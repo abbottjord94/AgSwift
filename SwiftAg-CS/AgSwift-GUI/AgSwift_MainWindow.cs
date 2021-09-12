@@ -1,45 +1,72 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Collections.Generic;
+using SwiftAg_CS;
 
 namespace AgSwift_GUI
 {
     public partial class AgSwift_MainWindow : Form
     {
+        private Graph graph;
         public AgSwift_MainWindow()
         {
             InitializeComponent();
+            graph = new Graph();
         }
 
         private void pictureBox_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
         {
             Graphics g = e.Graphics;
-            Pen p = new Pen(Color.White, 3);
-            System.Drawing.Point pt1 = new System.Drawing.Point(100, 100);
-            System.Drawing.Point pt2 = new System.Drawing.Point(200, 200);
-
-            g.DrawLine(p, pt1, pt2);
-
+            Pen p = new Pen(Color.Green, 1);
+            Dictionary<int, SwiftAg_CS.Point> pts = graph.getPoints();
+            Dictionary<int, SwiftAg_CS.Edge> edges = graph.getEdges();
+            foreach(KeyValuePair<int, SwiftAg_CS.Point> pt in pts)
+            {
+                g.DrawEllipse(p, new Rectangle((int)pt.Value.get_x(), (int)pt.Value.get_y(),3,3));
+            }
+            foreach (KeyValuePair<int, SwiftAg_CS.Edge> edge in edges)
+            {
+                System.Drawing.Point pt1 = new System.Drawing.Point((int)edge.Value.get_a().get_x(), (int)edge.Value.get_a().get_y());
+                System.Drawing.Point pt2 = new System.Drawing.Point((int)edge.Value.get_b().get_x(), (int)edge.Value.get_b().get_y());
+                g.DrawLine(p, pt1, pt2);
+            }
         }
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            pictureBox1.Refresh();
-            MessageBox.Show("All your base are belong to us", "Lmao", MessageBoxButtons.OK);
+            graph.triangulate();
+            drawingSurface.Refresh();
+
+            edgesLabel.Text = "Edges: " + graph.edgeCount().ToString();
+            trianglesLabel.Text = "Triangles: " + graph.triangleCount().ToString();
         }
 
         private void AgSwift_MainWindow_Load(object sender, EventArgs e)
         {
-            pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox_Paint);
+            drawingSurface.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox_Paint);
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            double x = MousePosition.X;
-            double y = MousePosition.Y;
+            MouseEventArgs mouseEvent = (MouseEventArgs)e;
+            double x = mouseEvent.X;
+            double y = mouseEvent.Y;
+            SwiftAg_CS.Point new_point = new SwiftAg_CS.Point(x, y, 0);
+            graph.addPoint(new_point);
+            drawingSurface.Refresh();
 
-            string msg = "X: " + x.ToString() + " Y: " + y.ToString();
-            MessageBox.Show(msg, "Test", MessageBoxButtons.OK);
+            pointsLabel.Text = "Points: " + graph.pointCount().ToString();
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

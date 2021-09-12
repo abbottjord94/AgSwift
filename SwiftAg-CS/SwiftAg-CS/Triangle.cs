@@ -106,7 +106,7 @@ namespace SwiftAg_CS
             double center_y = (((b.get_x() - c.get_x()) * (b.get_x() + c.get_x()) + (b.get_y() - c.get_y()) * (b.get_y() + c.get_y())) / 2 * (a.get_x() - c.get_x()) - ((a.get_x() - c.get_x()) * (a.get_x() + c.get_x()) + (a.get_y() - c.get_y()) * (a.get_y() + c.get_y())) / 2 * (b.get_x() - c.get_x())) / D;
             double radius = Math.Sqrt(Math.Pow(c.get_x() - center_x, 2) + Math.Pow(c.get_y() - center_y, 2));
 
-            Tuple<Point, double> cc = new Tuple<Point, double>(new Point(center_y, center_y, 0), radius);
+            Tuple<Point, double> cc = new Tuple<Point, double>(new Point(center_x, center_y, 0), radius);
             return cc;
         }
 

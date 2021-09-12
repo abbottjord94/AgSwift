@@ -79,5 +79,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SwiftAg-CS\SwiftAg-CS.csproj">
+      <Project>{ef1e6436-fa38-4274-8fdf-a8beddf7bdf3}</Project>
+      <Name>SwiftAg-CS</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
