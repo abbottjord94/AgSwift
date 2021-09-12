@@ -141,5 +141,33 @@ namespace SwiftAg_CS
         {
 
         }
+
+        public void triangulate()
+        {
+            foreach(KeyValuePair<int, Point> pt1 in points)
+            {
+                foreach (KeyValuePair<int, Point> pt2 in points)
+                {
+                    foreach (KeyValuePair<int, Point> pt3 in points)
+                    {
+                        if( (pt1.Key != pt2.Key) && (pt2.Key != pt3.Key) && (pt3.Key != pt1.Key))
+                        {
+                            Triangle test_tri = new Triangle(pt1.Value, pt2.Value, pt3.Value);
+                            if(delaunayTest(test_tri) && !containsTriangle(test_tri))
+                            {
+                                addTriangle(test_tri);
+                            }
+                        }
+                    }
+                }
+            }
+
+            foreach(KeyValuePair<int, Triangle> t in triangles)
+            {
+                addEdge(t.Value.get_ab());
+                addEdge(t.Value.get_bc());
+                addEdge(t.Value.get_ca());
+            }
+        }
     }
 }
