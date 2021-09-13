@@ -141,17 +141,21 @@ namespace SwiftAg_CS
             edges.Clear();
             triangles.Clear();
 
-/*            for (int i = 0; i < 20; i++)
-            {
-                int x_max = 1000;
-                int y_max = 600;
-                int x_val = rnd.Next() % x_max;
-                int y_val = rnd.Next() % y_max;
-                Point randGenPoint = new Point(x_val, y_val, 0);
-                points.Add(randGenPoint.GetHashCode(), randGenPoint);
-            }*/
+            /*            for (int i = 0; i < 20; i++)
+                        {
+                            int x_max = 1000;
+                            int y_max = 600;
+                            int x_val = rnd.Next() % x_max;
+                            int y_val = rnd.Next() % y_max;
+                            Point randGenPoint = new Point(x_val, y_val, 0);
+                            points.Add(randGenPoint.GetHashCode(), randGenPoint);
+                        }*/
 
-            Triangle superTriangle = new Triangle(new Point(0, 0, 0), new Point(0, 1000, 0), new Point(500, 0, 0));
+            Point supertri_p1 = new Point(0, 0, 0);
+            Point supertri_p2 = new Point(500, 1000, 0);
+            Point supertri_p3 = new Point(1000, 0, 0);
+
+            Triangle superTriangle = new Triangle(supertri_p1,supertri_p2,supertri_p3);
             addTriangle(superTriangle);
             //addEdgesOfTriangle(superTriangle);
 
@@ -171,7 +175,8 @@ namespace SwiftAg_CS
                 List<Edge> polygon = new List<Edge>();
                 foreach (Triangle badTri in badTriangles)
                 {
-                    foreach (Edge badEdge in badTri.getEdges())
+                    List<Edge> badtri_edges = badTri.getEdges();
+                    foreach (Edge badEdge in badtri_edges)
                     {
                         if (polygon.Contains(badEdge))
                         {
@@ -189,10 +194,21 @@ namespace SwiftAg_CS
                 {
                     Triangle newTri = new Triangle(p, polyEdge);
                     addTriangle(newTri);
-                    addEdgesOfTriangle(newTri);
+                    // addEdgesOfTriangle(newTri);
                 }
             }
             //TODO: clean up supertriangle
+            Dictionary<int, Triangle> tris_copy = new Dictionary<int, Triangle>(triangles);
+            foreach(KeyValuePair<int, Triangle> t in triangles)
+            {
+                if(t.Value.containsPoint(supertri_p1) || t.Value.containsPoint(supertri_p2) || t.Value.containsPoint(supertri_p3))
+                {
+                    tris_copy.Remove(t.Key);
+                }
+            }
+
+            triangles = new Dictionary<int, Triangle>(tris_copy);
+            // removeTriangle(superTriangle);
         }
 
         private void addEdgesOfTriangle(Triangle _t)
