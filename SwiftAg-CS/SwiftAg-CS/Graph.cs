@@ -138,23 +138,22 @@ namespace SwiftAg_CS
 
         public void selfContainedBowyerWatsonTriangulation()
         {
-            points.Clear();
             edges.Clear();
             triangles.Clear();
 
-            for (int i = 0; i < 20; i++)
+/*            for (int i = 0; i < 20; i++)
             {
-                Random rnd = new Random();
-                int x_max = 50;
-                int y_max = 50;
+                int x_max = 1000;
+                int y_max = 600;
                 int x_val = rnd.Next() % x_max;
                 int y_val = rnd.Next() % y_max;
                 Point randGenPoint = new Point(x_val, y_val, 0);
                 points.Add(randGenPoint.GetHashCode(), randGenPoint);
-            }
-            Triangle superTriangle = new Triangle(new Point(0, 0, 0), new Point(0, 100, 0), new Point(100, 0, 0));
+            }*/
+
+            Triangle superTriangle = new Triangle(new Point(0, 0, 0), new Point(0, 1000, 0), new Point(500, 0, 0));
             addTriangle(superTriangle);
-            addEdgesOfTriangle(superTriangle);
+            //addEdgesOfTriangle(superTriangle);
 
             foreach (KeyValuePair<int, Point> pointHashPair in points)
             {
@@ -204,18 +203,123 @@ namespace SwiftAg_CS
             }
         }
 
+        public void addPointToTriangulation(Point _p)
+        {
+            addPoint(_p);
+            switch(pointCount())
+            {
+                case 0:
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    List<Point> pts = new List<Point>();
+                    foreach(KeyValuePair<int, Point> kp in points)
+                    {
+                        pts.Add(kp.Value);
+                    }
+                    Triangle new_tri = new Triangle(pts[0], pts[1], pts[2]);
+                    addTriangle(new_tri);
+                    break;
+                default:
+                    List<Triangle> bad_tris = new List<Triangle>();
+                    foreach(KeyValuePair<int, Triangle> kp in triangles)
+                    {
+                        Tuple<Point, double> cc = kp.Value.circumcircle();
+                        if(_p.distance(cc.Item1) < cc.Item2)
+                        {
+                            bad_tris.Add(kp.Value);
+                        }
+                    }
+                    if(bad_tris.Count == 0)
+                    {
+                        foreach(KeyValuePair<int, Point> kp1 in points)
+                        {
+                            foreach(KeyValuePair<int, Point> kp2 in points)
+                            {
+                                if(kp1.Value != kp2.Value && kp2.Value != _p && kp1.Value != _p)
+                                {
+                                    Triangle test_tri = new Triangle(kp1.Value, kp2.Value, _p);
+                                    if(delaunayTest(test_tri))
+                                    {
+                                        addTriangle(test_tri);
+                                    }
+                                }
+                            }
+                        }
+                    } 
+                    else
+                    {
+                        if(bad_tris.Count == 1)
+                        {
+                            Point pt1 = bad_tris[0].get_a();
+                            Point pt2 = bad_tris[0].get_b();
+                            Point pt3 = bad_tris[0].get_c();
+                            Triangle tri1 = new Triangle(pt1, pt2, pt3);
+                            Triangle tri2 = new Triangle(_p, pt2, pt3);
+                            Triangle tri3 = new Triangle(pt1, _p, pt3);
+                            Triangle tri4 = new Triangle(pt1, pt2, _p);
+                            removeTriangle(bad_tris[0]);
+                            addTriangle(tri1);
+                            addTriangle(tri2);
+                            addTriangle(tri3);
+                            addTriangle(tri4);
+                        }
+                        else
+                        {
+                            Dictionary<int, Edge> polygon = new Dictionary<int, Edge>();
+                            Dictionary<int, Edge> copy_polygon = new Dictionary<int, Edge>();
+
+                            foreach (Triangle t in bad_tris)
+                            {
+                                polygon.Add(t.get_ab().GetHashCode(), t.get_ab());
+                                polygon.Add(t.get_bc().GetHashCode(), t.get_bc());
+                                polygon.Add(t.get_ca().GetHashCode(), t.get_ca());
+
+                                copy_polygon.Add(t.get_ab().GetHashCode(), t.get_ab());
+                                copy_polygon.Add(t.get_bc().GetHashCode(), t.get_bc());
+                                copy_polygon.Add(t.get_ca().GetHashCode(), t.get_ca());
+                            }
+
+                            foreach(KeyValuePair<int, Edge> poly_edge1 in polygon)
+                            {
+                                foreach(KeyValuePair<int, Edge> poly_edge2 in polygon)
+                                {
+                                    if(poly_edge1.Key != poly_edge2.Key && poly_edge1.Value == poly_edge2.Value)
+                                    {
+                                        copy_polygon.Remove(poly_edge1.Key);
+                                        copy_polygon.Remove(poly_edge2.Key);
+                                    }
+                                }
+                            }
+
+                            foreach(KeyValuePair<int, Edge> poly_edge in copy_polygon)
+                            {
+                                Triangle t1 = new Triangle(_p, poly_edge.Value);
+                                addTriangle(t1);
+                            } 
+                        }
+                    }
+                    break;
+            }
+        }
+
         public void triangulate()
         {
+            triangles.Clear();
+            edges.Clear();
             foreach(KeyValuePair<int, Point> pt1 in points)
             {
                 foreach (KeyValuePair<int, Point> pt2 in points)
                 {
                     foreach (KeyValuePair<int, Point> pt3 in points)
                     {
-                        if( (pt1.Key != pt2.Key) && (pt2.Key != pt3.Key) && (pt3.Key != pt1.Key))
+                        if( (pt1.Value != pt2.Value) && (pt2.Value != pt3.Value) && (pt3.Value != pt1.Value))
                         {
                             Triangle test_tri = new Triangle(pt1.Value, pt2.Value, pt3.Value);
-                            if(delaunayTest(test_tri) && !containsTriangle(test_tri))
+                            if(delaunayTest(test_tri))
                             {
                                 addTriangle(test_tri);
                             }

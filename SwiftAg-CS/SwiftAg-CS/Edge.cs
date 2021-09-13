@@ -71,7 +71,7 @@ namespace SwiftAg_CS
 
         public static bool operator==(Edge _a, Edge _b)
         {
-            if ((_a.get_a() == _b.get_a() || _a.get_b() == _b.get_a()) && (_a.get_b() == _b.get_a() || _a.get_b() == _b.get_b())) return true;
+            if ((_a.get_a() == _b.get_a() || _a.get_a() == _b.get_b()) && (_a.get_b() == _b.get_a() || _a.get_b() == _b.get_b())) return true;
             else return false;
         }
         public static bool operator !=(Edge _a, Edge _b)
