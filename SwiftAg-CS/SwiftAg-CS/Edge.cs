@@ -1,4 +1,6 @@
-﻿namespace SwiftAg_CS
+﻿using System;
+
+namespace SwiftAg_CS
 {
     public class Edge
     {
@@ -6,8 +8,12 @@
         private Point b;
         public Edge(Point _a, Point _b)
         {
-            a = _a;
-            b = _b;
+            if (_a == _b) throw new ArgumentException("Points on an edge can not be equivalent.");
+            else
+            {
+                a = _a;
+                b = _b;
+            }
         }
 
         public Point get_a()

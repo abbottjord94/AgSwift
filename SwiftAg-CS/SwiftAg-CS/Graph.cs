@@ -136,10 +136,60 @@ namespace SwiftAg_CS
             return true;
         }
 
-        //TODO
         public void bowyerWatsonTriangulation()
         {
+            points.Clear();
+            edges.Clear();
+            triangles.Clear();
 
+            foreach (int i in System.Linq.Enumerable.Range(1, 20))
+            {
+                Random rnd = new Random();
+                int x_max = 50;
+                int y_max = 50;
+                int x_val = rnd.Next() % x_max;
+                int y_val = rnd.Next() % y_max;
+                Point randGenPoint = new Point(x_val, y_val, 0);
+                points.Add(randGenPoint.GetHashCode(), randGenPoint);
+            }
+            Triangle superTriangle = new Triangle(new Point(0, 0, 0), new Point(0, 100, 0), new Point(100, 0, 0));
+
+            foreach (KeyValuePair<int, Point> pointHashPair in points)
+            {
+                Point p = pointHashPair.Value;
+                List<Triangle> badTriangles = new List<Triangle>();
+                foreach (KeyValuePair<int, Triangle> triangleHashPair in triangles)
+                {
+                    Triangle t = triangleHashPair.Value;
+                    Tuple<Point, double> centerAndRadius = t.circumcircle();
+                    if (p.distance(centerAndRadius.Item1) < centerAndRadius.Item2)
+                    {
+                        badTriangles.Add(t);
+                    }
+                }
+                List<Edge> polygon = new List<Edge>();
+                foreach (Triangle badTri in badTriangles)
+                {
+                    foreach (Edge badEdge in badTri.get_edges())
+                    {
+                        if (polygon.Contains(badEdge))
+                        {
+                            polygon.Remove(badEdge);
+                            edges.Remove(badEdge.GetHashCode());
+                            triangles.Remove(badTri.GetHashCode());
+                        }
+                        else
+                        {
+                            polygon.Add(badEdge);
+                        }
+                    }
+                }
+                foreach (Edge polyEdge in polygon)
+                {
+                    addTriangle(new Triangle(p, polyEdge));
+                }
+            }
+            //TODO: clean up supertriangle
         }
 
         public void triangulate()

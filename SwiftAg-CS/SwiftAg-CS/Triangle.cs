@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SwiftAg_CS
 {
@@ -14,6 +15,9 @@ namespace SwiftAg_CS
 
         public Triangle(Point _a, Point _b, Point _c)
         {
+            if (_a == _b) throw new ArgumentException("Points A and B of a triangle can not be equivalent.");
+            if (_b == _c) throw new ArgumentException("Points B and C of a triangle can not be equivalent.");
+            if (_a == _c) throw new ArgumentException("Points A and C of a triangle can not be equivalent.");
             a = _a;
             b = _b;
             c = _c;
@@ -74,6 +78,12 @@ namespace SwiftAg_CS
         public Edge get_ca()
         {
             return ca;
+        }
+
+        public List<Edge> get_edges()
+        {
+            List<Edge> retval = new List<Edge> { ab, bc, ca };
+            return retval;
         }
 
         public Edge getSharedEdge(Triangle _t)
