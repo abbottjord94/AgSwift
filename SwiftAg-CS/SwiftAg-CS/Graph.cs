@@ -142,7 +142,7 @@ namespace SwiftAg_CS
             edges.Clear();
             triangles.Clear();
 
-            foreach (int i in System.Linq.Enumerable.Range(1, 20))
+            for (int i = 0; i < 20; i++)
             {
                 Random rnd = new Random();
                 int x_max = 50;
