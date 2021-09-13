@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SwiftAg_CS;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +15,8 @@ namespace AgSwift_GUI
         [STAThread]
         static void Main()
         {
+            Graph g1 = new Graph();
+            g1.selfContainedBowyerWatsonTriangulation();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new AgSwift_MainWindow());

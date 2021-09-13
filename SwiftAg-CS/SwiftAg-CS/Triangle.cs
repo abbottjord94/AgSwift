@@ -80,7 +80,7 @@ namespace SwiftAg_CS
             return ca;
         }
 
-        public List<Edge> get_edges()
+        public List<Edge> getEdges()
         {
             List<Edge> retval = new List<Edge> { ab, bc, ca };
             return retval;

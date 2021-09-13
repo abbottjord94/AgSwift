@@ -136,7 +136,7 @@ namespace SwiftAg_CS
             return true;
         }
 
-        public void bowyerWatsonTriangulation()
+        public void selfContainedBowyerWatsonTriangulation()
         {
             points.Clear();
             edges.Clear();
@@ -153,6 +153,8 @@ namespace SwiftAg_CS
                 points.Add(randGenPoint.GetHashCode(), randGenPoint);
             }
             Triangle superTriangle = new Triangle(new Point(0, 0, 0), new Point(0, 100, 0), new Point(100, 0, 0));
+            addTriangle(superTriangle);
+            addEdgesOfTriangle(superTriangle);
 
             foreach (KeyValuePair<int, Point> pointHashPair in points)
             {
@@ -170,7 +172,7 @@ namespace SwiftAg_CS
                 List<Edge> polygon = new List<Edge>();
                 foreach (Triangle badTri in badTriangles)
                 {
-                    foreach (Edge badEdge in badTri.get_edges())
+                    foreach (Edge badEdge in badTri.getEdges())
                     {
                         if (polygon.Contains(badEdge))
                         {
@@ -186,10 +188,20 @@ namespace SwiftAg_CS
                 }
                 foreach (Edge polyEdge in polygon)
                 {
-                    addTriangle(new Triangle(p, polyEdge));
+                    Triangle newTri = new Triangle(p, polyEdge);
+                    addTriangle(newTri);
+                    addEdgesOfTriangle(newTri);
                 }
             }
             //TODO: clean up supertriangle
+        }
+
+        private void addEdgesOfTriangle(Triangle _t)
+        {
+            foreach(Edge e in _t.getEdges())
+            {
+                addEdge(e);
+            }
         }
 
         public void triangulate()
