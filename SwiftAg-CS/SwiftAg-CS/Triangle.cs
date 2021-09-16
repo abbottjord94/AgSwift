@@ -133,7 +133,7 @@ namespace SwiftAg_CS
             return !(neg && pos);
         }
 
-        double getHeightAtPoint(Point _p)
+        public double getHeightAtPoint(Point _p)
         {
             if (!pointInTriangle(_p)) return 0;
             else
@@ -147,6 +147,16 @@ namespace SwiftAg_CS
                 double h = ((d1 / total_dist) * a.get_elevation()) + ((d2 / total_dist) * b.get_elevation()) + ((d3 / total_dist) * c.get_elevation());
                 return h;
             }
+        }
+
+        public bool equivalent(Triangle _t)
+        {
+            if (
+                (_t.get_a() == a || _t.get_a() == b || _t.get_a() == c) &&
+                (_t.get_b() == a || _t.get_b() == b || _t.get_b() == c) &&
+                (_t.get_c() == a || _t.get_c() == b || _t.get_c() == c)
+                ) return true;
+            else return false;
         }
 
     }
