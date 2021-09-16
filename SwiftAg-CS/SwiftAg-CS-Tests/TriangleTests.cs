@@ -5,7 +5,7 @@ namespace SwiftAg_CS_Tests
 {
     public class TriangleTests
     {
-        Triangle t1, t2;
+        Triangle t1, t2, t3, t4;
         Point p1, p2, p3, e1a, e1b;
         Edge e1;
 
@@ -23,6 +23,10 @@ namespace SwiftAg_CS_Tests
 
             t1 = new Triangle(p1, p2, p3);
             t2 = new Triangle(p3, e1);
+
+            //these triangles are equivalent to t1, but not equal
+            t3 = new Triangle(p2, p3, p1);
+            t4 = new Triangle(p3, p1, p2);
         }
 
         [Test]
@@ -66,6 +70,18 @@ namespace SwiftAg_CS_Tests
         public void PointInsideTriangleTest()
         {
             if(t1.pointInTriangle(e1a))
+            {
+                Assert.Pass();
+            } else
+            {
+                Assert.Fail();
+            }
+        }
+
+        [Test]
+        public void TriangleEquvialencyTest()
+        {
+            if(t1.equivalent(t3) && t3.equivalent(t4) && t4.equivalent(t1) && !t2.equivalent(t3))
             {
                 Assert.Pass();
             } else
