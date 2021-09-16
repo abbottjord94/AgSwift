@@ -8,6 +8,8 @@ namespace SwiftAg_CS_Tests
     {
         Triangle t1, t2, t3, t4, t5;
         Point p1, p2, p3, p4, p5, p6, e1a, e1b;
+        Triangle t1, t2, t3, t4;
+        Point p1, p2, p3, e1a, e1b;
         Edge e1;
 
         [SetUp]
@@ -35,6 +37,7 @@ namespace SwiftAg_CS_Tests
             p6 = new Point(3, 0, 0);
 
             t5 = new Triangle(p4, p5, p6);
+
         }
 
         [Test]
@@ -123,6 +126,7 @@ namespace SwiftAg_CS_Tests
             }
             Assert.Fail();
         }
+
 
     }
 }
