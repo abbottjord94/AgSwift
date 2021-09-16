@@ -60,10 +60,10 @@ namespace AgSwift_GUI
             SwiftAg_CS.Point new_point = new SwiftAg_CS.Point(x, y, 0);
 
             //Method 2: Jordan's Bowyer-Watson triangulation function
-            //graph.addPointToTriangulation(new_point);
+            graph.addPointToTriangulation(new_point);
             //Method 3: O(N^3) triangulation
-            graph.addPoint(new_point);
-            graph.triangulate();
+            //graph.addPoint(new_point);
+            //graph.triangulate();
             drawingSurface.Refresh();
 
             pointsLabel.Text = "Points: " + graph.pointCount().ToString();

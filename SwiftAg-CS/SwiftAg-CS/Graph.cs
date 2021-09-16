@@ -82,8 +82,11 @@ namespace SwiftAg_CS
 
         public bool containsTriangle(Triangle _t)
         {
-            if (triangles.ContainsKey(_t.GetHashCode())) return true;
-            else return false;
+            foreach(KeyValuePair<int, Triangle> kp in triangles)
+            {
+                if (kp.Value.equivalent(_t)) return true;
+            }
+            return false;
         }
 
         public void removeTriangle(Triangle _t)
@@ -243,9 +246,7 @@ namespace SwiftAg_CS
                     List<Triangle> bad_tris = new List<Triangle>();
                     foreach(KeyValuePair<int, Triangle> kp in triangles)
                     {
-                        Tuple<Point, double> cc = kp.Value.circumcircle();
-                        if(_p.distance(cc.Item1) < cc.Item2)
-                        {
+                        if(!delaunayTest(kp.Value)) {
                             bad_tris.Add(kp.Value);
                         }
                     }
@@ -258,7 +259,7 @@ namespace SwiftAg_CS
                                 if(kp1.Value != kp2.Value && kp2.Value != _p && kp1.Value != _p)
                                 {
                                     Triangle test_tri = new Triangle(kp1.Value, kp2.Value, _p);
-                                    if(delaunayTest(test_tri))
+                                    if (delaunayTest(test_tri) && !containsTriangle(test_tri))
                                     {
                                         addTriangle(test_tri);
                                     }
@@ -278,10 +279,22 @@ namespace SwiftAg_CS
                             Triangle tri3 = new Triangle(pt1, _p, pt3);
                             Triangle tri4 = new Triangle(pt1, pt2, _p);
                             removeTriangle(bad_tris[0]);
-                            addTriangle(tri1);
-                            addTriangle(tri2);
-                            addTriangle(tri3);
-                            addTriangle(tri4);
+                            if(!containsTriangle(tri1))
+                            {
+                                addTriangle(tri1);
+                            }
+                            if(!containsTriangle(tri2))
+                            {
+                                addTriangle(tri2);
+                            }
+                            if(!containsTriangle(tri3))
+                            {
+                                addTriangle(tri3);
+                            }
+                            if(!containsTriangle(tri4))
+                            {
+                                addTriangle(tri4);
+                            }
                         }
                         else
                         {
@@ -297,6 +310,8 @@ namespace SwiftAg_CS
                                 copy_polygon.Add(t.get_ab().GetHashCode(), t.get_ab());
                                 copy_polygon.Add(t.get_bc().GetHashCode(), t.get_bc());
                                 copy_polygon.Add(t.get_ca().GetHashCode(), t.get_ca());
+
+                                removeTriangle(t);
                             }
 
                             foreach(KeyValuePair<int, Edge> poly_edge1 in polygon)
@@ -314,7 +329,11 @@ namespace SwiftAg_CS
                             foreach(KeyValuePair<int, Edge> poly_edge in copy_polygon)
                             {
                                 Triangle t1 = new Triangle(_p, poly_edge.Value);
-                                addTriangle(t1);
+                                if(delaunayTest(t1) && !containsTriangle(t1))
+                                {
+                                    addTriangle(t1);
+                                }
+                                
                             } 
                         }
                     }
@@ -335,7 +354,7 @@ namespace SwiftAg_CS
                         if( (pt1.Value != pt2.Value) && (pt2.Value != pt3.Value) && (pt3.Value != pt1.Value))
                         {
                             Triangle test_tri = new Triangle(pt1.Value, pt2.Value, pt3.Value);
-                            if(delaunayTest(test_tri))
+                            if(delaunayTest(test_tri) && !containsTriangle(test_tri))
                             {
                                 addTriangle(test_tri);
                             }
