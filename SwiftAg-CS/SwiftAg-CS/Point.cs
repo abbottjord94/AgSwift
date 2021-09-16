@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SwiftAg_CS
 {
@@ -7,12 +8,14 @@ namespace SwiftAg_CS
         private double x;
         private double y;
         private double elevation;
+        private List<Edge> connections;
 
         public Point(double _x, double _y, double _elevation)
         {
             x = _x;
             y = _y;
             elevation = _elevation;
+            connections = new List<Edge>();
         }
 
         public void set_x(double _x)
@@ -43,6 +46,22 @@ namespace SwiftAg_CS
         public double get_elevation()
         {
             return elevation;
+        }
+
+        public List<Edge> get_connections()
+        {
+            return connections;
+        }
+
+        public bool addConnection(Edge _e)
+        {
+            bool added = false;
+            if (!connections.Contains(_e))
+            {
+                connections.Add(_e);
+                added = true;
+            }
+            return added;
         }
 
         public double distance(Point _p)

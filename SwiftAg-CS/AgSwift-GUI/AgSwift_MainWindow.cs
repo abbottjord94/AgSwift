@@ -21,9 +21,9 @@ namespace AgSwift_GUI
             Pen p = new Pen(Color.Green, 1);
             Dictionary<int, SwiftAg_CS.Point> pts = graph.getPoints();
             Dictionary<int, SwiftAg_CS.Edge> edges = graph.getEdges();
-            foreach(KeyValuePair<int, SwiftAg_CS.Point> pt in pts)
+            foreach (KeyValuePair<int, SwiftAg_CS.Point> pt in pts)
             {
-                g.DrawEllipse(p, new Rectangle((int)pt.Value.get_x(), (int)pt.Value.get_y(),3,3));
+                g.DrawEllipse(p, new Rectangle((int)pt.Value.get_x(), (int)pt.Value.get_y(), 3, 3));
             }
             foreach (KeyValuePair<int, SwiftAg_CS.Edge> edge in edges)
             {
@@ -67,6 +67,27 @@ namespace AgSwift_GUI
         private void label2_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void generatePointsStripMenuItem_Click(object sender, EventArgs e){
+            graph.generateRandomPoints(10, 200, 200);
+            drawingSurface.Refresh();
+            return;
+        }
+
+        private void bowyer_Click(object sender, EventArgs e)
+        {
+            graph.bowyerWatsonTriangulation();
+            drawingSurface.Refresh();
+
+            edgesLabel.Text = "Edges: " + graph.edgeCount().ToString();
+            trianglesLabel.Text = "Triangles: " + graph.triangleCount().ToString();
+        }
+
+        private void clearGraphStripMenuItem_Click(object sender, EventArgs e)
+        {
+            graph.clearGraph();
+            drawingSurface.Refresh();
         }
     }
 }

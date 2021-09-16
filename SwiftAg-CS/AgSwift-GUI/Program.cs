@@ -15,8 +15,6 @@ namespace AgSwift_GUI
         [STAThread]
         static void Main()
         {
-            Graph g1 = new Graph();
-            g1.selfContainedBowyerWatsonTriangulation();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new AgSwift_MainWindow());

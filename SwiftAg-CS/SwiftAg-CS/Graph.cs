@@ -136,23 +136,64 @@ namespace SwiftAg_CS
             return true;
         }
 
-        public void selfContainedBowyerWatsonTriangulation()
+        public void clearGraph()
         {
             points.Clear();
             edges.Clear();
             triangles.Clear();
+        }
 
-            for (int i = 0; i < 20; i++)
+        public void generateRandomPoints(int _numPoints, int _max_x, int _max_y)
+        {
+            Random rnd = new Random();
+            for (int i = 0; i < _numPoints; i++)
             {
-                Random rnd = new Random();
-                int x_max = 50;
-                int y_max = 50;
-                int x_val = rnd.Next() % x_max;
-                int y_val = rnd.Next() % y_max;
+                int x_val = rnd.Next() % _max_x;
+                int y_val = rnd.Next() % _max_y;
                 Point randGenPoint = new Point(x_val, y_val, 0);
-                points.Add(randGenPoint.GetHashCode(), randGenPoint);
+                if (!points.ContainsKey(randGenPoint.GetHashCode())) addPoint(randGenPoint);
             }
-            Triangle superTriangle = new Triangle(new Point(0, 0, 0), new Point(0, 100, 0), new Point(100, 0, 0));
+        }
+
+        private List<Edge> generatePolygon(List<Triangle> badTriangles)
+        {
+            List<Edge> polygon = new List<Edge>();
+            foreach (Triangle badTri in badTriangles)
+            {
+                foreach (Edge badEdge in badTri.getEdges())
+                {
+                    //.Contains() seems to test for identity not equality, so this is a bad workaround
+                    bool polyContainsEquivalent = false;
+                    foreach (Edge polyEdge in polygon)
+                    {
+                        if (badEdge == polyEdge)
+                        {
+                            polyContainsEquivalent = true;
+                            break;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                    if (polyContainsEquivalent)
+                    {
+                        polygon.Remove(badEdge);
+                        removeEdge(badEdge);
+                        removeTriangle(badTri);
+                    }
+                    else
+                    {
+                        polygon.Add(badEdge);
+                    }
+                }
+            }
+            return polygon;
+        }
+
+        public void bowyerWatsonTriangulation()
+        {
+            Triangle superTriangle = new Triangle(new Point(0, 0, 0), new Point(0, 800, 0), new Point(800, 0, 0));
             addTriangle(superTriangle);
             addEdgesOfTriangle(superTriangle);
 
@@ -169,23 +210,7 @@ namespace SwiftAg_CS
                         badTriangles.Add(t);
                     }
                 }
-                List<Edge> polygon = new List<Edge>();
-                foreach (Triangle badTri in badTriangles)
-                {
-                    foreach (Edge badEdge in badTri.getEdges())
-                    {
-                        if (polygon.Contains(badEdge))
-                        {
-                            polygon.Remove(badEdge);
-                            edges.Remove(badEdge.GetHashCode());
-                            triangles.Remove(badTri.GetHashCode());
-                        }
-                        else
-                        {
-                            polygon.Add(badEdge);
-                        }
-                    }
-                }
+                List<Edge> polygon = generatePolygon(badTriangles);
                 foreach (Edge polyEdge in polygon)
                 {
                     Triangle newTri = new Triangle(p, polyEdge);
@@ -193,7 +218,13 @@ namespace SwiftAg_CS
                     addEdgesOfTriangle(newTri);
                 }
             }
-            //TODO: clean up supertriangle
+            foreach(Point p in superTriangle.getPoints())
+            {
+                foreach(Edge connection in p.get_connections())
+                {
+                    removeEdge(connection);
+                }
+            }
         }
 
         private void addEdgesOfTriangle(Triangle _t)
