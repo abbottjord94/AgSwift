@@ -1,4 +1,5 @@
-﻿using SwiftAg_CS;
+﻿using System;
+using SwiftAg_CS;
 using NUnit.Framework;
 
 namespace SwiftAg_CS_Tests
@@ -107,6 +108,20 @@ namespace SwiftAg_CS_Tests
             {
                 Assert.Fail();
             }
+        }
+
+        [Test]
+
+        public void TriangleArgumentExceptionTest()
+        {
+            try
+            {
+                Triangle test_tri = new Triangle(p1, p1, p2);
+            } catch(ArgumentException e)
+            {
+                Assert.Pass();
+            }
+            Assert.Fail();
         }
 
     }
