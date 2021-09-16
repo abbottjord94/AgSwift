@@ -279,19 +279,19 @@ namespace SwiftAg_CS
                             Triangle tri3 = new Triangle(pt1, _p, pt3);
                             Triangle tri4 = new Triangle(pt1, pt2, _p);
                             removeTriangle(bad_tris[0]);
-                            if(!containsTriangle(tri1))
+                            if(!containsTriangle(tri1) && !tri1.collinear())
                             {
                                 addTriangle(tri1);
                             }
-                            if(!containsTriangle(tri2))
+                            if(!containsTriangle(tri2) && !tri2.collinear())
                             {
                                 addTriangle(tri2);
                             }
-                            if(!containsTriangle(tri3))
+                            if(!containsTriangle(tri3) && !tri3.collinear())
                             {
                                 addTriangle(tri3);
                             }
-                            if(!containsTriangle(tri4))
+                            if(!containsTriangle(tri4) && !tri4.collinear())
                             {
                                 addTriangle(tri4);
                             }
@@ -307,12 +307,10 @@ namespace SwiftAg_CS
                                 polygon.Add(t.get_bc().GetHashCode(), t.get_bc());
                                 polygon.Add(t.get_ca().GetHashCode(), t.get_ca());
 
-                                copy_polygon.Add(t.get_ab().GetHashCode(), t.get_ab());
-                                copy_polygon.Add(t.get_bc().GetHashCode(), t.get_bc());
-                                copy_polygon.Add(t.get_ca().GetHashCode(), t.get_ca());
-
                                 removeTriangle(t);
                             }
+
+                            copy_polygon = new Dictionary<int, Edge>(polygon);
 
                             foreach(KeyValuePair<int, Edge> poly_edge1 in polygon)
                             {
@@ -329,7 +327,7 @@ namespace SwiftAg_CS
                             foreach(KeyValuePair<int, Edge> poly_edge in copy_polygon)
                             {
                                 Triangle t1 = new Triangle(_p, poly_edge.Value);
-                                if(delaunayTest(t1) && !containsTriangle(t1))
+                                if(delaunayTest(t1) && !containsTriangle(t1) && !t1.collinear())
                                 {
                                     addTriangle(t1);
                                 }
