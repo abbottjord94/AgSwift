@@ -16,15 +16,18 @@ namespace SwiftAg_CS
         public Triangle(Point _a, Point _b, Point _c)
         {
             if (_a == _b) throw new ArgumentException("Points A and B of a triangle can not be equivalent.");
-            if (_b == _c) throw new ArgumentException("Points B and C of a triangle can not be equivalent.");
-            if (_a == _c) throw new ArgumentException("Points A and C of a triangle can not be equivalent.");
-            a = _a;
-            b = _b;
-            c = _c;
+            else if (_b == _c) throw new ArgumentException("Points B and C of a triangle can not be equivalent.");
+            else if (_a == _c) throw new ArgumentException("Points A and C of a triangle can not be equivalent.");
+            else
+            {
+                a = _a;
+                b = _b;
+                c = _c;
 
-            ab = new Edge(a, b);
-            bc = new Edge(b, c);
-            ca = new Edge(c, a);
+                ab = new Edge(a, b);
+                bc = new Edge(b, c);
+                ca = new Edge(c, a);
+            }
         }
 
         public Triangle(Point _a, Edge _bc)
@@ -166,6 +169,13 @@ namespace SwiftAg_CS
                 (_t.get_b() == a || _t.get_b() == b || _t.get_b() == c) &&
                 (_t.get_c() == a || _t.get_c() == b || _t.get_c() == c)
                 ) return true;
+            else return false;
+        }
+
+        public bool collinear()
+        {
+            double deg = Math.Acos(Math.Pow(a.distance(b), 2) + Math.Pow(a.distance(c), 2) - Math.Pow(b.distance(c), 2) / (2 * a.distance(b) * a.distance(c)));
+            if ( deg < 0.001 || deg - 180 < 0.001 ) return true;
             else return false;
         }
 
