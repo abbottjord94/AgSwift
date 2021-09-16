@@ -354,7 +354,7 @@ namespace SwiftAg_CS
                         if( (pt1.Value != pt2.Value) && (pt2.Value != pt3.Value) && (pt3.Value != pt1.Value))
                         {
                             Triangle test_tri = new Triangle(pt1.Value, pt2.Value, pt3.Value);
-                            if(delaunayTest(test_tri) && !containsTriangle(test_tri))
+                            if(delaunayTest(test_tri) && !containsTriangle(test_tri) && !test_tri.collinear())
                             {
                                 addTriangle(test_tri);
                             }

@@ -174,8 +174,8 @@ namespace SwiftAg_CS
 
         public bool collinear()
         {
-            Double deg = Math.Acos(Math.Pow(a.distance(b), 2) + Math.Pow(a.distance(c), 2) - Math.Pow(b.distance(c), 2) / (2 * a.distance(b) * a.distance(c)));
-            if ( deg < 0.001 || deg - Math.PI < 0.001 || Double.IsNaN(deg)) return true;
+            Double deg = Math.Acos( (Math.Pow(ab.length(), 2) + Math.Pow(ca.length(), 2) - Math.Pow(bc.length(), 2)) / (2 * ab.length() * ca.length())) ;
+            if (Double.IsNaN(deg) || (deg.CompareTo(0d) == 0)) return true;
             else return false;
         }
 

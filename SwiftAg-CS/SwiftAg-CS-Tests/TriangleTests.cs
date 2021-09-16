@@ -100,7 +100,7 @@ namespace SwiftAg_CS_Tests
         [Test]
         public void TriangleCollinearityTest()
         {
-            if(t5.collinear())
+            if(t5.collinear() && !t1.collinear())
             {
                 Assert.Pass();
             } else
