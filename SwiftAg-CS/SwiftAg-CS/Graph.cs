@@ -6,6 +6,8 @@ namespace SwiftAg_CS
     public class Graph
     {
         private Dictionary<int, Point> points;
+
+        //Current implementation allows equivalent edges to live at different locations in dictionary 9/17/21 -RH
         private Dictionary<int, Edge> edges;
         private Dictionary<int, Triangle> triangles;
 
@@ -193,13 +195,26 @@ namespace SwiftAg_CS
 
         public void bowyerWatsonTriangulation()
         {
-            Triangle superTriangle = new Triangle(new Point(0, 0, 0), new Point(0, 800, 0), new Point(800, 0, 0));
+            Point supTriPoint_a = new Point(0, 0, 0);
+            Point supTriPoint_b = new Point(0, 800, 0);
+            Point supTriPoint_c = new Point(800, 0, 0);
+
+            Triangle superTriangle = new Triangle(supTriPoint_a, supTriPoint_b, supTriPoint_c);
             addTriangle(superTriangle);
             addEdgesOfTriangle(superTriangle);
+            addPoint(supTriPoint_a);
+            addPoint(supTriPoint_b);
+            addPoint(supTriPoint_c);
+
+            //SPECULATION ON OBSERVATION
+            //When we make this supertriangle, we are creating points that don't exist on the graph.
+            //I suspect this is occurring else where
+            //We must add the points to the graph, and ensure all connections to the points of the supertriangle are stored in a single object
 
             foreach (KeyValuePair<int, Point> pointHashPair in points)
             {
                 Point p = pointHashPair.Value;
+                if (superTriangle.getPoints().Contains(p)) continue;
                 List<Triangle> badTriangles = new List<Triangle>();
                 foreach (KeyValuePair<int, Triangle> triangleHashPair in triangles)
                 {
@@ -211,6 +226,10 @@ namespace SwiftAg_CS
                     }
                 }
                 List<Edge> polygon = generatePolygon(badTriangles);
+                foreach(Triangle badTri in badTriangles)
+                {
+                    removeTriangle(badTri);
+                }
                 foreach (Edge polyEdge in polygon)
                 {
                     Triangle newTri = new Triangle(p, polyEdge);
@@ -220,11 +239,15 @@ namespace SwiftAg_CS
             }
             foreach(Point p in superTriangle.getPoints())
             {
+                //TODO: phantom edges occurring because we are removing connections from only the supertriangle points, not the connections to the point at that location
+                //the change of thought required to solve this will likely solve the zero length edges
                 foreach(Edge connection in p.get_connections())
                 {
                     removeEdge(connection);
                 }
+                removePoint(p);
             }
+            removeTriangle(superTriangle);
         }
 
         private void addEdgesOfTriangle(Triangle _t)

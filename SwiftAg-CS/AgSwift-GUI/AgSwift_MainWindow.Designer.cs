@@ -40,6 +40,7 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearGraphToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,7 +53,6 @@
             this.elevationEntryBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.bowyer = new System.Windows.Forms.Button();
-            this.clearGraphToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.drawingSurface)).BeginInit();
@@ -167,8 +167,15 @@
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
             this.settingsToolStripMenuItem.Text = "Settings...";
+            // 
+            // clearGraphToolStripMenuItem
+            // 
+            this.clearGraphToolStripMenuItem.Name = "clearGraphToolStripMenuItem";
+            this.clearGraphToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.clearGraphToolStripMenuItem.Text = "Clear Graph";
+            this.clearGraphToolStripMenuItem.Click += new System.EventHandler(this.clearGraphStripMenuItem_Click);
             // 
             // viewToolStripMenuItem
             // 
@@ -265,16 +272,9 @@
             this.bowyer.Name = "bowyer";
             this.bowyer.Size = new System.Drawing.Size(94, 23);
             this.bowyer.TabIndex = 7;
-            this.bowyer.Text = "Generate Test";
+            this.bowyer.Text = "Bowyer";
             this.bowyer.UseVisualStyleBackColor = true;
             this.bowyer.Click += new System.EventHandler(this.bowyer_Click);
-            // 
-            // clearGraphToolStripMenuItem
-            // 
-            this.clearGraphToolStripMenuItem.Name = "clearGraphToolStripMenuItem";
-            this.clearGraphToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.clearGraphToolStripMenuItem.Text = "Clear Graph";
-            this.clearGraphToolStripMenuItem.Click += new System.EventHandler(this.clearGraphStripMenuItem_Click);
             // 
             // AgSwift_MainWindow
             // 

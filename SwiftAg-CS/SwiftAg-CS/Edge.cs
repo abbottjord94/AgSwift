@@ -8,10 +8,18 @@ namespace SwiftAg_CS
         private Point b;
         public Edge(Point _a, Point _b)
         {
-            if (_a == _b) throw new ArgumentException("Points on an edge can not be equivalent.");
-            a = _a;
+            if (_a == _b) throw new ArgumentException("Zero Length Edge");
+            if(_a.closerToOriginThan(_b))
+            {
+                a = _a;
+                b = _b;
+            }
+            else
+            {
+                a = _b;
+                b = _a;
+            }
             a.addConnection(this);
-            b = _b;
             b.addConnection(this);
         }
 
