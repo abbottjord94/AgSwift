@@ -83,6 +83,12 @@ namespace SwiftAg_CS
             return ca;
         }
 
+        public List<Point> getPoints()
+        {
+            List<Point> retval = new List<Point> { a, b, c };
+            return retval;
+        }
+
         public List<Edge> getEdges()
         {
             List<Edge> retval = new List<Edge> { ab, bc, ca };

@@ -40,15 +40,19 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearGraphToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.testingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.autoGeneratePointsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.triangulate_button = new System.Windows.Forms.Button();
             this.pointsLabel = new System.Windows.Forms.Label();
             this.edgesLabel = new System.Windows.Forms.Label();
             this.trianglesLabel = new System.Windows.Forms.Label();
             this.elevationEntryBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
+            this.bowyer = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.drawingSurface)).BeginInit();
@@ -107,7 +111,8 @@
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
             this.viewToolStripMenuItem,
-            this.helpToolStripMenuItem});
+            this.helpToolStripMenuItem,
+            this.testingToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1193, 24);
@@ -153,7 +158,8 @@
             // editToolStripMenuItem
             // 
             this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.settingsToolStripMenuItem});
+            this.settingsToolStripMenuItem,
+            this.clearGraphToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "Edit";
@@ -161,8 +167,15 @@
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
             this.settingsToolStripMenuItem.Text = "Settings...";
+            // 
+            // clearGraphToolStripMenuItem
+            // 
+            this.clearGraphToolStripMenuItem.Name = "clearGraphToolStripMenuItem";
+            this.clearGraphToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.clearGraphToolStripMenuItem.Text = "Clear Graph";
+            this.clearGraphToolStripMenuItem.Click += new System.EventHandler(this.clearGraphStripMenuItem_Click);
             // 
             // viewToolStripMenuItem
             // 
@@ -184,6 +197,21 @@
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.aboutToolStripMenuItem.Text = "About";
             // 
+            // testingToolStripMenuItem
+            // 
+            this.testingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.autoGeneratePointsToolStripMenuItem});
+            this.testingToolStripMenuItem.Name = "testingToolStripMenuItem";
+            this.testingToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
+            this.testingToolStripMenuItem.Text = "Testing";
+            // 
+            // autoGeneratePointsToolStripMenuItem
+            // 
+            this.autoGeneratePointsToolStripMenuItem.Name = "autoGeneratePointsToolStripMenuItem";
+            this.autoGeneratePointsToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.autoGeneratePointsToolStripMenuItem.Text = "Generate Points";
+            this.autoGeneratePointsToolStripMenuItem.Click += new System.EventHandler(this.generatePointsStripMenuItem_Click);
+            // 
             // triangulate_button
             // 
             this.triangulate_button.Location = new System.Drawing.Point(12, 666);
@@ -197,7 +225,7 @@
             // pointsLabel
             // 
             this.pointsLabel.AutoSize = true;
-            this.pointsLabel.Location = new System.Drawing.Point(113, 675);
+            this.pointsLabel.Location = new System.Drawing.Point(843, 672);
             this.pointsLabel.Name = "pointsLabel";
             this.pointsLabel.Size = new System.Drawing.Size(48, 13);
             this.pointsLabel.TabIndex = 2;
@@ -206,7 +234,7 @@
             // edgesLabel
             // 
             this.edgesLabel.AutoSize = true;
-            this.edgesLabel.Location = new System.Drawing.Point(180, 675);
+            this.edgesLabel.Location = new System.Drawing.Point(788, 672);
             this.edgesLabel.Name = "edgesLabel";
             this.edgesLabel.Size = new System.Drawing.Size(49, 13);
             this.edgesLabel.TabIndex = 3;
@@ -216,7 +244,7 @@
             // trianglesLabel
             // 
             this.trianglesLabel.AutoSize = true;
-            this.trianglesLabel.Location = new System.Drawing.Point(246, 675);
+            this.trianglesLabel.Location = new System.Drawing.Point(720, 672);
             this.trianglesLabel.Name = "trianglesLabel";
             this.trianglesLabel.Size = new System.Drawing.Size(62, 13);
             this.trianglesLabel.TabIndex = 4;
@@ -238,12 +266,23 @@
             this.label4.TabIndex = 6;
             this.label4.Text = "Elevation";
             // 
+            // bowyer
+            // 
+            this.bowyer.Location = new System.Drawing.Point(93, 666);
+            this.bowyer.Name = "bowyer";
+            this.bowyer.Size = new System.Drawing.Size(94, 23);
+            this.bowyer.TabIndex = 7;
+            this.bowyer.Text = "Bowyer";
+            this.bowyer.UseVisualStyleBackColor = true;
+            this.bowyer.Click += new System.EventHandler(this.bowyer_Click);
+            // 
             // AgSwift_MainWindow
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(1216, 698);
+            this.Controls.Add(this.bowyer);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.elevationEntryBox);
             this.Controls.Add(this.trianglesLabel);
@@ -289,6 +328,10 @@
         private System.Windows.Forms.Label trianglesLabel;
         private System.Windows.Forms.TextBox elevationEntryBox;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button bowyer;
+        private System.Windows.Forms.ToolStripMenuItem testingToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem autoGeneratePointsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem clearGraphToolStripMenuItem;
     }
 }
 
