@@ -40,6 +40,7 @@ namespace AgSwift_GUI
         {
             //Method 1: Riley's Bowyer-Watson triangulation function
             //graph.selfContainedBowyerWatsonTriangulation();
+            graph.triangulate();
             drawingSurface.Refresh();
 
             pointsLabel.Text = "Points: " + graph.pointCount().ToString();
@@ -60,9 +61,9 @@ namespace AgSwift_GUI
             SwiftAg_CS.Point new_point = new SwiftAg_CS.Point(x, y, 0);
 
             //Method 2: Jordan's Bowyer-Watson triangulation function
-            graph.addPointToTriangulation(new_point);
+            //graph.addPointToTriangulation(new_point);
             //Method 3: O(N^3) triangulation
-            //graph.addPoint(new_point);
+            graph.addPoint(new_point);
             //graph.triangulate();
             drawingSurface.Refresh();
 
@@ -79,6 +80,26 @@ namespace AgSwift_GUI
         private void label2_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void bowyer_Click(object sender, EventArgs e)
+        {
+            graph.bowyerWatsonTriangulation();
+            drawingSurface.Refresh();
+
+            pointsLabel.Text = "Points: " + graph.pointCount().ToString();
+            edgesLabel.Text = "Edges: " + graph.edgeCount().ToString();
+            trianglesLabel.Text = "Triangles: " + graph.triangleCount().ToString();
+        }
+
+        private void clearGraphToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            graph.clearGraph();
+            drawingSurface.Refresh();
+
+            pointsLabel.Text = "Points: " + graph.pointCount().ToString();
+            edgesLabel.Text = "Edges: " + graph.edgeCount().ToString();
+            trianglesLabel.Text = "Triangles: " + graph.triangleCount().ToString();
         }
     }
 }

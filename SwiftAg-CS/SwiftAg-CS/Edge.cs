@@ -8,19 +8,21 @@ namespace SwiftAg_CS
         private Point b;
         public Edge(Point _a, Point _b)
         {
-            if (_a == _b) throw new ArgumentException("Zero Length Edge");
-            if(_a.closerToOriginThan(_b))
-            {
-                a = _a;
-                b = _b;
-            }
-            else
-            {
-                a = _b;
-                b = _a;
-            }
-            a.addConnection(this);
-            b.addConnection(this);
+            //if (_a == _b) throw new ArgumentException("Zero Length Edge");
+            //if(_a.closerToOriginThan(_b))
+            //{
+            //    a = _a;
+            //    b = _b;
+            //}
+            //else
+            //{
+            //    a = _b;
+            //    b = _a;
+            //}
+            //a.addConnection(this);
+            //b.addConnection(this);
+            a = _a;
+            b = _b;
         }
 
         public Point get_a()
@@ -90,7 +92,14 @@ namespace SwiftAg_CS
         }
         public static bool operator !=(Edge _a, Edge _b)
         {
-            if ((_a.get_a() == _b.get_a() || _a.get_b() == _b.get_a()) && (_a.get_b() == _b.get_a() || _a.get_b() == _b.get_b())) return false;
+            if ((_a.get_a() == _b.get_a()) && (_a.get_b() == _b.get_b()))
+            {
+                return false;
+            }
+            if ((_a.get_a() == _b.get_b()) && (_a.get_b() == _b.get_a()))
+            {
+                return false;
+            }
             else return true;
         }
     }

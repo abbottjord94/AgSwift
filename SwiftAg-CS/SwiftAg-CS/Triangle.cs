@@ -15,19 +15,13 @@ namespace SwiftAg_CS
 
         public Triangle(Point _a, Point _b, Point _c)
         {
-            if (_a == _b) throw new ArgumentException("Points A and B of a triangle can not be equivalent.");
-            else if (_b == _c) throw new ArgumentException("Points B and C of a triangle can not be equivalent.");
-            else if (_a == _c) throw new ArgumentException("Points A and C of a triangle can not be equivalent.");
-            else
-            {
-                a = _a;
-                b = _b;
-                c = _c;
+            a = _a;
+            b = _b;
+            c = _c;
 
-                ab = new Edge(a, b);
-                bc = new Edge(b, c);
-                ca = new Edge(c, a);
-            }
+            ab = new Edge(a, b);
+            bc = new Edge(b, c);
+            ca = new Edge(c, a);
         }
 
         public Triangle(Point _a, Edge _bc)

@@ -173,9 +173,9 @@
             // clearGraphToolStripMenuItem
             // 
             this.clearGraphToolStripMenuItem.Name = "clearGraphToolStripMenuItem";
-            this.clearGraphToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.clearGraphToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.clearGraphToolStripMenuItem.Text = "Clear Graph";
-            this.clearGraphToolStripMenuItem.Click += new System.EventHandler(this.clearGraphStripMenuItem_Click);
+            this.clearGraphToolStripMenuItem.Click += new System.EventHandler(this.clearGraphToolStripMenuItem_Click);
             // 
             // viewToolStripMenuItem
             // 
@@ -210,7 +210,6 @@
             this.autoGeneratePointsToolStripMenuItem.Name = "autoGeneratePointsToolStripMenuItem";
             this.autoGeneratePointsToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.autoGeneratePointsToolStripMenuItem.Text = "Generate Points";
-            this.autoGeneratePointsToolStripMenuItem.Click += new System.EventHandler(this.generatePointsStripMenuItem_Click);
             // 
             // triangulate_button
             // 
