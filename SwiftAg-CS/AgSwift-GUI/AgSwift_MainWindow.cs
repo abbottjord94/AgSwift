@@ -55,6 +55,46 @@ namespace AgSwift_GUI
 
         private void pictureBox1_Click(object sender, EventArgs e)
         { 
+
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void bowyer_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void clearGraphToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void drawingSurface_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void bowyer_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void drawingSurface_Click_1(object sender, EventArgs e)
+        {
             MouseEventArgs mouseEvent = (MouseEventArgs)e;
             double x = mouseEvent.X;
             double y = mouseEvent.Y;
@@ -72,17 +112,12 @@ namespace AgSwift_GUI
             trianglesLabel.Text = "Triangles: " + graph.triangleCount().ToString();
         }
 
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Application.Exit();
-        }
-
-        private void label2_Click(object sender, EventArgs e)
+        private void bowyer_Click_2(object sender, EventArgs e)
         {
 
         }
 
-        private void bowyer_Click(object sender, EventArgs e)
+        private void bowyer_Click_3(object sender, EventArgs e)
         {
             graph.bowyerWatsonTriangulation();
             drawingSurface.Refresh();
@@ -92,7 +127,7 @@ namespace AgSwift_GUI
             trianglesLabel.Text = "Triangles: " + graph.triangleCount().ToString();
         }
 
-        private void clearGraphToolStripMenuItem_Click(object sender, EventArgs e)
+        private void clearGraphToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             graph.clearGraph();
             drawingSurface.Refresh();
@@ -100,6 +135,11 @@ namespace AgSwift_GUI
             pointsLabel.Text = "Points: " + graph.pointCount().ToString();
             edgesLabel.Text = "Edges: " + graph.edgeCount().ToString();
             trianglesLabel.Text = "Triangles: " + graph.triangleCount().ToString();
+        }
+
+        private void exitToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }

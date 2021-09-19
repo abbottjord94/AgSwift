@@ -198,8 +198,6 @@ namespace SwiftAg_CS
                 polygon.Add(t.get_bc());
                 polygon.Add(t.get_ca());
             }
-            //Creating a copy that we can delete from safely
-            //List<Edge> copy_polygon = new List<Edge>(polygon);
 
             //Delete any edges that repeat and return
             List<Edge> ret_poly = new List<Edge>();
@@ -225,6 +223,7 @@ namespace SwiftAg_CS
 
         public void bowyerWatsonTriangulation()
         {
+            triangles.Clear();
             //Calculate maximum difference between x and y coordinates in point set
             double dmax;
             double dx = xmax - xmin;
