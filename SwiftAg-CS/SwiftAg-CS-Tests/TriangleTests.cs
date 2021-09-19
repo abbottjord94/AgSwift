@@ -1,12 +1,13 @@
-﻿using SwiftAg_CS;
+﻿using System;
+using SwiftAg_CS;
 using NUnit.Framework;
 
 namespace SwiftAg_CS_Tests
 {
     public class TriangleTests
     {
-        Triangle t1, t2, t3, t4;
-        Point p1, p2, p3, e1a, e1b;
+        Triangle t1, t2, t3, t4, t5;
+        Point p1, p2, p3, p4, p5, p6, e1a, e1b;
         Edge e1;
 
         [SetUp]
@@ -27,6 +28,14 @@ namespace SwiftAg_CS_Tests
             //these triangles are equivalent to t1, but not equal
             t3 = new Triangle(p2, p3, p1);
             t4 = new Triangle(p3, p1, p2);
+
+            //This triangle will have 3 collinear points to test the collinearity function
+            p4 = new Point(1, 0, 0);
+            p5 = new Point(2, 0, 0);
+            p6 = new Point(3, 0, 0);
+
+            t5 = new Triangle(p4, p5, p6);
+
         }
 
         [Test]
@@ -89,6 +98,33 @@ namespace SwiftAg_CS_Tests
                 Assert.Fail();
             }
         }
+
+        [Test]
+        public void TriangleCollinearityTest()
+        {
+            if(t5.collinear() && !t1.collinear())
+            {
+                Assert.Pass();
+            } else
+            {
+                Assert.Fail();
+            }
+        }
+
+        [Test]
+
+        public void TriangleArgumentExceptionTest()
+        {
+            try
+            {
+                Triangle test_tri = new Triangle(p1, p1, p2);
+            } catch(ArgumentException e)
+            {
+                Assert.Pass();
+            }
+            Assert.Fail();
+        }
+
 
     }
 }

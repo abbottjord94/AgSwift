@@ -6,8 +6,14 @@ namespace SwiftAg_CS
     public class Graph
     {
         private Dictionary<int, Point> points;
+
+        //Current implementation allows equivalent edges to live at different locations in dictionary 9/17/21 -RH
         private Dictionary<int, Edge> edges;
         private Dictionary<int, Triangle> triangles;
+
+        //Adding coordinate minimum and maximum counters
+        private double xmin, ymin = Double.NaN;
+        private double xmax, ymax = 0;
 
         public Graph()
         {
@@ -28,6 +34,22 @@ namespace SwiftAg_CS
             int h = _p.GetHashCode();
             if(!points.ContainsKey(h))
             {
+                if(_p.get_x() > xmax)
+                {
+                    xmax = _p.get_x();
+                }
+                if (_p.get_y() > ymax)
+                {
+                    ymax = _p.get_y();
+                }
+                if (_p.get_x() < xmin || Double.IsNaN(xmin))
+                {
+                    xmin = _p.get_x();
+                }
+                if (_p.get_y() < ymin || Double.IsNaN(ymin))
+                {
+                    ymin = _p.get_y();
+                }
                 points.Add(h, _p);
             }
         }
@@ -82,8 +104,14 @@ namespace SwiftAg_CS
 
         public bool containsTriangle(Triangle _t)
         {
-            if (triangles.ContainsKey(_t.GetHashCode())) return true;
-            else return false;
+            foreach(KeyValuePair<int, Triangle> kp in triangles)
+            {
+                if(kp.Value.equivalent(_t))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public void removeTriangle(Triangle _t)
@@ -136,10 +164,162 @@ namespace SwiftAg_CS
             return true;
         }
 
-        //TODO
+        public void clearGraph()
+        {
+            points.Clear();
+            edges.Clear();
+            triangles.Clear();
+            xmin = 0;
+            ymin = 0;
+            xmax = Double.NaN;
+            ymax = Double.NaN;
+        }
+
+        public void generateRandomPoints(int _numPoints, int _max_x, int _max_y)
+        {
+            Random rnd = new Random();
+            for (int i = 0; i < _numPoints; i++)
+            {
+                int x_val = rnd.Next() % _max_x;
+                int y_val = rnd.Next() % _max_y;
+                Point randGenPoint = new Point(x_val, y_val, 0);
+                if (!points.ContainsKey(randGenPoint.GetHashCode())) addPoint(randGenPoint);
+            }
+        }
+
+        private List<Edge> generatePolygon(List<Triangle> badTriangles)
+        {
+            List<Edge> polygon = new List<Edge>();
+            
+            //Adding all edges to the polygon
+            foreach (Triangle t in badTriangles)
+            {
+                polygon.Add(t.get_ab());
+                polygon.Add(t.get_bc());
+                polygon.Add(t.get_ca());
+            }
+            //Creating a copy that we can delete from safely
+            //List<Edge> copy_polygon = new List<Edge>(polygon);
+
+            //Delete any edges that repeat and return
+            List<Edge> ret_poly = new List<Edge>();
+            foreach(Edge e1 in polygon)
+            {
+                bool found = false;
+                foreach(Edge e2 in polygon)
+                {
+                    if(polygon.IndexOf(e1) != polygon.IndexOf(e2) && e1 == e2)
+                    {
+                        found = true;
+                    }
+                }
+                if(!found)
+                {
+                    ret_poly.Add(e1);
+                }
+            }
+
+            return ret_poly;
+
+        }
+
         public void bowyerWatsonTriangulation()
         {
+            //Calculate maximum difference between x and y coordinates in point set
+            double dmax;
+            double dx = xmax - xmin;
+            double dy = ymax - ymin;
+            if(dy > dx)
+            {
+                dmax = dy - dx;
+            } else
+            {
+                dmax = dx - dy;
+            }
 
+            //Calculate midpoints of x and y coordinates in point set
+            double xmid = (xmax + xmin) / 2;
+            double ymid = (ymax + ymin) / 2;
+
+            //Creating supertriangle and adding their points to the triangulation
+            Point supTriPoint_a = new Point(xmid - 2 * dmax, ymid - dmax, 0);
+            Point supTriPoint_b = new Point(xmid, ymid + 2 * dmax, 0);
+            Point supTriPoint_c = new Point(xmid + 2 * dmax, ymid - dmax, 0);
+
+            Triangle superTriangle = new Triangle(supTriPoint_a, supTriPoint_b, supTriPoint_c);
+            addPoint(supTriPoint_a);
+            addPoint(supTriPoint_b);
+            addPoint(supTriPoint_c);
+            addTriangle(superTriangle);
+
+
+            //SPECULATION ON OBSERVATION
+            //When we make this supertriangle, we are creating points that don't exist on the graph.
+            //I suspect this is occurring else where
+            //We must add the points to the graph, and ensure all connections to the points of the supertriangle are stored in a single object
+
+            //Another Observation:
+                // It may be necessary to force the triangle edges to be clockwise or counter clockwise, as that appears in many other implementations of Bowyer-Watson. I'll proceed for now without changing the triangles.
+
+            foreach (KeyValuePair<int, Point> pointHashPair in points)
+            {
+                if (pointHashPair.Value == supTriPoint_a || pointHashPair.Value == supTriPoint_b || pointHashPair.Value == supTriPoint_c) continue;
+                List<Triangle> badTriangles = new List<Triangle>();
+                foreach (KeyValuePair<int, Triangle> triangleHashPair in triangles)
+                {
+                    Triangle t = triangleHashPair.Value;
+                    Tuple<Point, double> centerAndRadius = t.circumcircle();
+                    if (pointHashPair.Value.distance(centerAndRadius.Item1) < centerAndRadius.Item2)
+                    {
+                        badTriangles.Add(t);
+                    }
+                }
+                List<Edge> polygon = generatePolygon(badTriangles);
+                foreach(Triangle badTri in badTriangles)
+                {
+                    removeTriangle(badTri);
+                }
+                foreach (Edge polyEdge in polygon)
+                {
+                    Triangle newTri = new Triangle(pointHashPair.Value, polyEdge);
+                    if (!containsTriangle(newTri))
+                    {
+                        addTriangle(newTri);
+                    }
+                    
+                }
+            }
+
+            List<Triangle> supTriConnections = new List<Triangle>();
+            foreach(KeyValuePair<int, Triangle> t in triangles)
+            {
+                if(t.Value.containsPoint(supTriPoint_a) || t.Value.containsPoint(supTriPoint_b) || t.Value.containsPoint(supTriPoint_c))
+                {
+                    supTriConnections.Add(t.Value);
+                }
+            }
+
+            foreach(Triangle t in supTriConnections)
+            {
+                if(containsTriangle(t))
+                {
+                    removeTriangle(t);
+                }
+            }
+
+            removePoint(supTriPoint_a);
+            removePoint(supTriPoint_b);
+            removePoint(supTriPoint_c);
+
+            removeTriangle(superTriangle);
+        }
+
+        private void addEdgesOfTriangle(Triangle _t)
+        {
+            foreach(Edge e in _t.getEdges())
+            {
+                addEdge(e);
+            }
         }
 
         public void triangulate()
@@ -150,7 +330,7 @@ namespace SwiftAg_CS
                 {
                     foreach (KeyValuePair<int, Point> pt3 in points)
                     {
-                        if( (pt1.Key != pt2.Key) && (pt2.Key != pt3.Key) && (pt3.Key != pt1.Key))
+                        if( (pt1.Value != pt2.Value) && (pt2.Value != pt3.Value) && (pt3.Value != pt1.Value))
                         {
                             Triangle test_tri = new Triangle(pt1.Value, pt2.Value, pt3.Value);
                             if(delaunayTest(test_tri) && !containsTriangle(test_tri))

@@ -1,4 +1,5 @@
-﻿using SwiftAg_CS;
+﻿using System;
+using SwiftAg_CS;
 using NUnit.Framework;
 
 namespace SwiftAg_CS_Tests
@@ -97,6 +98,20 @@ namespace SwiftAg_CS_Tests
             {
                 Assert.Fail();
             }
+        }
+
+        [Test]
+        public void EdgeArgumentExceptionTest()
+        {
+            try
+            {
+                Edge test_edge = new Edge(a, a);
+            }
+            catch(ArgumentException e)
+            {
+                Assert.Pass();
+            }
+            Assert.Fail();
         }
     }
 }

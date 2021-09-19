@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SwiftAg_CS
 {
@@ -74,6 +75,18 @@ namespace SwiftAg_CS
         public Edge get_ca()
         {
             return ca;
+        }
+
+        public List<Point> getPoints()
+        {
+            List<Point> retval = new List<Point> { a, b, c };
+            return retval;
+        }
+
+        public List<Edge> getEdges()
+        {
+            List<Edge> retval = new List<Edge> { ab, bc, ca };
+            return retval;
         }
 
         public Edge getSharedEdge(Triangle _t)
@@ -154,8 +167,18 @@ namespace SwiftAg_CS
             if (
                 (_t.get_a() == a || _t.get_a() == b || _t.get_a() == c) &&
                 (_t.get_b() == a || _t.get_b() == b || _t.get_b() == c) &&
-                (_t.get_c() == a || _t.get_c() == b || _t.get_c() == c)
+                (_t.get_c() == a || _t.get_c() == b || _t.get_c() == c) &&
+                (_t.get_ab() == ab || _t.get_bc() == ab || _t.get_ca() == ab) &&
+                (_t.get_ab() == bc || _t.get_bc() == bc || _t.get_ca() == bc) &&
+                (_t.get_ab() == ca || _t.get_bc() == ca || _t.get_ca() == ca)
                 ) return true;
+            else return false;
+        }
+
+        public bool collinear()
+        {
+            Double deg = Math.Acos( (Math.Pow(ab.length(), 2) + Math.Pow(ca.length(), 2) - Math.Pow(bc.length(), 2)) / (2 * ab.length() * ca.length())) ;
+            if (Double.IsNaN(deg) || (deg.CompareTo(0d) == 0)) return true;
             else return false;
         }
 
