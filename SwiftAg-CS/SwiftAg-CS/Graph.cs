@@ -6,6 +6,7 @@ namespace SwiftAg_CS
     public class Graph
     {
         private Dictionary<int, Point> points;
+        private List<Point> sorted_points;
 
         //Current implementation allows equivalent edges to live at different locations in dictionary 9/17/21 -RH
         private Dictionary<int, Edge> edges;
@@ -20,6 +21,7 @@ namespace SwiftAg_CS
             points = new Dictionary<int, Point>();
             edges = new Dictionary<int, Edge>();
             triangles = new Dictionary<int, Triangle>();
+            sorted_points = new List<Point>();
         }
 
         public Graph(Graph _g)
@@ -51,6 +53,55 @@ namespace SwiftAg_CS
                     ymin = _p.get_y();
                 }
                 points.Add(h, _p);
+            }
+        }
+
+        private void sortPoints()
+        {
+            sorted_points.Clear();
+            double min_y = Double.NaN;
+
+            //Iterate through all Dictionary points
+            foreach(KeyValuePair<int, Point> kp in points)
+            {
+                //If we find a value lower than the smallest Y-value found in the list, insert the new value to the front and set the new minimum Y value.
+                if (kp.Value.get_y() < min_y || Double.IsNaN(min_y))
+                {
+                    min_y = kp.Value.get_y();
+                    sorted_points.Insert(0, kp.Value);
+                }
+
+                //Otherwise, we need to find where in the list the new point should go.
+                else
+                {
+                    int index = 0;
+                    //By the end of this loop, index should be set to the index of the list where the point should be stored.
+                    foreach(Point p in sorted_points)
+                    {
+                        if (p.get_y() > kp.Value.get_y())
+                        {
+                            index = sorted_points.IndexOf(p);
+                            break;
+                        }
+                        //If the Y-values are equal, sort by the X coordinate instead.
+                        else if(p.get_y() == kp.Value.get_y())
+                        {
+                            if(p.get_x() < kp.Value.get_x())
+                            {
+                                index = sorted_points.IndexOf(p);
+                                break;
+                            }
+                            else
+                            {
+                                index = sorted_points.IndexOf(p) + 1;
+                                break;
+                            }
+                        }
+                        else continue;
+                    }
+                    sorted_points.Insert(index, kp.Value);
+
+                }
             }
         }
 
@@ -169,10 +220,10 @@ namespace SwiftAg_CS
             points.Clear();
             edges.Clear();
             triangles.Clear();
-            xmin = 0;
-            ymin = 0;
-            xmax = Double.NaN;
-            ymax = Double.NaN;
+            xmin = Double.NaN;
+            ymin = Double.NaN;
+            xmax = 0;
+            ymax = 0;
         }
 
         public void generateRandomPoints(int _numPoints, int _max_x, int _max_y)
@@ -224,6 +275,8 @@ namespace SwiftAg_CS
         public void bowyerWatsonTriangulation()
         {
             triangles.Clear();
+            edges.Clear();
+            sortPoints();
             //Calculate maximum difference between x and y coordinates in point set
             double dmax;
             double dx = xmax - xmin;
@@ -246,9 +299,6 @@ namespace SwiftAg_CS
             Point supTriPoint_c = new Point(xmid + 2 * dmax, ymid - dmax, 0);
 
             Triangle superTriangle = new Triangle(supTriPoint_a, supTriPoint_b, supTriPoint_c);
-            addPoint(supTriPoint_a);
-            addPoint(supTriPoint_b);
-            addPoint(supTriPoint_c);
             addTriangle(superTriangle);
 
 
@@ -260,15 +310,15 @@ namespace SwiftAg_CS
             //Another Observation:
                 // It may be necessary to force the triangle edges to be clockwise or counter clockwise, as that appears in many other implementations of Bowyer-Watson. I'll proceed for now without changing the triangles.
 
-            foreach (KeyValuePair<int, Point> pointHashPair in points)
+            foreach (Point p in sorted_points)
             {
-                if (pointHashPair.Value == supTriPoint_a || pointHashPair.Value == supTriPoint_b || pointHashPair.Value == supTriPoint_c) continue;
+                if (p == supTriPoint_a || p == supTriPoint_b || p == supTriPoint_c) continue;
                 List<Triangle> badTriangles = new List<Triangle>();
                 foreach (KeyValuePair<int, Triangle> triangleHashPair in triangles)
                 {
                     Triangle t = triangleHashPair.Value;
                     Tuple<Point, double> centerAndRadius = t.circumcircle();
-                    if (pointHashPair.Value.distance(centerAndRadius.Item1) < centerAndRadius.Item2)
+                    if (p.distance(centerAndRadius.Item1) < centerAndRadius.Item2)
                     {
                         badTriangles.Add(t);
                     }
@@ -280,7 +330,7 @@ namespace SwiftAg_CS
                 }
                 foreach (Edge polyEdge in polygon)
                 {
-                    Triangle newTri = new Triangle(pointHashPair.Value, polyEdge);
+                    Triangle newTri = new Triangle(p, polyEdge);
                     if (!containsTriangle(newTri))
                     {
                         addTriangle(newTri);
@@ -305,10 +355,6 @@ namespace SwiftAg_CS
                     removeTriangle(t);
                 }
             }
-
-            removePoint(supTriPoint_a);
-            removePoint(supTriPoint_b);
-            removePoint(supTriPoint_c);
 
             removeTriangle(superTriangle);
         }

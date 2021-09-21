@@ -8,15 +8,30 @@ namespace AgSwift_GUI
 {
     public partial class AgSwift_MainWindow : Form
     {
-        private Graph graph;
+        private Graph existing_graph, proposed_graph;
         public AgSwift_MainWindow()
         {
             InitializeComponent();
-            graph = new Graph();
+            existing_graph = new Graph();
+            proposed_graph = new Graph();
+            blueprintComboBox.SelectedIndex = 0;
         }
 
         private void pictureBox_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
         {
+            Graph graph;
+            if(blueprintComboBox.SelectedItem.ToString() == "Existing")
+            {
+                graph = existing_graph;
+            }
+            else if(blueprintComboBox.SelectedItem.ToString() == "Proposed")
+            {
+                graph = proposed_graph;
+            }
+            else
+            {
+                graph = existing_graph;
+            }
             Graphics g = e.Graphics;
             Pen p = new Pen(Color.Green, 1);
             Dictionary<int, SwiftAg_CS.Point> pts = graph.getPoints();
@@ -40,12 +55,12 @@ namespace AgSwift_GUI
         {
             //Method 1: Riley's Bowyer-Watson triangulation function
             //graph.selfContainedBowyerWatsonTriangulation();
-            graph.triangulate();
+            //graph.triangulate();
             drawingSurface.Refresh();
 
-            pointsLabel.Text = "Points: " + graph.pointCount().ToString();
-            edgesLabel.Text = "Edges: " + graph.edgeCount().ToString();
-            trianglesLabel.Text = "Triangles: " + graph.triangleCount().ToString();
+           // pointsLabel.Text = "Points: " + graph.pointCount().ToString();
+            //edgesLabel.Text = "Edges: " + graph.edgeCount().ToString();
+           // trianglesLabel.Text = "Triangles: " + graph.triangleCount().ToString();
         }
 
         private void AgSwift_MainWindow_Load(object sender, EventArgs e)
@@ -95,21 +110,45 @@ namespace AgSwift_GUI
 
         private void drawingSurface_Click_1(object sender, EventArgs e)
         {
-            MouseEventArgs mouseEvent = (MouseEventArgs)e;
-            double x = mouseEvent.X;
-            double y = mouseEvent.Y;
-            SwiftAg_CS.Point new_point = new SwiftAg_CS.Point(x, y, 0);
+            if (blueprintComboBox.SelectedItem.ToString() == "[SELECT]")
+            {
+                MessageBox.Show("Please Select a Blueprint");
+            }
+            else
+            {
+                Graph graph;
+                if(blueprintComboBox.SelectedItem.ToString() == "Existing")
+                {
+                    graph = existing_graph;
+                }
+                else if(blueprintComboBox.SelectedItem.ToString() == "Proposed")
+                {
+                    graph = proposed_graph;
+                }
+                else
+                {
+                    graph = existing_graph;
+                }
+                MouseEventArgs mouseEvent = (MouseEventArgs)e;
+                double x = mouseEvent.X;
+                double y = mouseEvent.Y;
+                SwiftAg_CS.Point new_point = new SwiftAg_CS.Point(x, y, 0);
 
-            //Method 2: Jordan's Bowyer-Watson triangulation function
-            //graph.addPointToTriangulation(new_point);
-            //Method 3: O(N^3) triangulation
-            graph.addPoint(new_point);
-            //graph.triangulate();
-            drawingSurface.Refresh();
+                //Method 2: Jordan's Bowyer-Watson triangulation function
+                //graph.addPointToTriangulation(new_point);
+                //Method 3: O(N^3) triangulation
+                graph.addPoint(new_point);
+                if (graph.pointCount() > 2)
+                {
+                    graph.bowyerWatsonTriangulation();
+                }
+                //graph.triangulate();
+                drawingSurface.Refresh();
 
-            pointsLabel.Text = "Points: " + graph.pointCount().ToString();
-            edgesLabel.Text = "Edges: " + graph.edgeCount().ToString();
-            trianglesLabel.Text = "Triangles: " + graph.triangleCount().ToString();
+                pointsLabel.Text = "Points: " + graph.pointCount().ToString();
+                edgesLabel.Text = "Edges: " + graph.edgeCount().ToString();
+                trianglesLabel.Text = "Triangles: " + graph.triangleCount().ToString();
+            }
         }
 
         private void bowyer_Click_2(object sender, EventArgs e)
@@ -119,7 +158,51 @@ namespace AgSwift_GUI
 
         private void bowyer_Click_3(object sender, EventArgs e)
         {
-            graph.bowyerWatsonTriangulation();
+            if (blueprintComboBox.SelectedItem.ToString() == "[SELECT]")
+            {
+                MessageBox.Show("Please Select a Blueprint");
+            }
+            else
+            {
+                Graph graph;
+                if(blueprintComboBox.SelectedItem.ToString() == "Existing")
+                {
+                    graph = existing_graph;
+                }
+                else if(blueprintComboBox.SelectedItem.ToString() == "Proposed")
+                {
+                    graph = proposed_graph;
+                }
+                else
+                {
+                    graph = existing_graph;
+                }
+
+                graph.bowyerWatsonTriangulation();
+                drawingSurface.Refresh();
+
+                pointsLabel.Text = "Points: " + graph.pointCount().ToString();
+                edgesLabel.Text = "Edges: " + graph.edgeCount().ToString();
+                trianglesLabel.Text = "Triangles: " + graph.triangleCount().ToString();
+            }
+        }
+
+        private void clearGraphToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            Graph graph;
+            if (blueprintComboBox.SelectedItem.ToString() == "Existing")
+            {
+                graph = existing_graph;
+            }
+            else if (blueprintComboBox.SelectedItem.ToString() == "Proposed")
+            {
+                graph = proposed_graph;
+            }
+            else
+            {
+                graph = existing_graph;
+            }
+            graph.clearGraph();
             drawingSurface.Refresh();
 
             pointsLabel.Text = "Points: " + graph.pointCount().ToString();
@@ -127,14 +210,9 @@ namespace AgSwift_GUI
             trianglesLabel.Text = "Triangles: " + graph.triangleCount().ToString();
         }
 
-        private void clearGraphToolStripMenuItem_Click_1(object sender, EventArgs e)
+        private void blueprintComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            graph.clearGraph();
             drawingSurface.Refresh();
-
-            pointsLabel.Text = "Points: " + graph.pointCount().ToString();
-            edgesLabel.Text = "Edges: " + graph.edgeCount().ToString();
-            trianglesLabel.Text = "Triangles: " + graph.triangleCount().ToString();
         }
 
         private void exitToolStripMenuItem_Click_1(object sender, EventArgs e)

@@ -29,16 +29,25 @@
         private void InitializeComponent()
         {
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importPDFToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearGraphToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.elevationEntryBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.drawingSurface = new System.Windows.Forms.PictureBox();
             this.pointList = new System.Windows.Forms.ListBox();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.threeDView = new System.Windows.Forms.Button();
+            this.calculateCutFill = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.blueprintLabel = new System.Windows.Forms.Label();
             this.blueprintComboBox = new System.Windows.Forms.ComboBox();
@@ -46,15 +55,6 @@
             this.pointsLabel = new System.Windows.Forms.Label();
             this.trianglesLabel = new System.Windows.Forms.Label();
             this.edgesLabel = new System.Windows.Forms.Label();
-            this.calculateCutFill = new System.Windows.Forms.Button();
-            this.threeDView = new System.Windows.Forms.Button();
-            this.newProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.importPDFToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.clearGraphToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.drawingSurface)).BeginInit();
@@ -74,6 +74,78 @@
             this.menuStrip1.Size = new System.Drawing.Size(1248, 24);
             this.menuStrip1.TabIndex = 10;
             this.menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newProjectToolStripMenuItem,
+            this.openProjectToolStripMenuItem,
+            this.saveProjectToolStripMenuItem,
+            this.importPDFToolStripMenuItem,
+            this.exitToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Text = "File";
+            // 
+            // newProjectToolStripMenuItem
+            // 
+            this.newProjectToolStripMenuItem.Name = "newProjectToolStripMenuItem";
+            this.newProjectToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.newProjectToolStripMenuItem.Text = "New Project";
+            // 
+            // openProjectToolStripMenuItem
+            // 
+            this.openProjectToolStripMenuItem.Name = "openProjectToolStripMenuItem";
+            this.openProjectToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.openProjectToolStripMenuItem.Text = "Open Project";
+            // 
+            // saveProjectToolStripMenuItem
+            // 
+            this.saveProjectToolStripMenuItem.Name = "saveProjectToolStripMenuItem";
+            this.saveProjectToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.saveProjectToolStripMenuItem.Text = "Save Project";
+            // 
+            // importPDFToolStripMenuItem
+            // 
+            this.importPDFToolStripMenuItem.Name = "importPDFToolStripMenuItem";
+            this.importPDFToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.importPDFToolStripMenuItem.Text = "Import PDF";
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click_1);
+            // 
+            // editToolStripMenuItem
+            // 
+            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.clearGraphToolStripMenuItem});
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
+            this.editToolStripMenuItem.Text = "Edit";
+            // 
+            // clearGraphToolStripMenuItem
+            // 
+            this.clearGraphToolStripMenuItem.Name = "clearGraphToolStripMenuItem";
+            this.clearGraphToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.clearGraphToolStripMenuItem.Text = "Clear Graph";
+            this.clearGraphToolStripMenuItem.Click += new System.EventHandler(this.clearGraphToolStripMenuItem_Click_1);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.aboutToolStripMenuItem.Text = "About";
             // 
             // elevationEntryBox
             // 
@@ -129,34 +201,6 @@
             this.pointList.Size = new System.Drawing.Size(119, 536);
             this.pointList.TabIndex = 14;
             // 
-            // fileToolStripMenuItem
-            // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.newProjectToolStripMenuItem,
-            this.openProjectToolStripMenuItem,
-            this.saveProjectToolStripMenuItem,
-            this.importPDFToolStripMenuItem,
-            this.exitToolStripMenuItem});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "File";
-            // 
-            // editToolStripMenuItem
-            // 
-            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.clearGraphToolStripMenuItem});
-            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
-            this.editToolStripMenuItem.Text = "Edit";
-            // 
-            // helpToolStripMenuItem
-            // 
-            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aboutToolStripMenuItem});
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.helpToolStripMenuItem.Text = "Help";
-            // 
             // tableLayoutPanel2
             // 
             this.tableLayoutPanel2.ColumnCount = 2;
@@ -185,6 +229,24 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(553, 51);
             this.panel1.TabIndex = 0;
+            // 
+            // threeDView
+            // 
+            this.threeDView.Location = new System.Drawing.Point(92, 9);
+            this.threeDView.Name = "threeDView";
+            this.threeDView.Size = new System.Drawing.Size(65, 36);
+            this.threeDView.TabIndex = 1;
+            this.threeDView.Text = "3D View";
+            this.threeDView.UseVisualStyleBackColor = true;
+            // 
+            // calculateCutFill
+            // 
+            this.calculateCutFill.Location = new System.Drawing.Point(13, 9);
+            this.calculateCutFill.Name = "calculateCutFill";
+            this.calculateCutFill.Size = new System.Drawing.Size(73, 37);
+            this.calculateCutFill.TabIndex = 0;
+            this.calculateCutFill.Text = "Calculate Cut/Fill";
+            this.calculateCutFill.UseVisualStyleBackColor = true;
             // 
             // panel2
             // 
@@ -215,12 +277,14 @@
             // 
             this.blueprintComboBox.FormattingEnabled = true;
             this.blueprintComboBox.Items.AddRange(new object[] {
+            "[SELECT]",
             "Existing",
-            "Design"});
+            "Proposed"});
             this.blueprintComboBox.Location = new System.Drawing.Point(7, 24);
             this.blueprintComboBox.Name = "blueprintComboBox";
             this.blueprintComboBox.Size = new System.Drawing.Size(121, 21);
             this.blueprintComboBox.TabIndex = 20;
+            this.blueprintComboBox.SelectedIndexChanged += new System.EventHandler(this.blueprintComboBox_SelectedIndexChanged);
             // 
             // bowyer
             // 
@@ -258,68 +322,6 @@
             this.edgesLabel.Size = new System.Drawing.Size(49, 13);
             this.edgesLabel.TabIndex = 22;
             this.edgesLabel.Text = "Edges: 0";
-            // 
-            // calculateCutFill
-            // 
-            this.calculateCutFill.Location = new System.Drawing.Point(13, 9);
-            this.calculateCutFill.Name = "calculateCutFill";
-            this.calculateCutFill.Size = new System.Drawing.Size(73, 37);
-            this.calculateCutFill.TabIndex = 0;
-            this.calculateCutFill.Text = "Calculate Cut/Fill";
-            this.calculateCutFill.UseVisualStyleBackColor = true;
-            // 
-            // threeDView
-            // 
-            this.threeDView.Location = new System.Drawing.Point(92, 9);
-            this.threeDView.Name = "threeDView";
-            this.threeDView.Size = new System.Drawing.Size(65, 36);
-            this.threeDView.TabIndex = 1;
-            this.threeDView.Text = "3D View";
-            this.threeDView.UseVisualStyleBackColor = true;
-            // 
-            // newProjectToolStripMenuItem
-            // 
-            this.newProjectToolStripMenuItem.Name = "newProjectToolStripMenuItem";
-            this.newProjectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.newProjectToolStripMenuItem.Text = "New Project";
-            // 
-            // openProjectToolStripMenuItem
-            // 
-            this.openProjectToolStripMenuItem.Name = "openProjectToolStripMenuItem";
-            this.openProjectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.openProjectToolStripMenuItem.Text = "Open Project";
-            // 
-            // saveProjectToolStripMenuItem
-            // 
-            this.saveProjectToolStripMenuItem.Name = "saveProjectToolStripMenuItem";
-            this.saveProjectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.saveProjectToolStripMenuItem.Text = "Save Project";
-            // 
-            // importPDFToolStripMenuItem
-            // 
-            this.importPDFToolStripMenuItem.Name = "importPDFToolStripMenuItem";
-            this.importPDFToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.importPDFToolStripMenuItem.Text = "Import PDF";
-            // 
-            // exitToolStripMenuItem
-            // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.exitToolStripMenuItem.Text = "Exit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click_1);
-            // 
-            // aboutToolStripMenuItem
-            // 
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.aboutToolStripMenuItem.Text = "About";
-            // 
-            // clearGraphToolStripMenuItem
-            // 
-            this.clearGraphToolStripMenuItem.Name = "clearGraphToolStripMenuItem";
-            this.clearGraphToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.clearGraphToolStripMenuItem.Text = "Clear Graph";
-            this.clearGraphToolStripMenuItem.Click += new System.EventHandler(this.clearGraphToolStripMenuItem_Click_1);
             // 
             // AgSwift_MainWindow
             // 
