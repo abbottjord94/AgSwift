@@ -182,5 +182,25 @@ namespace SwiftAg_CS
             else return false;
         }
 
+        public List<Point> getIntersectionPoints(Edge _e)
+        {
+            List<Point> intersection_points = new List<Point>();
+            
+            List<Edge> edges = getEdges();
+            foreach(Edge e in edges)
+            {
+                if(e.intersects(_e))
+                {
+                    Point int_point = e.getIntersectionPoint(_e);
+                    if (int_point != null)
+                    {
+                        intersection_points.Add(int_point);
+                    }
+                }
+            }
+
+            return intersection_points;
+        }
+
     }
 }

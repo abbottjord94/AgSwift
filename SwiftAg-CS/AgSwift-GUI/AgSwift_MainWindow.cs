@@ -215,6 +215,28 @@ namespace AgSwift_GUI
             drawingSurface.Refresh();
         }
 
+        private void calculateCutFill_Click(object sender, EventArgs e)
+        {
+            String msg;
+            double cut, fill;
+            MeshComparator mc = new MeshComparator(existing_graph, proposed_graph);
+            mc.CalculateCutFill();
+            if(mc.getError())
+            {
+                MessageBox.Show(mc.getErrorMsg(), "Error");
+            }
+            else
+            {
+                cut = mc.getCut();
+                fill = mc.getFill();
+                msg = "Total Cut: \t" + cut.ToString() + "\n"
+                    + "Total Fill: \t" + fill.ToString() + "\n"
+                    + "Difference: \t" + Math.Abs(cut - fill) + "\n";
+                MessageBox.Show(msg, "Cut/Fill Calculation");
+            }
+
+        }
+
         private void exitToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             Application.Exit();

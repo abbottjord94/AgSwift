@@ -247,6 +247,7 @@
             this.calculateCutFill.TabIndex = 0;
             this.calculateCutFill.Text = "Calculate Cut/Fill";
             this.calculateCutFill.UseVisualStyleBackColor = true;
+            this.calculateCutFill.Click += new System.EventHandler(this.calculateCutFill_Click);
             // 
             // panel2
             // 
