@@ -132,7 +132,8 @@ namespace AgSwift_GUI
                 MouseEventArgs mouseEvent = (MouseEventArgs)e;
                 double x = mouseEvent.X;
                 double y = mouseEvent.Y;
-                SwiftAg_CS.Point new_point = new SwiftAg_CS.Point(x, y, 0);
+                double elevation = Double.Parse(elevationEntryBox.Text);
+                SwiftAg_CS.Point new_point = new SwiftAg_CS.Point(x, y, elevation);
 
                 //Method 2: Jordan's Bowyer-Watson triangulation function
                 //graph.addPointToTriangulation(new_point);

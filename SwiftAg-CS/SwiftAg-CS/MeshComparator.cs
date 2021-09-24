@@ -104,6 +104,9 @@ namespace SwiftAg_CS
                     List<Point> existing_intersection_points = new List<Point>();
                     List<Point> proposed_intersection_points = new List<Point>();
 
+                    double sectionAreaCut = 0;
+                    double sectionAreaFill = 0;
+
                     //Now we find the intersection points from every triangle in each map.
                     //Starting with the existing map:
 
@@ -136,60 +139,89 @@ namespace SwiftAg_CS
                         }
                     }
 
-
-                    //Now sort the points along the Y-axis.
-                    existing_intersection_points = sortPoints(existing_intersection_points);
-                    proposed_intersection_points = sortPoints(proposed_intersection_points);
-
-                    //At this point we can create imaginary edges between each point in both lists, so that we can measure the distances along every point between each line.
-                    //Multiplied by the minimum distance between the lines, this will give us a total area between the curves.
-                    //Further multiplying this by the step value will give us an approximate volume
-                    //For areas where the existing line is above the proposed line, the difference should be added to the Cut value
-                    //For areas where the existing line is below the proposed line, the difference show be added to the Fill value
-
-                    List<Edge> existing_curve = new List<Edge>();
-                    List<Edge> proposed_curve = new List<Edge>();
-
-                    int existing_point_count = existing_intersection_points.Count;
-                    int proposed_point_count = proposed_intersection_points.Count;
-
-                    for (int j = 0; j < existing_point_count - 1; j++)
+                    //Check that we intersected both graphs
+                    if (existing_intersection_points.Count > 1 && proposed_intersection_points.Count > 1)
                     {
-                        Edge temp_edge = new Edge(existing_intersection_points[j], existing_intersection_points[j + 1]);
-                        existing_curve.Add(temp_edge);
-                    }
-                    for (int j = 0; j < proposed_point_count - 1; j++)
-                    {
-                        Edge temp_edge = new Edge(proposed_intersection_points[j], proposed_intersection_points[j + 1]);
-                        proposed_curve.Add(temp_edge);
-                    }
 
-                    //Determine the range of the curve (i.e., ensure that we only scan between the two curves)
-                    double range_min = 0, range_max = 0;
-                    if (existing_intersection_points[0].get_y() >= proposed_intersection_points[0].get_y())
-                    {
-                        range_min = proposed_intersection_points[0].get_y();
+                        //Now sort the points along the Y-axis.
+                        existing_intersection_points = sortPoints(existing_intersection_points);
+                        proposed_intersection_points = sortPoints(proposed_intersection_points);
+
+                        //At this point we can create imaginary edges between each point in both lists, so that we can measure the distances along every point between each line.
+                        //Multiplied by the minimum distance between the lines, this will give us a total area between the curves.
+                        //Further multiplying this by the step value will give us an approximate volume
+                        //For areas where the existing line is above the proposed line, the difference should be added to the Cut value
+                        //For areas where the existing line is below the proposed line, the difference show be added to the Fill value
+
+                        List<Edge> existing_curve = new List<Edge>();
+                        List<Edge> proposed_curve = new List<Edge>();
+
+                        int existing_point_count = existing_intersection_points.Count;
+                        int proposed_point_count = proposed_intersection_points.Count;
+
+                        for (int j = 0; j < existing_point_count - 1; j++)
+                        {
+                            Edge temp_edge = new Edge(existing_intersection_points[j], existing_intersection_points[j + 1]);
+                            existing_curve.Add(temp_edge);
+                        }
+                        for (int j = 0; j < proposed_point_count - 1; j++)
+                        {
+                            Edge temp_edge = new Edge(proposed_intersection_points[j], proposed_intersection_points[j + 1]);
+                            proposed_curve.Add(temp_edge);
+                        }
+
+                        //Determine the range of the curve (i.e., ensure that we only scan between the two curves)
+                        double range_min = 0, range_max = 0;
+                        if (existing_intersection_points[0].get_y() >= proposed_intersection_points[0].get_y())
+                        {
+                            range_min = proposed_intersection_points[0].get_y();
+                        }
+                        else
+                        {
+                            range_min = existing_intersection_points[0].get_y();
+                        }
+
+                        if (existing_intersection_points[existing_point_count - 1].get_y() >= proposed_intersection_points[proposed_point_count - 1].get_y())
+                        {
+                            range_max = proposed_intersection_points[proposed_point_count - 1].get_y();
+                        }
+                        else
+                        {
+                            range_max = existing_intersection_points[existing_point_count - 1].get_y();
+                        }
+
+                        int existing_index = 0;
+                        int proposed_index = 0;
+
+                        for (double k = range_min; k < range_max; k += step)
+                        {
+                            if (k > existing_curve[existing_index].get_b().get_y()) existing_index++;
+                            if (k > proposed_curve[proposed_index].get_b().get_y()) proposed_index++;
+
+                            double existing_slope = (existing_curve[existing_index].get_b().get_elevation() - existing_curve[existing_index].get_a().get_elevation()) / existing_curve[existing_index].length();
+                            double proposed_slope = (proposed_curve[proposed_index].get_b().get_elevation() - proposed_curve[proposed_index].get_a().get_elevation()) / proposed_curve[proposed_index].length();
+
+                            double existing_height = existing_curve[existing_index].get_a().get_elevation() + ((k - existing_curve[existing_index].get_a().get_y()) * existing_slope);
+                            double proposed_height = proposed_curve[proposed_index].get_a().get_elevation() + ((k - proposed_curve[proposed_index].get_a().get_y()) * proposed_slope);
+
+                            if (existing_height > proposed_height)
+                            {
+                                sectionAreaCut += (existing_height - proposed_height) * step; //This should result in an approximate area under the curve (can be improved)
+                            }
+                            else if (existing_height < proposed_height)
+                            {
+                                sectionAreaFill += (proposed_height - existing_height) * step;
+                            }
+
+                        }
+
+                        cut_amount += sectionAreaCut * step;
+                        fill_amount += sectionAreaFill * step;
                     }
                     else
                     {
-                        range_min = existing_intersection_points[0].get_y();
+                        continue;
                     }
-
-                    if (existing_intersection_points[existing_point_count - 1].get_y() >= proposed_intersection_points[existing_point_count - 1].get_y())
-                    {
-                        range_max = proposed_intersection_points[existing_point_count - 1].get_y();
-                    }
-                    else
-                    {
-                        range_max = existing_intersection_points[existing_point_count - 1].get_y();
-                    }
-
-                    for (double k = range_min; k < range_max; k += step)
-                    {
-
-                    }
-
-
                 }
             }
         }
