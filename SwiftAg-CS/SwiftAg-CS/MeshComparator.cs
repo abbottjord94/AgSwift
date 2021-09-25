@@ -119,7 +119,8 @@ namespace SwiftAg_CS
                             {
                                 Point tri_int_point = t_edge.getIntersectionPoint(scan_edge);
                                 tri_int_point.set_elevation(e_triangle.Value.getHeightAtPoint(tri_int_point));
-                                existing_intersection_points.Add(tri_int_point);
+                                List<Point> duplicates = existing_intersection_points.FindAll(e => e == tri_int_point);
+                                if(duplicates.Count == 0) existing_intersection_points.Add(tri_int_point);
                             }
                         }
                     }
@@ -134,7 +135,8 @@ namespace SwiftAg_CS
                             {
                                 Point tri_int_point = t_edge.getIntersectionPoint(scan_edge);
                                 tri_int_point.set_elevation(p_triangle.Value.getHeightAtPoint(tri_int_point));
-                                proposed_intersection_points.Add(tri_int_point);
+                                List<Point> duplicates = proposed_intersection_points.FindAll(e => e == tri_int_point);
+                                if (duplicates.Count == 0) proposed_intersection_points.Add(tri_int_point);
                             }
                         }
                     }
@@ -198,8 +200,8 @@ namespace SwiftAg_CS
                             if (k > existing_curve[existing_index].get_b().get_y()) existing_index++;
                             if (k > proposed_curve[proposed_index].get_b().get_y()) proposed_index++;
 
-                            double existing_slope = (existing_curve[existing_index].get_b().get_elevation() - existing_curve[existing_index].get_a().get_elevation()) / existing_curve[existing_index].length();
-                            double proposed_slope = (proposed_curve[proposed_index].get_b().get_elevation() - proposed_curve[proposed_index].get_a().get_elevation()) / proposed_curve[proposed_index].length();
+                            double existing_slope = (existing_curve[existing_index].get_b().get_elevation() - existing_curve[existing_index].get_a().get_elevation()) / (existing_curve[existing_index].get_b().get_y() - existing_curve[existing_index].get_a().get_y());
+                            double proposed_slope = (proposed_curve[proposed_index].get_b().get_elevation() - proposed_curve[proposed_index].get_a().get_elevation()) / (proposed_curve[proposed_index].get_b().get_y() - proposed_curve[proposed_index].get_a().get_y());
 
                             double existing_height = existing_curve[existing_index].get_a().get_elevation() + ((k - existing_curve[existing_index].get_a().get_y()) * existing_slope);
                             double proposed_height = proposed_curve[proposed_index].get_a().get_elevation() + ((k - proposed_curve[proposed_index].get_a().get_y()) * proposed_slope);

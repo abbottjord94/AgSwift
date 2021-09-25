@@ -148,10 +148,6 @@ namespace SwiftAg_CS
 
         public double getHeightAtPoint(Point _p)
         {
-            if (!pointInTriangle(_p)) return 0;
-            else
-            {
-
                 double d1 = _p.distance(a);
                 double d2 = _p.distance(b);
                 double d3 = _p.distance(c);
@@ -159,7 +155,6 @@ namespace SwiftAg_CS
 
                 double h = ((d1 / total_dist) * a.get_elevation()) + ((d2 / total_dist) * b.get_elevation()) + ((d3 / total_dist) * c.get_elevation());
                 return h;
-            }
         }
 
         public bool equivalent(Triangle _t)
