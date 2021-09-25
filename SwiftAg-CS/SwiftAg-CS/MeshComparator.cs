@@ -146,8 +146,8 @@ namespace SwiftAg_CS
                     {
 
                         //Now sort the points along the Y-axis.
-                        existing_intersection_points = sortPoints(existing_intersection_points);
-                        proposed_intersection_points = sortPoints(proposed_intersection_points);
+                        //existing_intersection_points = sortPoints(existing_intersection_points);
+                        //proposed_intersection_points = sortPoints(proposed_intersection_points);
 
                         //At this point we can create imaginary edges between each point in both lists, so that we can measure the distances along every point between each line.
                         //Multiplied by the minimum distance between the lines, this will give us a total area between the curves.
@@ -200,19 +200,32 @@ namespace SwiftAg_CS
                             if (k > existing_curve[existing_index].get_b().get_y()) existing_index++;
                             if (k > proposed_curve[proposed_index].get_b().get_y()) proposed_index++;
 
-                            double existing_slope = (existing_curve[existing_index].get_b().get_elevation() - existing_curve[existing_index].get_a().get_elevation()) / (existing_curve[existing_index].get_b().get_y() - existing_curve[existing_index].get_a().get_y());
-                            double proposed_slope = (proposed_curve[proposed_index].get_b().get_elevation() - proposed_curve[proposed_index].get_a().get_elevation()) / (proposed_curve[proposed_index].get_b().get_y() - proposed_curve[proposed_index].get_a().get_y());
+                            //double existing_slope = (existing_curve[existing_index].get_b().get_elevation() - existing_curve[existing_index].get_a().get_elevation()) / (existing_curve[existing_index].get_b().get_y() - existing_curve[existing_index].get_a().get_y());
+                            //double proposed_slope = (proposed_curve[proposed_index].get_b().get_elevation() - proposed_curve[proposed_index].get_a().get_elevation()) / (proposed_curve[proposed_index].get_b().get_y() - proposed_curve[proposed_index].get_a().get_y());
 
-                            double existing_height = existing_curve[existing_index].get_a().get_elevation() + ((k - existing_curve[existing_index].get_a().get_y()) * existing_slope);
-                            double proposed_height = proposed_curve[proposed_index].get_a().get_elevation() + ((k - proposed_curve[proposed_index].get_a().get_y()) * proposed_slope);
+                            //double existing_height = existing_curve[existing_index].get_a().get_elevation() + ((k - existing_curve[existing_index].get_a().get_y()) * existing_slope);
+                            //double proposed_height = proposed_curve[proposed_index].get_a().get_elevation() + ((k - proposed_curve[proposed_index].get_a().get_y()) * proposed_slope);
 
-                            if (existing_height > proposed_height)
+                            Point existing_tp = new Point(existing_curve[existing_index].get_a().get_x(), existing_curve[existing_index].get_a().get_y() + k, 0);
+                            Point proposed_tp = new Point(proposed_curve[proposed_index].get_a().get_x(), proposed_curve[proposed_index].get_a().get_y() + k, 0);
+
+                            double existing_height = existing_curve[existing_index].get_a().get_elevation() + ((existing_curve[existing_index].get_b().get_elevation() - existing_curve[existing_index].get_a().get_elevation()) * (existing_tp.distance(existing_curve[existing_index].get_a()) / existing_curve[existing_index].length()));
+                            double proposed_height = proposed_curve[proposed_index].get_a().get_elevation() + ((proposed_curve[proposed_index].get_b().get_elevation() - proposed_curve[proposed_index].get_a().get_elevation()) * (proposed_tp.distance(proposed_curve[proposed_index].get_a()) / proposed_curve[proposed_index].length()));
+
+                            double diff = Math.Abs(existing_height - proposed_height);
+
+                            //Set to 3 significant digits for now (not sure if it needs to be more accurate than that)
+                            if (diff > 0.01)
                             {
-                                sectionAreaCut += (existing_height - proposed_height) * step; //This should result in an approximate area under the curve (can be improved)
-                            }
-                            else if (existing_height < proposed_height)
-                            {
-                                sectionAreaFill += (proposed_height - existing_height) * step;
+
+                                if (existing_height > proposed_height)
+                                {
+                                    sectionAreaCut += (existing_height - proposed_height) * step; //This should result in an approximate area under the curve (can be improved)
+                                }
+                                else if (existing_height < proposed_height)
+                                {
+                                    sectionAreaFill += (proposed_height - existing_height) * step;
+                                }
                             }
 
                         }
@@ -248,6 +261,8 @@ namespace SwiftAg_CS
             return err_msg;
         }
 
+
+        //TO DO: Debug and fix this
         private List<Point> sortPoints(List<Point> points)
         {
             List<Point> sorted_points = new List<Point>();
