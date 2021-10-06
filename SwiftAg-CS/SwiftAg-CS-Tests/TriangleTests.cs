@@ -113,16 +113,21 @@ namespace SwiftAg_CS_Tests
 
         [Test]
 
-        public void TriangleArgumentExceptionTest()
+        public void TriangleCircumcircleTest()
         {
-            try
-            {
-                Triangle test_tri = new Triangle(p1, p1, p2);
-            } catch(ArgumentException e)
+            Tuple<Point, double> cc1 = t1.circumcircle();
+            Tuple<Point, double> cc2 = t3.circumcircle();
+            Tuple<Point, double> cc3 = t4.circumcircle();
+
+            if(cc1.Item1 == cc2.Item1 && cc1.Item1 == cc3.Item1 && cc2.Item1 == cc3.Item1
+                && cc1.Item2 == cc2.Item2 && cc1.Item2 == cc3.Item2 && cc2.Item2 == cc3.Item2
+                )
             {
                 Assert.Pass();
+            } else
+            {
+                Assert.Fail();
             }
-            Assert.Fail();
         }
 
 

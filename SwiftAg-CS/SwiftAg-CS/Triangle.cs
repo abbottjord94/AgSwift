@@ -148,10 +148,6 @@ namespace SwiftAg_CS
 
         public double getHeightAtPoint(Point _p)
         {
-            if (!pointInTriangle(_p)) return 0;
-            else
-            {
-
                 double d1 = _p.distance(a);
                 double d2 = _p.distance(b);
                 double d3 = _p.distance(c);
@@ -159,7 +155,6 @@ namespace SwiftAg_CS
 
                 double h = ((d1 / total_dist) * a.get_elevation()) + ((d2 / total_dist) * b.get_elevation()) + ((d3 / total_dist) * c.get_elevation());
                 return h;
-            }
         }
 
         public bool equivalent(Triangle _t)
@@ -180,6 +175,26 @@ namespace SwiftAg_CS
             Double deg = Math.Acos( (Math.Pow(ab.length(), 2) + Math.Pow(ca.length(), 2) - Math.Pow(bc.length(), 2)) / (2 * ab.length() * ca.length())) ;
             if (Double.IsNaN(deg) || (deg.CompareTo(0d) == 0)) return true;
             else return false;
+        }
+
+        public List<Point> getIntersectionPoints(Edge _e)
+        {
+            List<Point> intersection_points = new List<Point>();
+            
+            List<Edge> edges = getEdges();
+            foreach(Edge e in edges)
+            {
+                if(e.intersects(_e))
+                {
+                    Point int_point = e.getIntersectionPoint(_e);
+                    if (int_point != null)
+                    {
+                        intersection_points.Add(int_point);
+                    }
+                }
+            }
+
+            return intersection_points;
         }
 
     }
