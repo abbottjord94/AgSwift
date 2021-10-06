@@ -222,13 +222,13 @@ namespace SwiftAg_CS
                             Point existing_tp = new Point(i, k, 0);
                             Point proposed_tp = new Point(i, k, 0);
 
-                            double existing_height = existing_curve[existing_index].get_a().get_elevation() + ((existing_curve[existing_index].get_b().get_elevation() - existing_curve[existing_index].get_a().get_elevation()) * (existing_tp.distance(existing_curve[existing_index].get_a()) / existing_curve[existing_index].length()));
-                            double proposed_height = proposed_curve[proposed_index].get_a().get_elevation() + ((proposed_curve[proposed_index].get_b().get_elevation() - proposed_curve[proposed_index].get_a().get_elevation()) * (proposed_tp.distance(proposed_curve[proposed_index].get_a()) / proposed_curve[proposed_index].length()));
+                            double existing_height = interpolateHeight(existing_curve[existing_index], existing_tp);
+                            double proposed_height = interpolateHeight(proposed_curve[proposed_index], proposed_tp);
 
                             double diff = Math.Abs(existing_height - proposed_height);
 
                             //Set to 3 significant digits for now (not sure if it needs to be more accurate than that)
-                            if (diff > 0.1)
+                            if (diff > 0.001)
                             {
 
                                 if (existing_height > proposed_height)
@@ -274,6 +274,35 @@ namespace SwiftAg_CS
             return err_msg;
         }
 
+        private double interpolateHeight(Edge _e, Point _p)
+        {
+            if (_p.get_y() > _e.get_b().get_y())
+            {
+                return _e.get_b().get_elevation();
+            }
+            else if (_p.get_y() < _e.get_a().get_y())
+            {
+                return _e.get_a().get_elevation();
+            }
+            else
+            {
+                double h = 0;
+                double dy_total = _e.get_b().get_y() - _e.get_a().get_y();
+                if (Double.IsInfinity(1 / dy_total))
+                {
+                    return _e.get_a().get_elevation();
+                }
+                else
+                {
+                    double dy_a = _p.get_y() - _e.get_a().get_y();
+                    double dy_b = _e.get_b().get_y() - _p.get_y();
+                    double da_frac = dy_a / dy_total;
+                    double db_frac = dy_b / dy_total;
+                    h = (_e.get_a().get_elevation() * da_frac) + (_e.get_b().get_elevation() * db_frac);
+                    return h;
+                }
+            }
+        }
 
         //Shitty selection sort
         private List<Point> selectionSortPoints(List<Point> _points)
