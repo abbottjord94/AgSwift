@@ -146,8 +146,20 @@ namespace SwiftAg_CS
                     {
 
                         //Now sort the points along the Y-axis.
-                        //existing_intersection_points = sortPoints(existing_intersection_points);
-                        //proposed_intersection_points = sortPoints(proposed_intersection_points);
+
+/*                        existing_intersection_points.Sort(delegate(Point _x, Point _y) {
+                            if (_x.get_y() > _y.get_y()) return 1;
+                            else if (_x.get_y() == _y.get_y()) return 0;
+                            else return -1;
+                        });
+                        proposed_intersection_points.Sort(delegate (Point _x, Point _y) {
+                            if (_x.get_y() > _y.get_y()) return 1;
+                            else if (_x.get_y() == _y.get_y()) return 0;
+                            else return -1;
+                        });*/
+
+                        List<Point> sorted_existing_intersection_points = selectionSortPoints(existing_intersection_points);
+                        List<Point> sorted_proposed_intersection_points = selectionSortPoints(proposed_intersection_points);
 
                         //At this point we can create imaginary edges between each point in both lists, so that we can measure the distances along every point between each line.
                         //Multiplied by the minimum distance between the lines, this will give us a total area between the curves.
@@ -158,38 +170,39 @@ namespace SwiftAg_CS
                         List<Edge> existing_curve = new List<Edge>();
                         List<Edge> proposed_curve = new List<Edge>();
 
-                        int existing_point_count = existing_intersection_points.Count;
-                        int proposed_point_count = proposed_intersection_points.Count;
+                        int existing_point_count = sorted_existing_intersection_points.Count;
+                        int proposed_point_count = sorted_proposed_intersection_points.Count;
 
                         for (int j = 0; j < existing_point_count - 1; j++)
                         {
-                            Edge temp_edge = new Edge(existing_intersection_points[j], existing_intersection_points[j + 1]);
+                            Edge temp_edge = new Edge(sorted_existing_intersection_points[j], sorted_existing_intersection_points[j + 1]);
                             existing_curve.Add(temp_edge);
                         }
                         for (int j = 0; j < proposed_point_count - 1; j++)
                         {
-                            Edge temp_edge = new Edge(proposed_intersection_points[j], proposed_intersection_points[j + 1]);
+                            Edge temp_edge = new Edge(sorted_proposed_intersection_points[j], sorted_proposed_intersection_points[j + 1]);
                             proposed_curve.Add(temp_edge);
                         }
 
                         //Determine the range of the curve (i.e., ensure that we only scan between the two curves)
-                        double range_min = 0, range_max = 0;
-                        if (existing_intersection_points[0].get_y() >= proposed_intersection_points[0].get_y())
+                        double range_min = 0;
+                        double range_max = 0;
+                        if (sorted_existing_intersection_points[0].get_y() >= sorted_proposed_intersection_points[0].get_y())
                         {
-                            range_min = proposed_intersection_points[0].get_y();
+                            range_min = sorted_existing_intersection_points[0].get_y();
                         }
                         else
                         {
-                            range_min = existing_intersection_points[0].get_y();
+                            range_min = sorted_proposed_intersection_points[0].get_y();
                         }
 
-                        if (existing_intersection_points[existing_point_count - 1].get_y() >= proposed_intersection_points[proposed_point_count - 1].get_y())
+                        if (sorted_existing_intersection_points[existing_point_count - 1].get_y() <= sorted_proposed_intersection_points[proposed_point_count - 1].get_y())
                         {
-                            range_max = proposed_intersection_points[proposed_point_count - 1].get_y();
+                            range_max = sorted_existing_intersection_points[existing_point_count - 1].get_y();
                         }
                         else
                         {
-                            range_max = existing_intersection_points[existing_point_count - 1].get_y();
+                            range_max = sorted_proposed_intersection_points[proposed_point_count - 1].get_y();
                         }
 
                         int existing_index = 0;
@@ -206,8 +219,8 @@ namespace SwiftAg_CS
                             //double existing_height = existing_curve[existing_index].get_a().get_elevation() + ((k - existing_curve[existing_index].get_a().get_y()) * existing_slope);
                             //double proposed_height = proposed_curve[proposed_index].get_a().get_elevation() + ((k - proposed_curve[proposed_index].get_a().get_y()) * proposed_slope);
 
-                            Point existing_tp = new Point(existing_curve[existing_index].get_a().get_x(), existing_curve[existing_index].get_a().get_y() + k, 0);
-                            Point proposed_tp = new Point(proposed_curve[proposed_index].get_a().get_x(), proposed_curve[proposed_index].get_a().get_y() + k, 0);
+                            Point existing_tp = new Point(i, k, 0);
+                            Point proposed_tp = new Point(i, k, 0);
 
                             double existing_height = existing_curve[existing_index].get_a().get_elevation() + ((existing_curve[existing_index].get_b().get_elevation() - existing_curve[existing_index].get_a().get_elevation()) * (existing_tp.distance(existing_curve[existing_index].get_a()) / existing_curve[existing_index].length()));
                             double proposed_height = proposed_curve[proposed_index].get_a().get_elevation() + ((proposed_curve[proposed_index].get_b().get_elevation() - proposed_curve[proposed_index].get_a().get_elevation()) * (proposed_tp.distance(proposed_curve[proposed_index].get_a()) / proposed_curve[proposed_index].length()));
@@ -215,7 +228,7 @@ namespace SwiftAg_CS
                             double diff = Math.Abs(existing_height - proposed_height);
 
                             //Set to 3 significant digits for now (not sure if it needs to be more accurate than that)
-                            if (diff > 0.01)
+                            if (diff > 0.1)
                             {
 
                                 if (existing_height > proposed_height)
@@ -262,7 +275,31 @@ namespace SwiftAg_CS
         }
 
 
-        //TO DO: Debug and fix this
+        //Shitty selection sort
+        private List<Point> selectionSortPoints(List<Point> _points)
+        {
+            List<Point> ret_points = new List<Point>();
+            List<Point> points = _points;
+            while (points.Count > 0) {
+                Point min_point = points[0];
+                double min = Double.NaN;
+                foreach (Point _p in points)
+                {
+                    if (_p.get_y() < min || Double.IsNaN(min))
+                    {
+                        min = _p.get_y();
+                        min_point = _p;
+                    }
+                }
+                ret_points.Add(min_point);
+                points.Remove(min_point);
+            }
+            
+            return ret_points;
+        }
+
+        //Shitty non-working insertion sort
+        //TO DO: Debug and fix this (or not)
         private List<Point> sortPoints(List<Point> points)
         {
             List<Point> sorted_points = new List<Point>();
@@ -285,6 +322,7 @@ namespace SwiftAg_CS
                     //By the end of this loop, index should be set to the index of the list where the point should be stored.
                     foreach (Point p in sorted_points)
                     {
+                        index = 0;
                         if (p.get_y() > kp.get_y())
                         {
                             index = sorted_points.IndexOf(p);
