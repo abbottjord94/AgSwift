@@ -46,13 +46,13 @@ namespace AgSwift_GUI
             Dictionary<int, SwiftAg_CS.Triangle> triangles = graph.getTriangles();
             foreach(KeyValuePair<int, SwiftAg_CS.Point> pt in pts)
             {
-                g.DrawEllipse(p, new Rectangle((int)pt.Value.get_x() * zoomFactor, (int)pt.Value.get_y() * zoomFactor, 3,3));
+                g.DrawEllipse(p, new Rectangle((int)(centerX + pt.Value.get_x() * zoomFactor), (int)(centerY + pt.Value.get_y() * zoomFactor), 3,3));
             }
             foreach (KeyValuePair<int, SwiftAg_CS.Triangle> triangle in triangles)
             {
-                System.Drawing.Point pt1 = new System.Drawing.Point((int)triangle.Value.get_a().get_x() * zoomFactor, (int)triangle.Value.get_a().get_y() * zoomFactor);
-                System.Drawing.Point pt2 = new System.Drawing.Point((int)triangle.Value.get_b().get_x() * zoomFactor, (int)triangle.Value.get_b().get_y() * zoomFactor);
-                System.Drawing.Point pt3 = new System.Drawing.Point((int)triangle.Value.get_c().get_x() * zoomFactor, (int)triangle.Value.get_c().get_y() * zoomFactor);
+                System.Drawing.Point pt1 = new System.Drawing.Point((int)(centerX + triangle.Value.get_a().get_x() * zoomFactor), (int)(centerY + triangle.Value.get_a().get_y() * zoomFactor));
+                System.Drawing.Point pt2 = new System.Drawing.Point((int)(centerX + triangle.Value.get_b().get_x() * zoomFactor), (int)(centerY + triangle.Value.get_b().get_y() * zoomFactor));
+                System.Drawing.Point pt3 = new System.Drawing.Point((int)(centerX + triangle.Value.get_c().get_x() * zoomFactor), (int)(centerY + triangle.Value.get_c().get_y() * zoomFactor));
                 g.DrawLine(p, pt1, pt2);
                 g.DrawLine(p, pt2, pt3);
                 g.DrawLine(p, pt1, pt3);
@@ -96,27 +96,35 @@ namespace AgSwift_GUI
                 int dx = (prevX - e.X) / zoomFactor;
                 int dy = (prevY - e.Y) / zoomFactor;
 
-                centerX += dx;
-                centerY += dy;
+                centerX += -dx;
+                centerY += -dy;
 
                 prevX = e.X;
                 prevY = e.Y;
 
                 centerLabel.Text = "Center: (" + centerX.ToString() + ", " + centerY.ToString() + ")";
+                drawingSurface.Refresh();
             }
         }
         private void drawingSurface_MiddleMouseClickDown(object sender, MouseEventArgs e)
         {
-            stateLabel.Text = "State: Dragging";
-            draggingState = true;
-            prevX = e.X;
-            prevY = e.Y;
+            if (e.Button == MouseButtons.Middle)
+            {
+                stateLabel.Text = "State: Dragging";
+                draggingState = true;
+                prevX = e.X;
+                prevY = e.Y;
+            }
         }
 
         private void drawingSurface_MiddleMouseClickUp(object sender, MouseEventArgs e)
         {
-            stateLabel.Text = "State: Not Dragging";
-            draggingState = false;
+            if(e.Button == MouseButtons.Middle)
+            {
+                stateLabel.Text = "State: Not Dragging";
+                draggingState = false;
+            }
+
         }
 
         private void drawingSurface_MouseWheel(object sender, MouseEventArgs e)
@@ -212,10 +220,10 @@ namespace AgSwift_GUI
                         graph = existing_graph;
                     }
                     MouseEventArgs mouseEvent = (MouseEventArgs)e;
-                    double x = mouseEvent.X;
-                    double y = mouseEvent.Y;
+                    double x = mouseEvent.X / zoomFactor;
+                    double y = mouseEvent.Y / zoomFactor;
                     double elevation = Double.Parse(elevationEntryBox.Text);
-                    SwiftAg_CS.Point new_point = new SwiftAg_CS.Point(x, y, elevation);
+                    SwiftAg_CS.Point new_point = new SwiftAg_CS.Point(x - centerX, y - centerY, elevation);
 
                     //Method 2: Jordan's Bowyer-Watson triangulation function
                     //graph.addPointToTriangulation(new_point);
