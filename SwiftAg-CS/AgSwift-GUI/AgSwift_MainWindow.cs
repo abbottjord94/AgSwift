@@ -87,6 +87,7 @@ namespace AgSwift_GUI
             centerY = drawingSurface.Height / 2;
 
             centerLabel.Text = "Center: (" + centerX.ToString() + ", " + centerY.ToString() + ")";
+            drawingSurface.Refresh();
         }
 
         private void drawingSurface_Pan(object sender, MouseEventArgs e)
