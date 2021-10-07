@@ -55,12 +55,17 @@
             this.pointsLabel = new System.Windows.Forms.Label();
             this.trianglesLabel = new System.Windows.Forms.Label();
             this.edgesLabel = new System.Windows.Forms.Label();
+            this.bottomPanel = new System.Windows.Forms.Panel();
+            this.zoomFactorLabel = new System.Windows.Forms.Label();
+            this.stateLabel = new System.Windows.Forms.Label();
+            this.centerLabel = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.drawingSurface)).BeginInit();
             this.tableLayoutPanel2.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
+            this.bottomPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -171,6 +176,7 @@
             this.tableLayoutPanel1.Controls.Add(this.drawingSurface, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.pointList, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.bottomPanel, 0, 2);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 24);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -324,6 +330,44 @@
             this.edgesLabel.TabIndex = 22;
             this.edgesLabel.Text = "Edges: 0";
             // 
+            // bottomPanel
+            // 
+            this.bottomPanel.Controls.Add(this.centerLabel);
+            this.bottomPanel.Controls.Add(this.stateLabel);
+            this.bottomPanel.Controls.Add(this.zoomFactorLabel);
+            this.bottomPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.bottomPanel.Location = new System.Drawing.Point(3, 608);
+            this.bottomPanel.Name = "bottomPanel";
+            this.bottomPanel.Size = new System.Drawing.Size(1117, 27);
+            this.bottomPanel.TabIndex = 25;
+            // 
+            // zoomFactorLabel
+            // 
+            this.zoomFactorLabel.AutoSize = true;
+            this.zoomFactorLabel.Location = new System.Drawing.Point(10, 8);
+            this.zoomFactorLabel.Name = "zoomFactorLabel";
+            this.zoomFactorLabel.Size = new System.Drawing.Size(79, 13);
+            this.zoomFactorLabel.TabIndex = 0;
+            this.zoomFactorLabel.Text = "Zoom Factor: 1";
+            // 
+            // stateLabel
+            // 
+            this.stateLabel.AutoSize = true;
+            this.stateLabel.Location = new System.Drawing.Point(109, 8);
+            this.stateLabel.Name = "stateLabel";
+            this.stateLabel.Size = new System.Drawing.Size(101, 13);
+            this.stateLabel.TabIndex = 1;
+            this.stateLabel.Text = "State: Not Dragging";
+            // 
+            // centerLabel
+            // 
+            this.centerLabel.AutoSize = true;
+            this.centerLabel.Location = new System.Drawing.Point(229, 8);
+            this.centerLabel.Name = "centerLabel";
+            this.centerLabel.Size = new System.Drawing.Size(44, 13);
+            this.centerLabel.TabIndex = 2;
+            this.centerLabel.Text = "Center: ";
+            // 
             // AgSwift_MainWindow
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -341,6 +385,8 @@
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
+            this.bottomPanel.ResumeLayout(false);
+            this.bottomPanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -374,6 +420,10 @@
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem clearGraphToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.Panel bottomPanel;
+        private System.Windows.Forms.Label zoomFactorLabel;
+        private System.Windows.Forms.Label stateLabel;
+        private System.Windows.Forms.Label centerLabel;
     }
 }
 

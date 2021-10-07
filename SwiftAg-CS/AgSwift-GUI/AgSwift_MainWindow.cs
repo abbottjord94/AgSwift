@@ -9,6 +9,10 @@ namespace AgSwift_GUI
     public partial class AgSwift_MainWindow : Form
     {
         private Graph existing_graph, proposed_graph;
+        private int zoomFactor = 1;
+        private bool draggingState = false;
+        private int prevX, prevY = 0;
+        private int centerX, centerY;
         public AgSwift_MainWindow()
         {
             InitializeComponent();
@@ -65,7 +69,77 @@ namespace AgSwift_GUI
 
         private void AgSwift_MainWindow_Load(object sender, EventArgs e)
         {
+            drawingSurface.Resize += new System.EventHandler(this.drawingSurface_Resize);
             drawingSurface.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox_Paint);
+            drawingSurface.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.drawingSurface_MouseWheel);
+            drawingSurface.MouseDown += new System.Windows.Forms.MouseEventHandler(this.drawingSurface_MiddleMouseClickDown);
+            drawingSurface.MouseUp += new System.Windows.Forms.MouseEventHandler(this.drawingSurface_MiddleMouseClickUp);
+            drawingSurface.MouseMove += new System.Windows.Forms.MouseEventHandler(this.drawingSurface_Pan);
+        }
+
+        private void drawingSurface_Resize(object sender, EventArgs e)
+        {
+            centerX = drawingSurface.Width / 2;
+            centerY = drawingSurface.Height / 2;
+
+            centerLabel.Text = "Center: (" + centerX.ToString() + ", " + centerY.ToString() + ")";
+        }
+
+        private void drawingSurface_Pan(object sender, MouseEventArgs e)
+        {
+            if(draggingState)
+            {
+                int dx = (prevX - e.X) / zoomFactor;
+                int dy = (prevY - e.Y) / zoomFactor;
+
+                centerX += dx;
+                centerY += dy;
+
+                prevX = e.X;
+                prevY = e.Y;
+
+                centerLabel.Text = "Center: (" + centerX.ToString() + ", " + centerY.ToString() + ")";
+            }
+        }
+        private void drawingSurface_MiddleMouseClickDown(object sender, MouseEventArgs e)
+        {
+            stateLabel.Text = "State: Dragging";
+            draggingState = true;
+            prevX = e.X;
+            prevY = e.Y;
+        }
+
+        private void drawingSurface_MiddleMouseClickUp(object sender, MouseEventArgs e)
+        {
+            stateLabel.Text = "State: Not Dragging";
+            draggingState = false;
+        }
+
+        private void drawingSurface_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                if (zoomFactor >= 16)
+                {
+                    zoomFactor = 16;
+                }
+                else
+                {
+                    zoomFactor++;
+                }
+            }
+            else
+            {
+                if (zoomFactor <= 1)
+                {
+                    zoomFactor = 1;
+                }
+                else
+                {
+                    zoomFactor--;
+                }
+            }
+            zoomFactorLabel.Text = "Zoom Factor: " + zoomFactor.ToString();
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
@@ -110,45 +184,49 @@ namespace AgSwift_GUI
 
         private void drawingSurface_Click_1(object sender, EventArgs e)
         {
-            if (blueprintComboBox.SelectedItem.ToString() == "[SELECT]")
+            MouseEventArgs me = (MouseEventArgs)e;
+            if (me.Button != MouseButtons.Middle)
             {
-                MessageBox.Show("Please Select a Blueprint");
-            }
-            else
-            {
-                Graph graph;
-                if(blueprintComboBox.SelectedItem.ToString() == "Existing")
+                if (blueprintComboBox.SelectedItem.ToString() == "[SELECT]")
                 {
-                    graph = existing_graph;
-                }
-                else if(blueprintComboBox.SelectedItem.ToString() == "Proposed")
-                {
-                    graph = proposed_graph;
+                    MessageBox.Show("Please Select a Blueprint");
                 }
                 else
                 {
-                    graph = existing_graph;
-                }
-                MouseEventArgs mouseEvent = (MouseEventArgs)e;
-                double x = mouseEvent.X;
-                double y = mouseEvent.Y;
-                double elevation = Double.Parse(elevationEntryBox.Text);
-                SwiftAg_CS.Point new_point = new SwiftAg_CS.Point(x, y, elevation);
+                    Graph graph;
+                    if (blueprintComboBox.SelectedItem.ToString() == "Existing")
+                    {
+                        graph = existing_graph;
+                    }
+                    else if (blueprintComboBox.SelectedItem.ToString() == "Proposed")
+                    {
+                        graph = proposed_graph;
+                    }
+                    else
+                    {
+                        graph = existing_graph;
+                    }
+                    MouseEventArgs mouseEvent = (MouseEventArgs)e;
+                    double x = mouseEvent.X;
+                    double y = mouseEvent.Y;
+                    double elevation = Double.Parse(elevationEntryBox.Text);
+                    SwiftAg_CS.Point new_point = new SwiftAg_CS.Point(x, y, elevation);
 
-                //Method 2: Jordan's Bowyer-Watson triangulation function
-                //graph.addPointToTriangulation(new_point);
-                //Method 3: O(N^3) triangulation
-                graph.addPoint(new_point);
-                if (graph.pointCount() > 2)
-                {
-                    graph.bowyerWatsonTriangulation();
-                }
-                //graph.triangulate();
-                drawingSurface.Refresh();
+                    //Method 2: Jordan's Bowyer-Watson triangulation function
+                    //graph.addPointToTriangulation(new_point);
+                    //Method 3: O(N^3) triangulation
+                    graph.addPoint(new_point);
+                    if (graph.pointCount() > 2)
+                    {
+                        graph.bowyerWatsonTriangulation();
+                    }
+                    //graph.triangulate();
+                    drawingSurface.Refresh();
 
-                pointsLabel.Text = "Points: " + graph.pointCount().ToString();
-                edgesLabel.Text = "Edges: " + graph.edgeCount().ToString();
-                trianglesLabel.Text = "Triangles: " + graph.triangleCount().ToString();
+                    pointsLabel.Text = "Points: " + graph.pointCount().ToString();
+                    edgesLabel.Text = "Edges: " + graph.edgeCount().ToString();
+                    trianglesLabel.Text = "Triangles: " + graph.triangleCount().ToString();
+                }
             }
         }
 
