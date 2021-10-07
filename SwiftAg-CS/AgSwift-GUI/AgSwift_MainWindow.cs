@@ -18,7 +18,11 @@ namespace AgSwift_GUI
             InitializeComponent();
             existing_graph = new Graph();
             proposed_graph = new Graph();
+            centerX = drawingSurface.Width / 2;
+            centerY = drawingSurface.Height / 2;
             blueprintComboBox.SelectedIndex = 0;
+
+            centerLabel.Text = "Center: (" + centerX.ToString() + ", " + centerY.ToString() + ")";
         }
 
         private void pictureBox_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
@@ -42,13 +46,13 @@ namespace AgSwift_GUI
             Dictionary<int, SwiftAg_CS.Triangle> triangles = graph.getTriangles();
             foreach(KeyValuePair<int, SwiftAg_CS.Point> pt in pts)
             {
-                g.DrawEllipse(p, new Rectangle((int)pt.Value.get_x(), (int)pt.Value.get_y(),3,3));
+                g.DrawEllipse(p, new Rectangle((int)pt.Value.get_x() * zoomFactor, (int)pt.Value.get_y() * zoomFactor, 3,3));
             }
             foreach (KeyValuePair<int, SwiftAg_CS.Triangle> triangle in triangles)
             {
-                System.Drawing.Point pt1 = new System.Drawing.Point((int)triangle.Value.get_a().get_x(), (int)triangle.Value.get_a().get_y());
-                System.Drawing.Point pt2 = new System.Drawing.Point((int)triangle.Value.get_b().get_x(), (int)triangle.Value.get_b().get_y());
-                System.Drawing.Point pt3 = new System.Drawing.Point((int)triangle.Value.get_c().get_x(), (int)triangle.Value.get_c().get_y());
+                System.Drawing.Point pt1 = new System.Drawing.Point((int)triangle.Value.get_a().get_x() * zoomFactor, (int)triangle.Value.get_a().get_y() * zoomFactor);
+                System.Drawing.Point pt2 = new System.Drawing.Point((int)triangle.Value.get_b().get_x() * zoomFactor, (int)triangle.Value.get_b().get_y() * zoomFactor);
+                System.Drawing.Point pt3 = new System.Drawing.Point((int)triangle.Value.get_c().get_x() * zoomFactor, (int)triangle.Value.get_c().get_y() * zoomFactor);
                 g.DrawLine(p, pt1, pt2);
                 g.DrawLine(p, pt2, pt3);
                 g.DrawLine(p, pt1, pt3);
@@ -140,6 +144,7 @@ namespace AgSwift_GUI
                 }
             }
             zoomFactorLabel.Text = "Zoom Factor: " + zoomFactor.ToString();
+            drawingSurface.Refresh();
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
