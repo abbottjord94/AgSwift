@@ -93,8 +93,8 @@ namespace AgSwift_GUI
         {
             if(draggingState)
             {
-                int dx = (prevX - e.X) / zoomFactor;
-                int dy = (prevY - e.Y) / zoomFactor;
+                int dx = (prevX - e.X);
+                int dy = (prevY - e.Y);
 
                 centerX += -dx;
                 centerY += -dy;
@@ -220,10 +220,10 @@ namespace AgSwift_GUI
                         graph = existing_graph;
                     }
                     MouseEventArgs mouseEvent = (MouseEventArgs)e;
-                    double x = mouseEvent.X / zoomFactor;
-                    double y = mouseEvent.Y / zoomFactor;
+                    double x = mouseEvent.X;
+                    double y = mouseEvent.Y;
                     double elevation = Double.Parse(elevationEntryBox.Text);
-                    SwiftAg_CS.Point new_point = new SwiftAg_CS.Point(x - centerX, y - centerY, elevation);
+                    SwiftAg_CS.Point new_point = new SwiftAg_CS.Point((x - centerX)/zoomFactor, (y - centerY)/zoomFactor, elevation);
 
                     //Method 2: Jordan's Bowyer-Watson triangulation function
                     //graph.addPointToTriangulation(new_point);
