@@ -13,6 +13,7 @@ namespace AgSwift_GUI
         private bool draggingState = false;
         private int prevX, prevY = 0;
         private int centerX, centerY;
+        private List<PointClickable> pointClickables = new List<PointClickable>();
         public AgSwift_MainWindow()
         {
             InitializeComponent();
@@ -44,9 +45,24 @@ namespace AgSwift_GUI
             Pen p = new Pen(Color.Green, 1);
             Dictionary<int, SwiftAg_CS.Point> pts = graph.getPoints();
             Dictionary<int, SwiftAg_CS.Triangle> triangles = graph.getTriangles();
+            /*
             foreach(KeyValuePair<int, SwiftAg_CS.Point> pt in pts)
             {
                 g.DrawEllipse(p, new Rectangle((int)(centerX + pt.Value.get_x() * zoomFactor), (int)(centerY + pt.Value.get_y() * zoomFactor), 3,3));
+            }
+            */
+
+            foreach(PointClickable _p in pointClickables)
+            {
+                if (_p.getSelected())
+                {
+                    Pen p1 = new Pen(Color.Red, 1);
+                    g.DrawEllipse(p1, new Rectangle((int)(centerX + _p.get_x() * zoomFactor) - 3, (int)(centerY + _p.get_y() * zoomFactor) - 3, 6, 6));
+                }
+                else
+                {
+                    g.DrawEllipse(p, new Rectangle((int)(centerX + _p.get_x() * zoomFactor) - 1, (int)(centerY + _p.get_y() * zoomFactor) - 1, 3, 3));
+                }
             }
             foreach (KeyValuePair<int, SwiftAg_CS.Triangle> triangle in triangles)
             {
@@ -224,7 +240,9 @@ namespace AgSwift_GUI
                     double x = mouseEvent.X;
                     double y = mouseEvent.Y;
                     double elevation = Double.Parse(elevationEntryBox.Text);
-                    SwiftAg_CS.Point new_point = new SwiftAg_CS.Point((x - centerX)/zoomFactor, (y - centerY)/zoomFactor, elevation);
+                    PointClickable new_point = new PointClickable((x - centerX)/zoomFactor, (y - centerY)/zoomFactor, elevation);
+                    pointClickables.Add(new_point);
+                    pointList.Items.Add(new_point.get_elevation().ToString());
 
                     //Method 2: Jordan's Bowyer-Watson triangulation function
                     //graph.addPointToTriangulation(new_point);
@@ -301,6 +319,17 @@ namespace AgSwift_GUI
             pointsLabel.Text = "Points: " + graph.pointCount().ToString();
             edgesLabel.Text = "Edges: " + graph.edgeCount().ToString();
             trianglesLabel.Text = "Triangles: " + graph.triangleCount().ToString();
+        }
+
+        private void pointList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int idx = pointList.SelectedIndex;
+            foreach(PointClickable _p in pointClickables)
+            {
+                _p.setSelected(false);
+            }
+            pointClickables[idx].setSelected(true);
+            drawingSurface.Refresh();
         }
 
         private void blueprintComboBox_SelectedIndexChanged(object sender, EventArgs e)

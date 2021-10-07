@@ -56,9 +56,9 @@
             this.trianglesLabel = new System.Windows.Forms.Label();
             this.edgesLabel = new System.Windows.Forms.Label();
             this.bottomPanel = new System.Windows.Forms.Panel();
-            this.zoomFactorLabel = new System.Windows.Forms.Label();
-            this.stateLabel = new System.Windows.Forms.Label();
             this.centerLabel = new System.Windows.Forms.Label();
+            this.stateLabel = new System.Windows.Forms.Label();
+            this.zoomFactorLabel = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.drawingSurface)).BeginInit();
@@ -206,6 +206,7 @@
             this.pointList.Name = "pointList";
             this.pointList.Size = new System.Drawing.Size(119, 536);
             this.pointList.TabIndex = 14;
+            this.pointList.SelectedIndexChanged += new System.EventHandler(this.pointList_SelectedIndexChanged);
             // 
             // tableLayoutPanel2
             // 
@@ -341,14 +342,14 @@
             this.bottomPanel.Size = new System.Drawing.Size(1117, 27);
             this.bottomPanel.TabIndex = 25;
             // 
-            // zoomFactorLabel
+            // centerLabel
             // 
-            this.zoomFactorLabel.AutoSize = true;
-            this.zoomFactorLabel.Location = new System.Drawing.Point(10, 8);
-            this.zoomFactorLabel.Name = "zoomFactorLabel";
-            this.zoomFactorLabel.Size = new System.Drawing.Size(79, 13);
-            this.zoomFactorLabel.TabIndex = 0;
-            this.zoomFactorLabel.Text = "Zoom Factor: 1";
+            this.centerLabel.AutoSize = true;
+            this.centerLabel.Location = new System.Drawing.Point(229, 8);
+            this.centerLabel.Name = "centerLabel";
+            this.centerLabel.Size = new System.Drawing.Size(44, 13);
+            this.centerLabel.TabIndex = 2;
+            this.centerLabel.Text = "Center: ";
             // 
             // stateLabel
             // 
@@ -359,14 +360,14 @@
             this.stateLabel.TabIndex = 1;
             this.stateLabel.Text = "State: Not Dragging";
             // 
-            // centerLabel
+            // zoomFactorLabel
             // 
-            this.centerLabel.AutoSize = true;
-            this.centerLabel.Location = new System.Drawing.Point(229, 8);
-            this.centerLabel.Name = "centerLabel";
-            this.centerLabel.Size = new System.Drawing.Size(44, 13);
-            this.centerLabel.TabIndex = 2;
-            this.centerLabel.Text = "Center: ";
+            this.zoomFactorLabel.AutoSize = true;
+            this.zoomFactorLabel.Location = new System.Drawing.Point(10, 8);
+            this.zoomFactorLabel.Name = "zoomFactorLabel";
+            this.zoomFactorLabel.Size = new System.Drawing.Size(79, 13);
+            this.zoomFactorLabel.TabIndex = 0;
+            this.zoomFactorLabel.Text = "Zoom Factor: 1";
             // 
             // AgSwift_MainWindow
             // 

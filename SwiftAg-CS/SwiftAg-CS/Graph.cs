@@ -56,6 +56,47 @@ namespace SwiftAg_CS
             }
         }
 
+        private void selectionSortPoints()
+        {
+            List<Point> pointsList = new List<Point>();
+            foreach(KeyValuePair<int, Point> kp in getPoints())
+            {
+                pointsList.Add(kp.Value);
+            }
+            sorted_points.Clear();
+            double min_y = Double.NaN;
+            double min_x = 0;
+            Point min_point;
+
+            while (pointsList.Count > 0)
+            {
+                min_point = pointsList[0];
+                foreach (Point _p in pointsList)
+                {
+                    min_y = Double.NaN;
+                    min_x = 0;
+                    min_point = _p;
+                    if (_p.get_y() < min_y || Double.IsNaN(min_y))
+                    {
+                        min_y = _p.get_y();
+                        min_x = _p.get_x();
+                        min_point = _p;
+                    }
+                    else if(_p.get_y() == min_y)
+                    {
+                        if(min_x > _p.get_x())
+                        {
+                            min_y = _p.get_y();
+                            min_x = _p.get_x();
+                            min_point = _p;
+                        }
+                    }
+                }
+                sorted_points.Add(min_point);
+                pointsList.Remove(min_point);
+            }
+        }
+
         private void sortPoints()
         {
             sorted_points.Clear();
@@ -276,7 +317,7 @@ namespace SwiftAg_CS
         {
             triangles.Clear();
             edges.Clear();
-            sortPoints();
+            selectionSortPoints();
             //Calculate maximum difference between x and y coordinates in point set
             double dmax;
             double dx = xmax - xmin;
