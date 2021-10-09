@@ -64,7 +64,7 @@ namespace AgSwift_GUI
 
         //Drawing Surface Paint Method
         //This runs every time drawingSurface.Refresh() is called.
-        private void pictureBox_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
+        private void drawingSurface_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
         {
             Graph graph;
             Graphics g = e.Graphics;
@@ -107,7 +107,7 @@ namespace AgSwift_GUI
         private void AgSwift_MainWindow_Load(object sender, EventArgs e)
         {
             drawingSurface.Resize += new System.EventHandler(this.drawingSurface_Resize);
-            drawingSurface.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox_Paint);
+            drawingSurface.Paint += new System.Windows.Forms.PaintEventHandler(this.drawingSurface_Paint);
             drawingSurface.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.drawingSurface_MouseWheel);
             drawingSurface.MouseDown += new System.Windows.Forms.MouseEventHandler(this.drawingSurface_MiddleMouseClickDown);
             drawingSurface.MouseUp += new System.Windows.Forms.MouseEventHandler(this.drawingSurface_MiddleMouseClickUp);
