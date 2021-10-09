@@ -8,19 +8,38 @@ namespace AgSwift_GUI
 {
     public partial class AgSwift_MainWindow : Form
     {
+        //Existing and Proposed Graphs
         private Graph existing_graph, proposed_graph;
+
+        //Sets the zoom factor for the drawing surface. Bounded between 1-16
         private int zoomFactor = 1;
+
+        //Determines whether the mouse is being dragged
         private bool draggingState = false;
+
+        //Booleans for the entry and selection modes. These are set by the "Interaction Mode" combo box at the top
         private bool selectionMode = false;
         private bool entryMode = false;
+
+        //Stores the previous X and Y values for the mouse, to determine the dx and dy for panning
         private int prevX, prevY = 0;
+
+        //Stores the X and Y values for the center of the drawing surface
         private int centerX, centerY;
+
+        //Stores whether or not there is a previous point, so that an EdgeClickable can be created (comparing prev_point to null returns an exception)
         private PointClickable prev_point = null;
         private bool has_prev_point = false;
+
+        //Lists to store references to pointClickables and edgeClickables that appear on the drawing surface.
         private List<PointClickable> pointClickables = new List<PointClickable>();
         private List<EdgeClickable> edgeClickables = new List<EdgeClickable>();
+
+        //Pens used to determine the color of items drawn on the drawing surface
         private Pen p = new Pen(Color.Green, 1);
         private Pen selected_pen = new Pen(Color.Red, 1);
+
+        //Constructor (Runs at the start of the program)
         public AgSwift_MainWindow()
         {
             InitializeComponent();
@@ -33,6 +52,8 @@ namespace AgSwift_GUI
             centerLabel.Text = "Center: (" + centerX.ToString() + ", " + centerY.ToString() + ")";
         }
 
+        //Drawing Surface Paint Method
+        //This runs every time drawingSurface.Refresh() is called.
         private void pictureBox_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
         {
             Graph graph;
@@ -49,15 +70,6 @@ namespace AgSwift_GUI
                 graph = existing_graph;
             }
             Graphics g = e.Graphics;
-            
-            Dictionary<int, SwiftAg_CS.Point> pts = graph.getPoints();
-            Dictionary<int, SwiftAg_CS.Triangle> triangles = graph.getTriangles();
-            /*
-            foreach(KeyValuePair<int, SwiftAg_CS.Point> pt in pts)
-            {
-                g.DrawEllipse(p, new Rectangle((int)(centerX + pt.Value.get_x() * zoomFactor), (int)(centerY + pt.Value.get_y() * zoomFactor), 3,3));
-            }
-            */
 
             foreach(PointClickable _p in pointClickables)
             {
@@ -85,30 +97,9 @@ namespace AgSwift_GUI
                     g.DrawLine(p, pt1, pt2);
                 }
             }
-
-/*            foreach (KeyValuePair<int, SwiftAg_CS.Triangle> triangle in triangles)
-            {
-                System.Drawing.Point pt1 = new System.Drawing.Point((int)(centerX + triangle.Value.get_a().get_x() * zoomFactor), (int)(centerY + triangle.Value.get_a().get_y() * zoomFactor));
-                System.Drawing.Point pt2 = new System.Drawing.Point((int)(centerX + triangle.Value.get_b().get_x() * zoomFactor), (int)(centerY + triangle.Value.get_b().get_y() * zoomFactor));
-                System.Drawing.Point pt3 = new System.Drawing.Point((int)(centerX + triangle.Value.get_c().get_x() * zoomFactor), (int)(centerY + triangle.Value.get_c().get_y() * zoomFactor));
-                g.DrawLine(p, pt1, pt2);
-                g.DrawLine(p, pt2, pt3);
-                g.DrawLine(p, pt1, pt3);
-            }*/
         }
 
-        private void button1_Click_1(object sender, EventArgs e)
-        {
-            //Method 1: Riley's Bowyer-Watson triangulation function
-            //graph.selfContainedBowyerWatsonTriangulation();
-            //graph.triangulate();
-            drawingSurface.Refresh();
-
-           // pointsLabel.Text = "Points: " + graph.pointCount().ToString();
-            //edgesLabel.Text = "Edges: " + graph.edgeCount().ToString();
-           // trianglesLabel.Text = "Triangles: " + graph.triangleCount().ToString();
-        }
-
+        //Runs when the main window is finished loading. Event handlers go here.
         private void AgSwift_MainWindow_Load(object sender, EventArgs e)
         {
             drawingSurface.Resize += new System.EventHandler(this.drawingSurface_Resize);
@@ -119,6 +110,7 @@ namespace AgSwift_GUI
             drawingSurface.MouseMove += new System.Windows.Forms.MouseEventHandler(this.drawingSurface_Pan);
         }
 
+        //Runs when the drawing surface is resized (given by the drawingSurface.Resize event handler)
         private void drawingSurface_Resize(object sender, EventArgs e)
         {
             centerX = drawingSurface.Width / 2;
@@ -128,6 +120,7 @@ namespace AgSwift_GUI
             drawingSurface.Refresh();
         }
 
+        //Function for panning across the drawing surface
         private void drawingSurface_Pan(object sender, MouseEventArgs e)
         {
             if(draggingState)
@@ -145,6 +138,8 @@ namespace AgSwift_GUI
                 drawingSurface.Refresh();
             }
         }
+
+        //Sets the draggingState variable when the middle mouse button event handler is triggered
         private void drawingSurface_MiddleMouseClickDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Middle)
@@ -156,6 +151,7 @@ namespace AgSwift_GUI
             }
         }
 
+        //Ensures that the draggingState is set to false when the user stops holding the middle mouse button
         private void drawingSurface_MiddleMouseClickUp(object sender, MouseEventArgs e)
         {
             if(e.Button == MouseButtons.Middle)
@@ -166,6 +162,7 @@ namespace AgSwift_GUI
 
         }
 
+        //Function for handling the scroll wheel event handler. This changes the drawing surface zoom factor
         private void drawingSurface_MouseWheel(object sender, MouseEventArgs e)
         {
             if (e.Delta > 0)
@@ -194,46 +191,7 @@ namespace AgSwift_GUI
             drawingSurface.Refresh();
         }
 
-        private void pictureBox1_Click(object sender, EventArgs e)
-        { 
-
-        }
-
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Application.Exit();
-        }
-
-        private void label2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void bowyer_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void clearGraphToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void drawingSurface_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void bowyer_Click_1(object sender, EventArgs e)
-        {
-
-        }
-
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
+        //Handles mouse clicks to the drawing surface.
         private void drawingSurface_Click_1(object sender, EventArgs e)
         {
 
@@ -290,16 +248,7 @@ namespace AgSwift_GUI
                                     prev_point = new_point;
                                     has_prev_point = true;
                                 }
-
-                                //Method 2: Jordan's Bowyer-Watson triangulation function
-                                //graph.addPointToTriangulation(new_point);
-                                //Method 3: O(N^3) triangulation
                                 graph.addPoint(new_point);
-/*                                if (graph.pointCount() > 2)
-                                {
-                                    graph.bowyerWatsonTriangulation();
-                                }*/
-                                //graph.triangulate();
                                 drawingSurface.Refresh();
 
                                 pointsLabel.Text = "Points: " + graph.pointCount().ToString();
@@ -325,42 +274,7 @@ namespace AgSwift_GUI
             }
         }
 
-        private void bowyer_Click_2(object sender, EventArgs e)
-        {
-
-        }
-
-        private void bowyer_Click_3(object sender, EventArgs e)
-        {
-            if (blueprintComboBox.SelectedItem.ToString() == "[SELECT]")
-            {
-                MessageBox.Show("Please Select a Blueprint");
-            }
-            else
-            {
-                Graph graph;
-                if(blueprintComboBox.SelectedItem.ToString() == "Existing")
-                {
-                    graph = existing_graph;
-                }
-                else if(blueprintComboBox.SelectedItem.ToString() == "Proposed")
-                {
-                    graph = proposed_graph;
-                }
-                else
-                {
-                    graph = existing_graph;
-                }
-
-                graph.bowyerWatsonTriangulation();
-                drawingSurface.Refresh();
-
-                pointsLabel.Text = "Points: " + graph.pointCount().ToString();
-                edgesLabel.Text = "Edges: " + graph.edgeCount().ToString();
-                trianglesLabel.Text = "Triangles: " + graph.triangleCount().ToString();
-            }
-        }
-
+        //Clears the selected graph of all points, edges, and triangles.
         private void clearGraphToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             Graph graph;
@@ -384,6 +298,7 @@ namespace AgSwift_GUI
             trianglesLabel.Text = "Triangles: " + graph.triangleCount().ToString();
         }
 
+        //Event handler for when a pointList item is selected
         private void pointList_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (selectionMode)
@@ -398,6 +313,7 @@ namespace AgSwift_GUI
             }
         }
 
+        //Event handler for when the user changes their interaction mode.
         private void modeSelectComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (modeSelectComboBox.SelectedIndex == 0)
@@ -417,11 +333,13 @@ namespace AgSwift_GUI
             }
         }
 
+        //Refreshes the drawing surface when the user changes the blueprint they're working on
         private void blueprintComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             drawingSurface.Refresh();
         }
 
+        //Calculates the cut and fill for the two graphs
         private void calculateCutFill_Click(object sender, EventArgs e)
         {
             String msg;
@@ -446,6 +364,7 @@ namespace AgSwift_GUI
 
         }
 
+        //Exits the program
         private void exitToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             Application.Exit();
