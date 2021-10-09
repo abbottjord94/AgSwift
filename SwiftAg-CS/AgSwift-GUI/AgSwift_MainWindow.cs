@@ -212,7 +212,9 @@ namespace AgSwift_GUI
                     {
                         SwiftAg_CS.Point test_point = new SwiftAg_CS.Point((me.X - centerX) / zoomFactor, (me.Y - centerY) / zoomFactor, 0);
                         PointClickable closest_point = null;
+                        EdgeClickable closest_edge = null;
                         bool found_point = false;
+                        bool found_edge = false;
                         double min_distance = Double.NaN;
                         foreach (PointClickable _p in pointClickables[blueprintComboBox.SelectedItem.ToString()])
                         {
@@ -223,7 +225,7 @@ namespace AgSwift_GUI
                                 min_distance = _p.distance(test_point);
                             }
                         }
-                        if(found_point)
+                        if (found_point)
                         {
                             if (closest_point.getSelected())
                             {
@@ -234,6 +236,30 @@ namespace AgSwift_GUI
                                 closest_point.setSelected(true);
                             }
                             drawingSurface.Refresh();
+                        }
+                        else {
+                            min_distance = Double.NaN;
+                            foreach (EdgeClickable _e in edgeClickables[blueprintComboBox.SelectedItem.ToString()])
+                            {
+                                if (_e.distanceFromEdge(test_point) < selectionRadius && (min_distance < _e.distanceFromEdge(test_point) || Double.IsNaN(min_distance)))
+                                {
+                                    closest_edge = _e;
+                                    found_edge = true;
+                                    min_distance = _e.distanceFromEdge(test_point);
+                                }
+                            }
+                            if(found_edge)
+                            {
+                                if(closest_edge.getSelected())
+                                {
+                                    closest_edge.setSelected(false);
+                                }
+                                else
+                                {
+                                    closest_edge.setSelected(true);
+                                }
+                                drawingSurface.Refresh();
+                            }
                         }
                     }
                 }
