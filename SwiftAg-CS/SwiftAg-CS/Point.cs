@@ -109,8 +109,17 @@ namespace SwiftAg_CS
             if (_a.get_x() == _b.get_x() && _a.get_y() == _b.get_y()) return false;
             else return true;
         }
-
-        //TODO: Write a cleanup function to call when deleting a point. May need to be on graph
-
+        public override int GetHashCode()
+        {
+            int prime_a = 37;
+            int prime_b = 97;
+            unchecked
+            {
+                int hash = prime_a;
+                hash = hash * prime_b + x.GetHashCode();
+                hash = hash * prime_b + y.GetHashCode();
+                return hash;
+            }
+        }
     }
 }

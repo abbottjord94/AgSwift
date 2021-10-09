@@ -196,6 +196,19 @@ namespace SwiftAg_CS
 
             return intersection_points;
         }
+        public override int GetHashCode()
+        {
+            int prime_a = 37;
+            int prime_b = 97;
+            unchecked
+            {
+                int hash = prime_a;
+                hash = hash * prime_b + a.GetHashCode();
+                hash = hash * prime_b + b.GetHashCode();
+                hash = hash * prime_b + c.GetHashCode();
+                return hash;
+            }
+        }
 
     }
 }
