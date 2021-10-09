@@ -11,9 +11,16 @@ namespace AgSwift_GUI
         private Graph existing_graph, proposed_graph;
         private int zoomFactor = 1;
         private bool draggingState = false;
+        private bool selectionMode = false;
+        private bool entryMode = false;
         private int prevX, prevY = 0;
         private int centerX, centerY;
+        private PointClickable prev_point = null;
+        private bool has_prev_point = false;
         private List<PointClickable> pointClickables = new List<PointClickable>();
+        private List<EdgeClickable> edgeClickables = new List<EdgeClickable>();
+        private Pen p = new Pen(Color.Green, 1);
+        private Pen selected_pen = new Pen(Color.Red, 1);
         public AgSwift_MainWindow()
         {
             InitializeComponent();
@@ -42,7 +49,7 @@ namespace AgSwift_GUI
                 graph = existing_graph;
             }
             Graphics g = e.Graphics;
-            Pen p = new Pen(Color.Green, 1);
+            
             Dictionary<int, SwiftAg_CS.Point> pts = graph.getPoints();
             Dictionary<int, SwiftAg_CS.Triangle> triangles = graph.getTriangles();
             /*
@@ -56,15 +63,30 @@ namespace AgSwift_GUI
             {
                 if (_p.getSelected())
                 {
-                    Pen p1 = new Pen(Color.Red, 1);
-                    g.DrawEllipse(p1, new Rectangle((int)(centerX + _p.get_x() * zoomFactor) - 3, (int)(centerY + _p.get_y() * zoomFactor) - 3, 6, 6));
+                    
+                    g.DrawEllipse(selected_pen, new Rectangle((int)(centerX + _p.get_x() * zoomFactor) - 3, (int)(centerY + _p.get_y() * zoomFactor) - 3, 6, 6));
                 }
                 else
                 {
                     g.DrawEllipse(p, new Rectangle((int)(centerX + _p.get_x() * zoomFactor) - 1, (int)(centerY + _p.get_y() * zoomFactor) - 1, 3, 3));
                 }
             }
-            foreach (KeyValuePair<int, SwiftAg_CS.Triangle> triangle in triangles)
+
+            foreach(EdgeClickable _e in edgeClickables)
+            {
+                System.Drawing.Point pt1 = new System.Drawing.Point((int)(centerX + _e.get_a().get_x() * zoomFactor), (int)(centerY + _e.get_a().get_y() * zoomFactor));
+                System.Drawing.Point pt2 = new System.Drawing.Point((int)(centerX + _e.get_b().get_x() * zoomFactor), (int)(centerY + _e.get_b().get_y() * zoomFactor));
+                if (_e.getSelected())
+                {
+                    g.DrawLine(selected_pen, pt1, pt2);
+                }
+                else
+                {
+                    g.DrawLine(p, pt1, pt2);
+                }
+            }
+
+/*            foreach (KeyValuePair<int, SwiftAg_CS.Triangle> triangle in triangles)
             {
                 System.Drawing.Point pt1 = new System.Drawing.Point((int)(centerX + triangle.Value.get_a().get_x() * zoomFactor), (int)(centerY + triangle.Value.get_a().get_y() * zoomFactor));
                 System.Drawing.Point pt2 = new System.Drawing.Point((int)(centerX + triangle.Value.get_b().get_x() * zoomFactor), (int)(centerY + triangle.Value.get_b().get_y() * zoomFactor));
@@ -72,7 +94,7 @@ namespace AgSwift_GUI
                 g.DrawLine(p, pt1, pt2);
                 g.DrawLine(p, pt2, pt3);
                 g.DrawLine(p, pt1, pt3);
-            }
+            }*/
         }
 
         private void button1_Click_1(object sender, EventArgs e)
@@ -214,51 +236,92 @@ namespace AgSwift_GUI
 
         private void drawingSurface_Click_1(object sender, EventArgs e)
         {
-            MouseEventArgs me = (MouseEventArgs)e;
-            if (me.Button != MouseButtons.Middle)
+
+            //Selection Mode
+            if(selectionMode)
             {
-                if (blueprintComboBox.SelectedItem.ToString() == "[SELECT]")
+
+            }
+            //Entry Mode
+            else if (entryMode)
+            {
+                MouseEventArgs me = (MouseEventArgs)e;
+                if (me.Button != MouseButtons.Middle)
                 {
-                    MessageBox.Show("Please Select a Blueprint");
-                }
-                else
-                {
-                    Graph graph;
-                    if (blueprintComboBox.SelectedItem.ToString() == "Existing")
+                    if (blueprintComboBox.SelectedItem.ToString() == "[SELECT]")
                     {
-                        graph = existing_graph;
-                    }
-                    else if (blueprintComboBox.SelectedItem.ToString() == "Proposed")
-                    {
-                        graph = proposed_graph;
+                        MessageBox.Show("Please Select a Blueprint");
                     }
                     else
                     {
-                        graph = existing_graph;
-                    }
-                    MouseEventArgs mouseEvent = (MouseEventArgs)e;
-                    double x = mouseEvent.X;
-                    double y = mouseEvent.Y;
-                    double elevation = Double.Parse(elevationEntryBox.Text);
-                    PointClickable new_point = new PointClickable((x - centerX)/zoomFactor, (y - centerY)/zoomFactor, elevation);
-                    pointClickables.Add(new_point);
-                    pointList.Items.Add(new_point.get_elevation().ToString());
+                        Graph graph;
+                        if (blueprintComboBox.SelectedItem.ToString() == "Existing")
+                        {
+                            graph = existing_graph;
+                        }
+                        else if (blueprintComboBox.SelectedItem.ToString() == "Proposed")
+                        {
+                            graph = proposed_graph;
+                        }
+                        else
+                        {
+                            graph = existing_graph;
+                        }
+                        MouseEventArgs mouseEvent = (MouseEventArgs)e;
+                        if (mouseEvent.Button == MouseButtons.Left)
+                        {
+                            double x = mouseEvent.X;
+                            double y = mouseEvent.Y;
+                            try
+                            {
+                                double elevation = Double.Parse(elevationEntryBox.Text);
+                                PointClickable new_point = new PointClickable((x - centerX) / zoomFactor, (y - centerY) / zoomFactor, elevation);
+                                pointClickables.Add(new_point);
+                                pointList.Items.Add(new_point.get_elevation().ToString());
 
-                    //Method 2: Jordan's Bowyer-Watson triangulation function
-                    //graph.addPointToTriangulation(new_point);
-                    //Method 3: O(N^3) triangulation
-                    graph.addPoint(new_point);
-                    if (graph.pointCount() > 2)
-                    {
-                        graph.bowyerWatsonTriangulation();
-                    }
-                    //graph.triangulate();
-                    drawingSurface.Refresh();
+                                if (has_prev_point)
+                                {
+                                    EdgeClickable new_edge = new EdgeClickable(prev_point, new_point);
+                                    edgeClickables.Add(new_edge);
+                                    prev_point = new_point;
+                                    has_prev_point = true;
+                                } else
+                                {
+                                    prev_point = new_point;
+                                    has_prev_point = true;
+                                }
 
-                    pointsLabel.Text = "Points: " + graph.pointCount().ToString();
-                    edgesLabel.Text = "Edges: " + graph.edgeCount().ToString();
-                    trianglesLabel.Text = "Triangles: " + graph.triangleCount().ToString();
+                                //Method 2: Jordan's Bowyer-Watson triangulation function
+                                //graph.addPointToTriangulation(new_point);
+                                //Method 3: O(N^3) triangulation
+                                graph.addPoint(new_point);
+/*                                if (graph.pointCount() > 2)
+                                {
+                                    graph.bowyerWatsonTriangulation();
+                                }*/
+                                //graph.triangulate();
+                                drawingSurface.Refresh();
+
+                                pointsLabel.Text = "Points: " + graph.pointCount().ToString();
+                                edgesLabel.Text = "Edges: " + graph.edgeCount().ToString();
+                                trianglesLabel.Text = "Triangles: " + graph.triangleCount().ToString();
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show("Error: " + ex.Message);
+                            }
+                        }
+                        else if(mouseEvent.Button == MouseButtons.Right)
+                        {
+                            has_prev_point = false;
+                            prev_point = null;
+                        }
+                    }
                 }
+            }
+            else
+            {
+                MessageBox.Show("Please Select an Interaction Mode");
             }
         }
 
@@ -323,13 +386,35 @@ namespace AgSwift_GUI
 
         private void pointList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            int idx = pointList.SelectedIndex;
-            foreach(PointClickable _p in pointClickables)
+            if (selectionMode)
             {
-                _p.setSelected(false);
+                int idx = pointList.SelectedIndex;
+                foreach (PointClickable _p in pointClickables)
+                {
+                    _p.setSelected(false);
+                }
+                pointClickables[idx].setSelected(true);
+                drawingSurface.Refresh();
             }
-            pointClickables[idx].setSelected(true);
-            drawingSurface.Refresh();
+        }
+
+        private void modeSelectComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (modeSelectComboBox.SelectedIndex == 0)
+            {
+                entryMode = false;
+                selectionMode = true;
+            }
+            else if (modeSelectComboBox.SelectedIndex == 1) 
+            {
+                entryMode = true;
+                selectionMode = false;
+            }
+            else
+            {
+                entryMode = false;
+                selectionMode = false;
+            }
         }
 
         private void blueprintComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -341,6 +426,8 @@ namespace AgSwift_GUI
         {
             String msg;
             double cut, fill;
+            existing_graph.bowyerWatsonTriangulation();
+            proposed_graph.bowyerWatsonTriangulation();
             MeshComparator mc = new MeshComparator(existing_graph, proposed_graph);
             mc.CalculateCutFill();
             if(mc.getError())
