@@ -8,14 +8,12 @@ namespace SwiftAg_CS
         private double x;
         private double y;
         private double elevation;
-        private List<Edge> connections;
 
         public Point(double _x, double _y, double _elevation)
         {
             x = _x;
             y = _y;
             elevation = _elevation;
-            connections = new List<Edge>();
         }
 
         public void set_x(double _x)
@@ -46,27 +44,6 @@ namespace SwiftAg_CS
         public double get_elevation()
         {
             return elevation;
-        }
-
-        public List<Edge> get_connections()
-        {
-            return connections;
-        }
-
-        public void addConnection(Edge _e)
-        {
-            if (!connections.Contains(_e))
-            {
-                connections.Add(_e);
-            }
-
-            //This implementation causes errors, likely as a result of Edges existing in the graph with no way to remove the unique objects when deleting a point
-            //Fixing equivalent edge bug in graph edge dictionary will go long way to resolve this
-            /*foreach(Edge connection in connections)
-            {
-                if (connection == _e) return;
-            }
-            connections.Add(_e);*/
         }
 
         public double distance(Point _p)

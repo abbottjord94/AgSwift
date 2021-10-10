@@ -52,6 +52,8 @@
     <Compile Include="AgSwift_MainWindow.Designer.cs">
       <DependentUpon>AgSwift_MainWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="EdgeClickable.cs" />
+    <Compile Include="PointClickable.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="AgSwift_MainWindow.resx">

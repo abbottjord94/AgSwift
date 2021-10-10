@@ -51,14 +51,15 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.blueprintLabel = new System.Windows.Forms.Label();
             this.blueprintComboBox = new System.Windows.Forms.ComboBox();
-            this.bowyer = new System.Windows.Forms.Button();
             this.pointsLabel = new System.Windows.Forms.Label();
             this.trianglesLabel = new System.Windows.Forms.Label();
             this.edgesLabel = new System.Windows.Forms.Label();
             this.bottomPanel = new System.Windows.Forms.Panel();
-            this.zoomFactorLabel = new System.Windows.Forms.Label();
-            this.stateLabel = new System.Windows.Forms.Label();
             this.centerLabel = new System.Windows.Forms.Label();
+            this.stateLabel = new System.Windows.Forms.Label();
+            this.zoomFactorLabel = new System.Windows.Forms.Label();
+            this.modeSelectComboBox = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.drawingSurface)).BeginInit();
@@ -206,6 +207,7 @@
             this.pointList.Name = "pointList";
             this.pointList.Size = new System.Drawing.Size(119, 536);
             this.pointList.TabIndex = 14;
+            this.pointList.SelectedIndexChanged += new System.EventHandler(this.pointList_SelectedIndexChanged);
             // 
             // tableLayoutPanel2
             // 
@@ -257,14 +259,12 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.label1);
+            this.panel2.Controls.Add(this.modeSelectComboBox);
             this.panel2.Controls.Add(this.label4);
             this.panel2.Controls.Add(this.elevationEntryBox);
             this.panel2.Controls.Add(this.blueprintLabel);
             this.panel2.Controls.Add(this.blueprintComboBox);
-            this.panel2.Controls.Add(this.bowyer);
-            this.panel2.Controls.Add(this.pointsLabel);
-            this.panel2.Controls.Add(this.trianglesLabel);
-            this.panel2.Controls.Add(this.edgesLabel);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel2.Location = new System.Drawing.Point(3, 3);
             this.panel2.Name = "panel2";
@@ -293,20 +293,10 @@
             this.blueprintComboBox.TabIndex = 20;
             this.blueprintComboBox.SelectedIndexChanged += new System.EventHandler(this.blueprintComboBox_SelectedIndexChanged);
             // 
-            // bowyer
-            // 
-            this.bowyer.Location = new System.Drawing.Point(331, 21);
-            this.bowyer.Name = "bowyer";
-            this.bowyer.Size = new System.Drawing.Size(70, 25);
-            this.bowyer.TabIndex = 24;
-            this.bowyer.Text = "Triangulate";
-            this.bowyer.UseVisualStyleBackColor = true;
-            this.bowyer.Click += new System.EventHandler(this.bowyer_Click_3);
-            // 
             // pointsLabel
             // 
             this.pointsLabel.AutoSize = true;
-            this.pointsLabel.Location = new System.Drawing.Point(256, 27);
+            this.pointsLabel.Location = new System.Drawing.Point(989, 8);
             this.pointsLabel.Name = "pointsLabel";
             this.pointsLabel.Size = new System.Drawing.Size(48, 13);
             this.pointsLabel.TabIndex = 21;
@@ -315,7 +305,7 @@
             // trianglesLabel
             // 
             this.trianglesLabel.AutoSize = true;
-            this.trianglesLabel.Location = new System.Drawing.Point(135, 27);
+            this.trianglesLabel.Location = new System.Drawing.Point(868, 8);
             this.trianglesLabel.Name = "trianglesLabel";
             this.trianglesLabel.Size = new System.Drawing.Size(62, 13);
             this.trianglesLabel.TabIndex = 23;
@@ -324,7 +314,7 @@
             // edgesLabel
             // 
             this.edgesLabel.AutoSize = true;
-            this.edgesLabel.Location = new System.Drawing.Point(201, 27);
+            this.edgesLabel.Location = new System.Drawing.Point(934, 8);
             this.edgesLabel.Name = "edgesLabel";
             this.edgesLabel.Size = new System.Drawing.Size(49, 13);
             this.edgesLabel.TabIndex = 22;
@@ -335,20 +325,23 @@
             this.bottomPanel.Controls.Add(this.centerLabel);
             this.bottomPanel.Controls.Add(this.stateLabel);
             this.bottomPanel.Controls.Add(this.zoomFactorLabel);
+            this.bottomPanel.Controls.Add(this.edgesLabel);
+            this.bottomPanel.Controls.Add(this.trianglesLabel);
+            this.bottomPanel.Controls.Add(this.pointsLabel);
             this.bottomPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.bottomPanel.Location = new System.Drawing.Point(3, 608);
             this.bottomPanel.Name = "bottomPanel";
             this.bottomPanel.Size = new System.Drawing.Size(1117, 27);
             this.bottomPanel.TabIndex = 25;
             // 
-            // zoomFactorLabel
+            // centerLabel
             // 
-            this.zoomFactorLabel.AutoSize = true;
-            this.zoomFactorLabel.Location = new System.Drawing.Point(10, 8);
-            this.zoomFactorLabel.Name = "zoomFactorLabel";
-            this.zoomFactorLabel.Size = new System.Drawing.Size(79, 13);
-            this.zoomFactorLabel.TabIndex = 0;
-            this.zoomFactorLabel.Text = "Zoom Factor: 1";
+            this.centerLabel.AutoSize = true;
+            this.centerLabel.Location = new System.Drawing.Point(229, 8);
+            this.centerLabel.Name = "centerLabel";
+            this.centerLabel.Size = new System.Drawing.Size(44, 13);
+            this.centerLabel.TabIndex = 2;
+            this.centerLabel.Text = "Center: ";
             // 
             // stateLabel
             // 
@@ -359,14 +352,35 @@
             this.stateLabel.TabIndex = 1;
             this.stateLabel.Text = "State: Not Dragging";
             // 
-            // centerLabel
+            // zoomFactorLabel
             // 
-            this.centerLabel.AutoSize = true;
-            this.centerLabel.Location = new System.Drawing.Point(229, 8);
-            this.centerLabel.Name = "centerLabel";
-            this.centerLabel.Size = new System.Drawing.Size(44, 13);
-            this.centerLabel.TabIndex = 2;
-            this.centerLabel.Text = "Center: ";
+            this.zoomFactorLabel.AutoSize = true;
+            this.zoomFactorLabel.Location = new System.Drawing.Point(10, 8);
+            this.zoomFactorLabel.Name = "zoomFactorLabel";
+            this.zoomFactorLabel.Size = new System.Drawing.Size(79, 13);
+            this.zoomFactorLabel.TabIndex = 0;
+            this.zoomFactorLabel.Text = "Zoom Factor: 1";
+            // 
+            // modeSelectComboBox
+            // 
+            this.modeSelectComboBox.FormattingEnabled = true;
+            this.modeSelectComboBox.Items.AddRange(new object[] {
+            "Selection",
+            "Entry"});
+            this.modeSelectComboBox.Location = new System.Drawing.Point(149, 24);
+            this.modeSelectComboBox.Name = "modeSelectComboBox";
+            this.modeSelectComboBox.Size = new System.Drawing.Size(121, 21);
+            this.modeSelectComboBox.TabIndex = 26;
+            this.modeSelectComboBox.SelectedIndexChanged += new System.EventHandler(this.modeSelectComboBox_SelectedIndexChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(146, 8);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(90, 13);
+            this.label1.TabIndex = 27;
+            this.label1.Text = "Interaction Mode:";
             // 
             // AgSwift_MainWindow
             // 
@@ -407,7 +421,6 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label blueprintLabel;
         private System.Windows.Forms.ComboBox blueprintComboBox;
-        private System.Windows.Forms.Button bowyer;
         private System.Windows.Forms.Label pointsLabel;
         private System.Windows.Forms.Label trianglesLabel;
         private System.Windows.Forms.Label edgesLabel;
@@ -424,6 +437,8 @@
         private System.Windows.Forms.Label zoomFactorLabel;
         private System.Windows.Forms.Label stateLabel;
         private System.Windows.Forms.Label centerLabel;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox modeSelectComboBox;
     }
 }
 
