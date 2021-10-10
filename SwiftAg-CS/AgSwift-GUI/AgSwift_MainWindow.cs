@@ -430,6 +430,12 @@ namespace AgSwift_GUI
             }
         }
 
+        private void threeDView_Click(object sender, EventArgs e)
+        {
+            OpenGL3Dview view = new OpenGL3Dview();
+            view.Show();
+        }
+
         //Event handler for when the user changes their interaction mode.
         private void modeSelectComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {

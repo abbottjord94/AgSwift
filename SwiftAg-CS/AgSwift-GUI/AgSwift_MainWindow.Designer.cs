@@ -49,17 +49,17 @@
             this.threeDView = new System.Windows.Forms.Button();
             this.calculateCutFill = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.modeSelectComboBox = new System.Windows.Forms.ComboBox();
             this.blueprintLabel = new System.Windows.Forms.Label();
             this.blueprintComboBox = new System.Windows.Forms.ComboBox();
-            this.pointsLabel = new System.Windows.Forms.Label();
-            this.trianglesLabel = new System.Windows.Forms.Label();
-            this.edgesLabel = new System.Windows.Forms.Label();
             this.bottomPanel = new System.Windows.Forms.Panel();
             this.centerLabel = new System.Windows.Forms.Label();
             this.stateLabel = new System.Windows.Forms.Label();
             this.zoomFactorLabel = new System.Windows.Forms.Label();
-            this.modeSelectComboBox = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.edgesLabel = new System.Windows.Forms.Label();
+            this.trianglesLabel = new System.Windows.Forms.Label();
+            this.pointsLabel = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.drawingSurface)).BeginInit();
@@ -246,6 +246,7 @@
             this.threeDView.TabIndex = 1;
             this.threeDView.Text = "3D View";
             this.threeDView.UseVisualStyleBackColor = true;
+            this.threeDView.Click += new System.EventHandler(this.threeDView_Click);
             // 
             // calculateCutFill
             // 
@@ -271,6 +272,27 @@
             this.panel2.Size = new System.Drawing.Size(552, 51);
             this.panel2.TabIndex = 1;
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(146, 8);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(90, 13);
+            this.label1.TabIndex = 27;
+            this.label1.Text = "Interaction Mode:";
+            // 
+            // modeSelectComboBox
+            // 
+            this.modeSelectComboBox.FormattingEnabled = true;
+            this.modeSelectComboBox.Items.AddRange(new object[] {
+            "Selection",
+            "Entry"});
+            this.modeSelectComboBox.Location = new System.Drawing.Point(149, 24);
+            this.modeSelectComboBox.Name = "modeSelectComboBox";
+            this.modeSelectComboBox.Size = new System.Drawing.Size(121, 21);
+            this.modeSelectComboBox.TabIndex = 26;
+            this.modeSelectComboBox.SelectedIndexChanged += new System.EventHandler(this.modeSelectComboBox_SelectedIndexChanged);
+            // 
             // blueprintLabel
             // 
             this.blueprintLabel.AutoSize = true;
@@ -292,33 +314,6 @@
             this.blueprintComboBox.Size = new System.Drawing.Size(121, 21);
             this.blueprintComboBox.TabIndex = 20;
             this.blueprintComboBox.SelectedIndexChanged += new System.EventHandler(this.blueprintComboBox_SelectedIndexChanged);
-            // 
-            // pointsLabel
-            // 
-            this.pointsLabel.AutoSize = true;
-            this.pointsLabel.Location = new System.Drawing.Point(989, 8);
-            this.pointsLabel.Name = "pointsLabel";
-            this.pointsLabel.Size = new System.Drawing.Size(48, 13);
-            this.pointsLabel.TabIndex = 21;
-            this.pointsLabel.Text = "Points: 0";
-            // 
-            // trianglesLabel
-            // 
-            this.trianglesLabel.AutoSize = true;
-            this.trianglesLabel.Location = new System.Drawing.Point(868, 8);
-            this.trianglesLabel.Name = "trianglesLabel";
-            this.trianglesLabel.Size = new System.Drawing.Size(62, 13);
-            this.trianglesLabel.TabIndex = 23;
-            this.trianglesLabel.Text = "Triangles: 0";
-            // 
-            // edgesLabel
-            // 
-            this.edgesLabel.AutoSize = true;
-            this.edgesLabel.Location = new System.Drawing.Point(934, 8);
-            this.edgesLabel.Name = "edgesLabel";
-            this.edgesLabel.Size = new System.Drawing.Size(49, 13);
-            this.edgesLabel.TabIndex = 22;
-            this.edgesLabel.Text = "Edges: 0";
             // 
             // bottomPanel
             // 
@@ -361,26 +356,32 @@
             this.zoomFactorLabel.TabIndex = 0;
             this.zoomFactorLabel.Text = "Zoom Factor: 1";
             // 
-            // modeSelectComboBox
+            // edgesLabel
             // 
-            this.modeSelectComboBox.FormattingEnabled = true;
-            this.modeSelectComboBox.Items.AddRange(new object[] {
-            "Selection",
-            "Entry"});
-            this.modeSelectComboBox.Location = new System.Drawing.Point(149, 24);
-            this.modeSelectComboBox.Name = "modeSelectComboBox";
-            this.modeSelectComboBox.Size = new System.Drawing.Size(121, 21);
-            this.modeSelectComboBox.TabIndex = 26;
-            this.modeSelectComboBox.SelectedIndexChanged += new System.EventHandler(this.modeSelectComboBox_SelectedIndexChanged);
+            this.edgesLabel.AutoSize = true;
+            this.edgesLabel.Location = new System.Drawing.Point(934, 8);
+            this.edgesLabel.Name = "edgesLabel";
+            this.edgesLabel.Size = new System.Drawing.Size(49, 13);
+            this.edgesLabel.TabIndex = 22;
+            this.edgesLabel.Text = "Edges: 0";
             // 
-            // label1
+            // trianglesLabel
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(146, 8);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(90, 13);
-            this.label1.TabIndex = 27;
-            this.label1.Text = "Interaction Mode:";
+            this.trianglesLabel.AutoSize = true;
+            this.trianglesLabel.Location = new System.Drawing.Point(868, 8);
+            this.trianglesLabel.Name = "trianglesLabel";
+            this.trianglesLabel.Size = new System.Drawing.Size(62, 13);
+            this.trianglesLabel.TabIndex = 23;
+            this.trianglesLabel.Text = "Triangles: 0";
+            // 
+            // pointsLabel
+            // 
+            this.pointsLabel.AutoSize = true;
+            this.pointsLabel.Location = new System.Drawing.Point(989, 8);
+            this.pointsLabel.Name = "pointsLabel";
+            this.pointsLabel.Size = new System.Drawing.Size(48, 13);
+            this.pointsLabel.TabIndex = 21;
+            this.pointsLabel.Text = "Points: 0";
             // 
             // AgSwift_MainWindow
             // 
