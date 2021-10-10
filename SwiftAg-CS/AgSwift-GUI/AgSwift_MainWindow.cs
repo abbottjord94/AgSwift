@@ -39,9 +39,13 @@ namespace AgSwift_GUI
         //Pens used to determine the color of items drawn on the drawing surface
         private Pen p = new Pen(Color.Green, 1);
         private Pen selected_pen = new Pen(Color.Red, 1);
+        private Pen yellow_pen = new Pen(Color.Yellow, 1);
 
         //Stores the maximum radius for point selection
         private double selectionRadius = 10;
+
+        //Stores X and Y mouse coordinates for drawing edges (might be a better way to do this)
+        private double mouseX, mouseY;
 
         //Constructor (Runs at the start of the program)
         public AgSwift_MainWindow()
@@ -66,7 +70,6 @@ namespace AgSwift_GUI
         //This runs every time drawingSurface.Refresh() is called.
         private void drawingSurface_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
         {
-            Graph graph;
             Graphics g = e.Graphics;
             if (blueprintComboBox.SelectedItem.ToString() == "Existing" || blueprintComboBox.SelectedItem.ToString() == "Proposed")
             {
@@ -96,10 +99,13 @@ namespace AgSwift_GUI
                         g.DrawLine(p, pt1, pt2);
                     }
                 }
-            }
-            else
-            {
-                graph = existing_graph;
+
+                if (has_prev_point)
+                {
+                    System.Drawing.Point prev_pt1 = new System.Drawing.Point((int)(centerX + prev_point.get_x() * zoomFactor), (int)(centerY + prev_point.get_y() * zoomFactor));
+                    System.Drawing.Point prev_pt2 = new System.Drawing.Point((int)mouseX, (int)mouseY);
+                    g.DrawLine(p, prev_pt1, prev_pt2);
+                }
             }
         }
 
@@ -112,6 +118,46 @@ namespace AgSwift_GUI
             drawingSurface.MouseDown += new System.Windows.Forms.MouseEventHandler(this.drawingSurface_MiddleMouseClickDown);
             drawingSurface.MouseUp += new System.Windows.Forms.MouseEventHandler(this.drawingSurface_MiddleMouseClickUp);
             drawingSurface.MouseMove += new System.Windows.Forms.MouseEventHandler(this.drawingSurface_Pan);
+            drawingSurface.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.drawingSurface_KeyDown);
+        }
+        
+        //Runs when a key is pressed on the drawing surface
+        private void drawingSurface_KeyDown(object sender, PreviewKeyDownEventArgs ke)
+        {
+            if(selectionMode && ke.KeyCode == Keys.Delete)
+            {
+                List<PointClickable> points = new List<PointClickable>();
+                foreach(PointClickable _p in pointClickables[blueprintComboBox.SelectedItem.ToString()])
+                {
+                    if(_p.getSelected())
+                    {
+                        foreach(EdgeClickable e in edgeClickables[blueprintComboBox.SelectedItem.ToString()])
+                        {
+                            if(e.containsPoint(_p))
+                            {
+                                e.setSelected(true);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        points.Add(_p);
+                    }
+                }
+
+                List<EdgeClickable> edges = new List<EdgeClickable>();
+                foreach (EdgeClickable _e in edgeClickables[blueprintComboBox.SelectedItem.ToString()])
+                {
+                    
+                    if(!_e.getSelected())
+                    {
+                        edges.Add(_e);
+                    }
+                }
+                pointClickables[blueprintComboBox.SelectedItem.ToString()] = points;
+                edgeClickables[blueprintComboBox.SelectedItem.ToString()] = edges;
+                drawingSurface.Refresh();
+            }
         }
 
         //Runs when the drawing surface is resized (given by the drawingSurface.Resize event handler)
@@ -139,6 +185,12 @@ namespace AgSwift_GUI
                 prevY = e.Y;
 
                 centerLabel.Text = "Center: (" + centerX.ToString() + ", " + centerY.ToString() + ")";
+                drawingSurface.Refresh();
+            }
+            else
+            {
+                mouseX = e.X;
+                mouseY = e.Y;
                 drawingSurface.Refresh();
             }
         }
@@ -198,7 +250,7 @@ namespace AgSwift_GUI
         //Handles mouse clicks to the drawing surface.
         private void drawingSurface_Click_1(object sender, EventArgs e)
         {
-
+            drawingSurface.Focus();
             //Selection Mode
             if (selectionMode)
             {
@@ -328,6 +380,7 @@ namespace AgSwift_GUI
                         {
                             has_prev_point = false;
                             prev_point = null;
+                            drawingSurface.Refresh();
                         }
                     }
                 }
