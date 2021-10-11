@@ -1,9 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>AgSwift_PdfImporter</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>C:\Users\Jordan\Desktop\fall2021\cs458\project_files\AgSwift\SwiftAg-CS\AgSwift-GUI\bin\Debug\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>

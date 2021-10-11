@@ -24,7 +24,7 @@ namespace AgSwift_PdfImporter
 
                         rasterizer.Open(ms);
 
-                        string outpath = "Page-" + args[1] + ".tiff";
+                        string outpath = Path.GetFileName(args[0]) + "-Page-" + args[1] + ".tiff";
                         int pageNumber = Convert.ToInt32(args[1]);
 
                         Image img = rasterizer.GetPage(dpi, pageNumber);
@@ -42,7 +42,7 @@ namespace AgSwift_PdfImporter
 
         static void print_usage()
         {
-            Console.WriteLine("usage: agswift-pdfimport <path to pdf file> <page number>");
+            Console.WriteLine("usage: AgSwift-PdfImporter <path to pdf file> <page number>");
         }
     }
 }
