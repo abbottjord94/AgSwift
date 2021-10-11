@@ -35,6 +35,7 @@ namespace AgSwift_GUI
 
         Dictionary<string, List<PointClickable>> pointClickables = new Dictionary<string, List<PointClickable>>();
         Dictionary<string, List<EdgeClickable>> edgeClickables = new Dictionary<string, List<EdgeClickable>>();
+        Dictionary<string, List<Image>> images = new Dictionary<string, List<Image>>();
 
         //Pens used to determine the color of items drawn on the drawing surface
         private Pen p = new Pen(Color.Green, 1);
@@ -63,18 +64,19 @@ namespace AgSwift_GUI
             pointClickables["Proposed"] = new List<PointClickable>();
             edgeClickables["Proposed"] = new List<EdgeClickable>();
 
+            images["Existing"] = new List<Image>();
+            images["Proposed"] = new List<Image>();
+
             centerLabel.Text = "Center: (" + centerX.ToString() + ", " + centerY.ToString() + ")";
         }
 
-        //Accessor functions for the graphs, so that the 3D view can access them.
-        public Graph getExistingGraph()
+        //Add image from import form
+        public void addImageFromImportForm(Image _image)
         {
-            return existing_graph;
-        }
-
-        public Graph getProposedGraph()
-        {
-            return proposed_graph;
+            if(!images[blueprintComboBox.SelectedItem.ToString()].Contains(_image))
+            {
+                images[blueprintComboBox.SelectedItem.ToString()].Add(_image);
+            }
         }
 
         //Drawing Surface Paint Method
@@ -84,6 +86,11 @@ namespace AgSwift_GUI
             Graphics g = e.Graphics;
             if (blueprintComboBox.SelectedItem.ToString() == "Existing" || blueprintComboBox.SelectedItem.ToString() == "Proposed")
             {
+                foreach(Image _i in images[blueprintComboBox.SelectedItem.ToString()])
+                {
+                    //g.DrawImage(_i, centerX/zoomFactor, centerY/zoomFactor);
+                    g.DrawImage(_i, new Rectangle(centerX, centerY, (int)(_i.Width * zoomFactor), (int)(_i.Height * zoomFactor)));
+                }
                 foreach (PointClickable _p in pointClickables[blueprintComboBox.SelectedItem.ToString()])
                 {
                     if (_p.getSelected())
@@ -254,7 +261,6 @@ namespace AgSwift_GUI
                     zoomFactor--;
                 }
             }
-            centerLabel.Text = "Center: (" + centerX.ToString() + ", " + centerY.ToString() + ")";
             zoomFactorLabel.Text = "Zoom Factor: " + zoomFactor.ToString();
             drawingSurface.Refresh();
         }
@@ -371,8 +377,7 @@ namespace AgSwift_GUI
                                     edgeClickables[blueprintComboBox.SelectedItem.ToString()].Add(new_edge);
                                     prev_point = new_point;
                                     has_prev_point = true;
-                                } 
-                                else
+                                } else
                                 {
                                     prev_point = new_point;
                                     has_prev_point = true;
@@ -443,10 +448,15 @@ namespace AgSwift_GUI
             }
         }
 
-        private void threeDView_Click(object sender, EventArgs e)
+        private void importPDFToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OpenGL3Dview view = new OpenGL3Dview(this);
-            view.Show();
+            OpenFileDialog fileDialog = new OpenFileDialog();
+            DialogResult result = fileDialog.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                ImportPdfForm importForm = new ImportPdfForm(fileDialog.FileName, this);
+                importForm.Show();
+            }
         }
 
         //Event handler for when the user changes their interaction mode.

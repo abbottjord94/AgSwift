@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AgSwift-PdfImporter": {
+      "commandName": "Project",
+      "commandLineArgs": "rrcp.pdf 2"
+    }
+  }
+}
