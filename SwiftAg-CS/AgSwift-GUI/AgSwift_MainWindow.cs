@@ -89,7 +89,7 @@ namespace AgSwift_GUI
                 foreach(Image _i in images[blueprintComboBox.SelectedItem.ToString()])
                 {
                     //g.DrawImage(_i, centerX/zoomFactor, centerY/zoomFactor);
-                    g.DrawImage(_i, new Rectangle(centerX, centerY, (int)(centerX + _i.Width * zoomFactor), (int)(centerY + _i.Height * zoomFactor)));
+                    g.DrawImage(_i, new Rectangle(centerX, centerY, (int)(_i.Width * zoomFactor), (int)(_i.Height * zoomFactor)));
                 }
                 foreach (PointClickable _p in pointClickables[blueprintComboBox.SelectedItem.ToString()])
                 {
