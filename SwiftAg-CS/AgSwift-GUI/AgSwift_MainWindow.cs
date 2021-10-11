@@ -66,6 +66,17 @@ namespace AgSwift_GUI
             centerLabel.Text = "Center: (" + centerX.ToString() + ", " + centerY.ToString() + ")";
         }
 
+        //Accessor functions for the graphs, so that the 3D view can access them.
+        public Graph getExistingGraph()
+        {
+            return existing_graph;
+        }
+
+        public Graph getProposedGraph()
+        {
+            return proposed_graph;
+        }
+
         //Drawing Surface Paint Method
         //This runs every time drawingSurface.Refresh() is called.
         private void drawingSurface_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
@@ -243,6 +254,7 @@ namespace AgSwift_GUI
                     zoomFactor--;
                 }
             }
+            centerLabel.Text = "Center: (" + centerX.ToString() + ", " + centerY.ToString() + ")";
             zoomFactorLabel.Text = "Zoom Factor: " + zoomFactor.ToString();
             drawingSurface.Refresh();
         }
@@ -359,7 +371,8 @@ namespace AgSwift_GUI
                                     edgeClickables[blueprintComboBox.SelectedItem.ToString()].Add(new_edge);
                                     prev_point = new_point;
                                     has_prev_point = true;
-                                } else
+                                } 
+                                else
                                 {
                                     prev_point = new_point;
                                     has_prev_point = true;
@@ -432,7 +445,7 @@ namespace AgSwift_GUI
 
         private void threeDView_Click(object sender, EventArgs e)
         {
-            OpenGL3Dview view = new OpenGL3Dview();
+            OpenGL3Dview view = new OpenGL3Dview(this);
             view.Show();
         }
 
