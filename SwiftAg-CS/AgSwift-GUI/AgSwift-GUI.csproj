@@ -53,11 +53,20 @@
       <DependentUpon>AgSwift_MainWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="EdgeClickable.cs" />
+    <Compile Include="ImportPdfForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ImportPdfForm.Designer.cs">
+      <DependentUpon>ImportPdfForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="PointClickable.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="AgSwift_MainWindow.resx">
       <DependentUpon>AgSwift_MainWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImportPdfForm.resx">
+      <DependentUpon>ImportPdfForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
