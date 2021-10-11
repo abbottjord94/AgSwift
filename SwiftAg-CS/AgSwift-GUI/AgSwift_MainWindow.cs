@@ -430,6 +430,16 @@ namespace AgSwift_GUI
             }
         }
 
+        private void importPDFToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            DialogResult result = openFileDialog.ShowDialog();
+            if(result == DialogResult.OK)
+            {
+                //Open PDF Import form here
+            }
+        }
+
         //Event handler for when the user changes their interaction mode.
         private void modeSelectComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
