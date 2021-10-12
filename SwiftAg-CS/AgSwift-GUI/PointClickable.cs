@@ -31,6 +31,7 @@ namespace AgSwift_GUI
             if(!connections.Contains(_p))
             {
                 connections.Add(_p);
+                _p.addConnection(this);
             }
         }
 
@@ -39,6 +40,7 @@ namespace AgSwift_GUI
             if (connections.Contains(_p))
             {
                 connections.Remove(_p);
+                _p.removeConnection(this);
             }
         }
 
