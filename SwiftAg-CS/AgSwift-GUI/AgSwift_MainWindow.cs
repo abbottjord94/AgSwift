@@ -8,9 +8,6 @@ namespace AgSwift_GUI
 {
     public partial class AgSwift_MainWindow : Form
     {
-        //Existing and Proposed Graphs
-        private Graph existing_graph, proposed_graph;
-
         //Sets the zoom factor for the drawing surface. Bounded between 1-16
         private int zoomFactor = 1;
 
@@ -33,6 +30,7 @@ namespace AgSwift_GUI
 
         //Lists to store references to pointClickables and edgeClickables that appear on the drawing surface.
 
+        Dictionary<string, Graph> graphs = new Dictionary<string, Graph>();
         Dictionary<string, List<PointClickable>> pointClickables = new Dictionary<string, List<PointClickable>>();
         Dictionary<string, List<EdgeClickable>> edgeClickables = new Dictionary<string, List<EdgeClickable>>();
         Dictionary<string, List<Image>> images = new Dictionary<string, List<Image>>();
@@ -52,11 +50,12 @@ namespace AgSwift_GUI
         public AgSwift_MainWindow()
         {
             InitializeComponent();
-            existing_graph = new Graph();
-            proposed_graph = new Graph();
             centerX = drawingSurface.Width / 2;
             centerY = drawingSurface.Height / 2;
             blueprintComboBox.SelectedIndex = 0;
+
+            graphs["Existing"] = new Graph();
+            graphs["Proposed"] = new Graph();
 
             pointClickables["Existing"] = new List<PointClickable>();
             edgeClickables["Existing"] = new List<EdgeClickable>();
@@ -70,6 +69,16 @@ namespace AgSwift_GUI
             centerLabel.Text = "Center: (" + centerX.ToString() + ", " + centerY.ToString() + ")";
         }
 
+        public Graph getExistingGraph()
+        {
+            return graphs["Existing"];
+        }
+
+        public Graph getProposedGraph()
+        {
+            return graphs["Proposed"];
+        }
+
         //Add image from import form
         public void addImageFromImportForm(Image _image)
         {
@@ -77,6 +86,12 @@ namespace AgSwift_GUI
             {
                 images[blueprintComboBox.SelectedItem.ToString()].Add(_image);
             }
+        }
+
+        private void threeDView_Click(object sender, EventArgs e)
+        {
+            OpenGL3Dview threeDPreview = new OpenGL3Dview(this);
+            threeDPreview.Show();
         }
 
         //Drawing Surface Paint Method
@@ -116,6 +131,20 @@ namespace AgSwift_GUI
                     {
                         g.DrawLine(p, pt1, pt2);
                     }
+                }
+
+                Dictionary<int, Triangle> tris = graphs[blueprintComboBox.SelectedItem.ToString()].getTriangles();
+                foreach(KeyValuePair<int, Triangle> _t in tris)
+                {
+                    Triangle _tri = _t.Value;
+                    System.Drawing.Point pt1 = new System.Drawing.Point((int)(centerX + _tri.get_a().get_x() * zoomFactor), (int)(centerY + _tri.get_a().get_y() * zoomFactor));
+                    System.Drawing.Point pt2 = new System.Drawing.Point((int)(centerX + _tri.get_b().get_x() * zoomFactor), (int)(centerY + _tri.get_b().get_y() * zoomFactor));
+                    System.Drawing.Point pt3 = new System.Drawing.Point((int)(centerX + _tri.get_c().get_x() * zoomFactor), (int)(centerY + _tri.get_c().get_y() * zoomFactor));
+
+                    g.DrawLine(yellow_pen, pt1, pt2);
+                    g.DrawLine(yellow_pen, pt2, pt3);
+                    g.DrawLine(yellow_pen, pt3, pt1);
+
                 }
 
                 if (has_prev_point)
@@ -346,19 +375,6 @@ namespace AgSwift_GUI
                     }
                     else
                     {
-                        Graph graph;
-                        if (blueprintComboBox.SelectedItem.ToString() == "Existing")
-                        {
-                            graph = existing_graph;
-                        }
-                        else if (blueprintComboBox.SelectedItem.ToString() == "Proposed")
-                        {
-                            graph = proposed_graph;
-                        }
-                        else
-                        {
-                            graph = existing_graph;
-                        }
                         MouseEventArgs mouseEvent = (MouseEventArgs)e;
                         if (mouseEvent.Button == MouseButtons.Left)
                         {
@@ -382,12 +398,12 @@ namespace AgSwift_GUI
                                     prev_point = new_point;
                                     has_prev_point = true;
                                 }
-                                graph.addPoint(new_point);
+                                graphs[blueprintComboBox.SelectedItem.ToString()].addPoint(new_point);
                                 drawingSurface.Refresh();
 
-                                pointsLabel.Text = "Points: " + graph.pointCount().ToString();
-                                edgesLabel.Text = "Edges: " + graph.edgeCount().ToString();
-                                trianglesLabel.Text = "Triangles: " + graph.triangleCount().ToString();
+                                pointsLabel.Text = "Points: " + graphs[blueprintComboBox.SelectedItem.ToString()].pointCount().ToString();
+                                edgesLabel.Text = "Edges: " + graphs[blueprintComboBox.SelectedItem.ToString()].edgeCount().ToString();
+                                trianglesLabel.Text = "Triangles: " + graphs[blueprintComboBox.SelectedItem.ToString()].triangleCount().ToString();
                             }
                             catch (Exception ex)
                             {
@@ -412,25 +428,12 @@ namespace AgSwift_GUI
         //Clears the selected graph of all points, edges, and triangles.
         private void clearGraphToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-            Graph graph;
-            if (blueprintComboBox.SelectedItem.ToString() == "Existing")
-            {
-                graph = existing_graph;
-            }
-            else if (blueprintComboBox.SelectedItem.ToString() == "Proposed")
-            {
-                graph = proposed_graph;
-            }
-            else
-            {
-                graph = existing_graph;
-            }
-            graph.clearGraph();
+            graphs[blueprintComboBox.SelectedItem.ToString()].clearGraph();
             drawingSurface.Refresh();
 
-            pointsLabel.Text = "Points: " + graph.pointCount().ToString();
-            edgesLabel.Text = "Edges: " + graph.edgeCount().ToString();
-            trianglesLabel.Text = "Triangles: " + graph.triangleCount().ToString();
+            pointsLabel.Text = "Points: " + graphs[blueprintComboBox.SelectedItem.ToString()].pointCount().ToString();
+            edgesLabel.Text = "Edges: " + graphs[blueprintComboBox.SelectedItem.ToString()].edgeCount().ToString();
+            trianglesLabel.Text = "Triangles: " + graphs[blueprintComboBox.SelectedItem.ToString()].triangleCount().ToString();
         }
 
         //Event handler for when a pointList item is selected
@@ -492,9 +495,9 @@ namespace AgSwift_GUI
         {
             String msg;
             double cut, fill;
-            existing_graph.bowyerWatsonTriangulation();
-            proposed_graph.bowyerWatsonTriangulation();
-            MeshComparator mc = new MeshComparator(existing_graph, proposed_graph);
+            graphs["Existing"].bowyerWatsonTriangulation();
+            graphs["Proposed"].bowyerWatsonTriangulation();
+            MeshComparator mc = new MeshComparator(graphs["Existing"], graphs["Proposed"]);
             mc.CalculateCutFill();
             if(mc.getError())
             {

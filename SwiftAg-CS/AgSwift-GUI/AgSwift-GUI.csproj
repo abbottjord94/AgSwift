@@ -59,6 +59,10 @@
       <DependentUpon>AgSwift_MainWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="EdgeClickable.cs" />
+    <Compile Include="ImportPdfForm.cs" />
+    <Compile Include="ImportPdfForm.Designer.cs">
+      <DependentUpon>ImportPdfForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="OpenGL3Dview.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -70,6 +74,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="AgSwift_MainWindow.resx">
       <DependentUpon>AgSwift_MainWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImportPdfForm.resx">
+      <DependentUpon>ImportPdfForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="OpenGL3Dview.resx">
       <DependentUpon>OpenGL3Dview.cs</DependentUpon>
