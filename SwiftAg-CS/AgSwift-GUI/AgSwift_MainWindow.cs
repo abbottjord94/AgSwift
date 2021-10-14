@@ -118,6 +118,20 @@ namespace AgSwift_GUI
                     }
                 }
 
+                //For debugging only. Remove before submitting pull request
+                Dictionary<int, Triangle> tris = existing_graph.getTriangles();
+                foreach(KeyValuePair<int, Triangle> _t in tris)
+                {
+                    Triangle t = _t.Value;
+                    System.Drawing.Point pt1 = new System.Drawing.Point((int)(centerX + t.get_a().get_x() * zoomFactor), (int)(centerY + t.get_a().get_y() * zoomFactor));
+                    System.Drawing.Point pt2 = new System.Drawing.Point((int)(centerX + t.get_b().get_x() * zoomFactor), (int)(centerY + t.get_b().get_y() * zoomFactor));
+                    System.Drawing.Point pt3 = new System.Drawing.Point((int)(centerX + t.get_c().get_x() * zoomFactor), (int)(centerY + t.get_c().get_y() * zoomFactor));
+
+                    g.DrawLine(yellow_pen, pt1, pt2);
+                    g.DrawLine(yellow_pen, pt2, pt3);
+                    g.DrawLine(yellow_pen, pt3, pt1);
+                }
+
                 if (has_prev_point)
                 {
                     System.Drawing.Point prev_pt1 = new System.Drawing.Point((int)(centerX + prev_point.get_x() * zoomFactor), (int)(centerY + prev_point.get_y() * zoomFactor));

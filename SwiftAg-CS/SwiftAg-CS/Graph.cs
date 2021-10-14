@@ -342,18 +342,12 @@ namespace SwiftAg_CS
             Triangle superTriangle = new Triangle(supTriPoint_a, supTriPoint_b, supTriPoint_c);
             addTriangle(superTriangle);
 
-
-            //SPECULATION ON OBSERVATION
-            //When we make this supertriangle, we are creating points that don't exist on the graph.
-            //I suspect this is occurring else where
-            //We must add the points to the graph, and ensure all connections to the points of the supertriangle are stored in a single object
-
-            //Another Observation:
-                // It may be necessary to force the triangle edges to be clockwise or counter clockwise, as that appears in many other implementations of Bowyer-Watson. I'll proceed for now without changing the triangles.
+            points.Clear(); //lmao
 
             foreach (Point p in sorted_points)
             {
                 if (p == supTriPoint_a || p == supTriPoint_b || p == supTriPoint_c) continue;
+                addPoint(p); //lmao
                 List<Triangle> badTriangles = new List<Triangle>();
                 foreach (KeyValuePair<int, Triangle> triangleHashPair in triangles)
                 {
