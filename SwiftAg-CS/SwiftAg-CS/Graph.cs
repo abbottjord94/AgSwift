@@ -76,15 +76,15 @@ namespace SwiftAg_CS
                     min_y = Double.NaN;
                     min_x = 0;
                     min_point = _p;
-                    if (_p.get_y() < min_y || Double.IsNaN(min_y))
+                    if (_p.get_elevation() < min_y || Double.IsNaN(min_y))
                     {
                         min_y = _p.get_y();
                         min_x = _p.get_x();
                         min_point = _p;
                     }
-                    else if(_p.get_y() == min_y)
+                    else if(_p.get_elevation() == min_y)
                     {
-                        if(min_x > _p.get_x())
+                        if(min_x > _p.get_x() || min_x == _p.get_x())
                         {
                             min_y = _p.get_y();
                             min_x = _p.get_x();
@@ -317,7 +317,11 @@ namespace SwiftAg_CS
         {
             triangles.Clear();
             edges.Clear();
-            selectionSortPoints();
+            //selectionSortPoints();
+            foreach(KeyValuePair<int, Point> pts in points)
+            {
+                sorted_points.Add(pts.Value);
+            }
             //Calculate maximum difference between x and y coordinates in point set
             double dmax;
             double dx = xmax - xmin;
