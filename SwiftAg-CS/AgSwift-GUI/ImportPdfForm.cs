@@ -93,6 +93,7 @@ namespace AgSwift_GUI
             }
             else
             {
+                
                 pageNumber -= 1;
                 previewImage = getImage();
                 imagePreviewBox.BackgroundImageLayout = ImageLayout.Stretch;

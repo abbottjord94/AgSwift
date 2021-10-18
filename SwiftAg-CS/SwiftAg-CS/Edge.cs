@@ -90,6 +90,21 @@ namespace SwiftAg_CS
             else return null;
         }
 
+        //Source: https://stackoverflow.com/questions/30559799/function-for-finding-the-distance-between-a-point-and-an-edge-in-java
+        public double distanceFromEdge(Point _p)
+        {
+            double A = _p.get_x() - a.get_x();
+            double B = _p.get_y() - a.get_y();
+            double C = b.get_x() - a.get_x();
+            double D = b.get_y() - a.get_y();
+            double E = -D;
+            double F = C;
+
+            double dot = (A * E) + (B * F);
+            double len_sq = (E * E) + (F * F);
+            return (dot * dot) / len_sq;
+        }
+
         public static bool operator==(Edge _a, Edge _b)
         {
             if((_a.get_a() == _b.get_a()) && (_a.get_b() == _b.get_b()))
