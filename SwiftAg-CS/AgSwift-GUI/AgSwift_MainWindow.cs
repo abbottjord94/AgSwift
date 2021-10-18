@@ -219,7 +219,7 @@ namespace AgSwift_GUI
                 prevX = e.X;
                 prevY = e.Y;
 
-                centerLabel.Text = "Center: (" + centerX.ToString() + ", " + centerY.ToString() + ")";
+                centerLabel.Text = "Center: (" + (centerX / zoomFactor).ToString() + ", " + (centerY / zoomFactor).ToString() + ")";
                 drawingSurface.Refresh();
             }
             else
@@ -553,7 +553,7 @@ namespace AgSwift_GUI
                         {
                             pointClickables[blueprintComboBox.SelectedItem.ToString()].Add(b);
                         }
-                        if (!edgeClickables[blueprintComboBox.SelectedItem.ToString()].Contains(ab) && !edgeClickables[blueprintComboBox.SelectedItem.ToString()].Contains(ab))
+                        if (!edgeClickables[blueprintComboBox.SelectedItem.ToString()].Contains(ab) && !edgeClickables[blueprintComboBox.SelectedItem.ToString()].Contains(ab_dup))
                         {
                             edgeClickables[blueprintComboBox.SelectedItem.ToString()].Add(ab);
                         }
@@ -600,8 +600,18 @@ namespace AgSwift_GUI
         {
             String msg;
             double cut, fill;
-            existing_graph.bowyerWatsonTriangulation();
-            proposed_graph.bowyerWatsonTriangulation();
+            existing_graph.clearGraph();
+            proposed_graph.clearGraph();
+            foreach(PointClickable _p in pointClickables["Existing"])
+            {
+                existing_graph.addPoint(_p);
+            }
+            foreach (PointClickable _p in pointClickables["Proposed"])
+            {
+                proposed_graph.addPoint(_p);
+            }
+            existing_graph.createTriangulation();
+            proposed_graph.createTriangulation();
             MeshComparator mc = new MeshComparator(existing_graph, proposed_graph);
             mc.CalculateCutFill();
             if(mc.getError())

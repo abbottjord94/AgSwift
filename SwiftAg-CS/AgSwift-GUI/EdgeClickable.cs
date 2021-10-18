@@ -42,7 +42,7 @@ namespace AgSwift_GUI
         }
 
         //Source: https://stackoverflow.com/questions/30559799/function-for-finding-the-distance-between-a-point-and-an-edge-in-java
-        public double distanceFromEdge(Point _p)
+/*        public double distanceFromEdge(Point _p)
         {
             double a = _p.get_x() - _pc_a.get_x();
             double b = _p.get_y() - _pc_a.get_y();
@@ -54,6 +54,6 @@ namespace AgSwift_GUI
             double dot = (a * e) + (b * f);
             double len_sq = (e * e) + (f * f);
             return (dot * dot) / len_sq;
-        }
+        }*/
     }
 }

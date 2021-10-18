@@ -313,6 +313,108 @@ namespace SwiftAg_CS
 
         }
 
+        public List<Point> sortByDistance(List<Point> points_to_sort, Point _p)
+        {
+            List<Point> return_list = new List<Point>();
+
+            while (points_to_sort.Count > 1)
+            {
+                Point smallest_point = new Point(0, 0, 0);
+                foreach (Point p in points_to_sort)
+                {
+                    double min_distance = Double.NaN;
+                    double d = p.distance(_p);
+
+                    if (_p != p && (Double.IsNaN(min_distance) || d < min_distance))
+                    {
+                        smallest_point = p;
+                        min_distance = d;
+                    }
+                }
+                return_list.Add(smallest_point);
+                points_to_sort.Remove(smallest_point);
+            }
+
+            return return_list;
+        }
+
+        public void sweephullTriangulation()
+        {
+            if (pointCount() >= 3) {
+                List<Point> pointList = new List<Point>();
+                foreach(KeyValuePair<int, Point> pt in points)
+                {
+                    pointList.Add(pt.Value);
+                }
+                //Select seed point x_0 and sort points according to distance
+                List<Point> radially_sorted_points = sortByDistance(pointList, pointList[0]);
+                Point x_i = radially_sorted_points[0];
+                
+                //Find point x_j closest to x_i
+                Point x_j = radially_sorted_points[1];
+
+                //Find the point x_k that creates the smallest circumcircle of the triangle made of x_i, x_j, and x_k.
+                //And record the center of the circumcircle
+                Point circumcircle_center = new Point(0,0,0);
+                Point x_k = radially_sorted_points[2];
+                Triangle seed_tri = new Triangle(x_i, x_j, x_k);
+                double min_cc_radius = Double.NaN;
+                for(int i=2; i<pointList.Count; i++)
+                {
+                    Point test_point = pointList[i];
+                    Triangle test_tri = new Triangle(x_i, x_j, test_point);
+                    Tuple<Point, double> cc = test_tri.circumcircle();
+                    if(Double.IsNaN(min_cc_radius) || min_cc_radius > cc.Item2)
+                    {
+                        min_cc_radius = cc.Item2;
+                        circumcircle_center = cc.Item1;
+                        x_k = pointList[i];
+                        seed_tri = test_tri;
+                    }
+                }
+
+                //Resort the remaining points according to the distance from the recorded circumcircle center
+                radially_sorted_points.Remove(x_i);
+                radially_sorted_points.Remove(x_j);
+                radially_sorted_points.Remove(x_k);
+
+                radially_sorted_points = sortByDistance(radially_sorted_points, circumcircle_center);
+
+                points.Clear();
+                triangles.Clear();
+
+                addTriangle(seed_tri);
+
+                //Sequentially add the remaining points to the propagating 2D triangulation
+                //A triangle can be created by finding the nearest existing edge, and creating a triangle between that edge and the new point.
+
+                foreach(Point new_point in radially_sorted_points)
+                {
+                    Dictionary<int, Triangle> tris = getTriangles();
+                    Edge nearest_edge = new Edge(x_i, x_k);
+                    foreach(KeyValuePair<int, Triangle> t in tris)
+                    {
+                        List<Edge> tri_edges = t.Value.getEdges();
+                        double min_distance = Double.NaN;
+                        foreach(Edge t_edge in tri_edges)
+                        {
+                            double d = t_edge.distanceFromEdge(new_point);
+                            if(d < min_distance || Double.IsNaN(min_distance))
+                            {
+                                min_distance = d;
+                                nearest_edge = t_edge;
+                            } 
+                        } 
+                    }
+                    Triangle new_tri = new Triangle(new_point, nearest_edge);
+                    addTriangle(new_tri);
+                }
+
+                //Once the triangulation is created, adjacent triangles should be flipped to ensure that the triangulation is Delaunay.
+
+            }
+        }
+
         public void bowyerWatsonTriangulation()
         {
             triangles.Clear();
@@ -350,7 +452,7 @@ namespace SwiftAg_CS
 
             foreach (Point p in sorted_points)
             {
-                if (p == supTriPoint_a || p == supTriPoint_b || p == supTriPoint_c) continue;
+                //if (p == supTriPoint_a || p == supTriPoint_b || p == supTriPoint_c) continue;
                 addPoint(p); //lmao
                 List<Triangle> badTriangles = new List<Triangle>();
                 foreach (KeyValuePair<int, Triangle> triangleHashPair in triangles)
@@ -396,6 +498,29 @@ namespace SwiftAg_CS
             }
 
             removeTriangle(superTriangle);
+        }
+
+        public void createTriangulation()
+        {
+            triangles.Clear();
+            List<Vertex> vertices = new List<Vertex>();
+            List<Point> graph_points = new List<Point>();
+            List<Triad> triads = new List<Triad>();
+            foreach(KeyValuePair<int, Point> pts in points)
+            {
+                Point pt = pts.Value;
+                graph_points.Add(pt);
+                Vertex new_vertex = new Vertex(pt.get_x(), pt.get_y());
+                vertices.Add(new_vertex);
+            }
+
+            Triangulator triangulator = new Triangulator();
+            triads = triangulator.Triangulation(vertices, false);
+            foreach(Triad t in triads)
+            {
+                Triangle new_tri = new Triangle(graph_points[t.a], graph_points[t.b], graph_points[t.c]);
+                addTriangle(new_tri);
+            }
         }
 
         private void addEdgesOfTriangle(Triangle _t)
