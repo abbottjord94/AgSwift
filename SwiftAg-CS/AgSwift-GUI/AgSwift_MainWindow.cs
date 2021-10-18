@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text;
+using System.IO;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
@@ -10,7 +12,7 @@ namespace AgSwift_GUI
     {
         //Existing and Proposed Graphs
         private Graph existing_graph, proposed_graph;
-
+        
         //Sets the zoom factor for the drawing surface. Bounded between 1-16
         private int zoomFactor = 1;
 
@@ -32,7 +34,6 @@ namespace AgSwift_GUI
         private bool has_prev_point = false;
 
         //Lists to store references to pointClickables and edgeClickables that appear on the drawing surface.
-
         Dictionary<string, List<PointClickable>> pointClickables = new Dictionary<string, List<PointClickable>>();
         Dictionary<string, List<EdgeClickable>> edgeClickables = new Dictionary<string, List<EdgeClickable>>();
         Dictionary<string, List<Image>> images = new Dictionary<string, List<Image>>();
@@ -41,7 +42,7 @@ namespace AgSwift_GUI
         private Pen p = new Pen(Color.Green, 1);
         private Pen selected_pen = new Pen(Color.Red, 1);
         private Pen yellow_pen = new Pen(Color.Yellow, 1);
-
+        
         //Stores the maximum radius for point selection
         private double selectionRadius = 10;
 
@@ -88,7 +89,6 @@ namespace AgSwift_GUI
             {
                 foreach(Image _i in images[blueprintComboBox.SelectedItem.ToString()])
                 {
-                    //g.DrawImage(_i, centerX/zoomFactor, centerY/zoomFactor);
                     g.DrawImage(_i, new Rectangle(centerX, centerY, (int)(_i.Width * zoomFactor), (int)(_i.Height * zoomFactor)));
                 }
                 foreach (PointClickable _p in pointClickables[blueprintComboBox.SelectedItem.ToString()])
@@ -116,6 +116,20 @@ namespace AgSwift_GUI
                     {
                         g.DrawLine(p, pt1, pt2);
                     }
+                }
+
+                //For debugging only. Remove before submitting pull request
+                Dictionary<int, Triangle> tris = existing_graph.getTriangles();
+                foreach(KeyValuePair<int, Triangle> _t in tris)
+                {
+                    Triangle t = _t.Value;
+                    System.Drawing.Point pt1 = new System.Drawing.Point((int)(centerX + t.get_a().get_x() * zoomFactor), (int)(centerY + t.get_a().get_y() * zoomFactor));
+                    System.Drawing.Point pt2 = new System.Drawing.Point((int)(centerX + t.get_b().get_x() * zoomFactor), (int)(centerY + t.get_b().get_y() * zoomFactor));
+                    System.Drawing.Point pt3 = new System.Drawing.Point((int)(centerX + t.get_c().get_x() * zoomFactor), (int)(centerY + t.get_c().get_y() * zoomFactor));
+
+                    g.DrawLine(yellow_pen, pt1, pt2);
+                    g.DrawLine(yellow_pen, pt2, pt3);
+                    g.DrawLine(yellow_pen, pt3, pt1);
                 }
 
                 if (has_prev_point)
@@ -202,7 +216,7 @@ namespace AgSwift_GUI
                 prevX = e.X;
                 prevY = e.Y;
 
-                centerLabel.Text = "Center: (" + centerX.ToString() + ", " + centerY.ToString() + ")";
+                centerLabel.Text = "Center: (" + (centerX / zoomFactor).ToString() + ", " + (centerY / zoomFactor).ToString() + ")";
                 drawingSurface.Refresh();
             }
             else
@@ -426,6 +440,8 @@ namespace AgSwift_GUI
                 graph = existing_graph;
             }
             graph.clearGraph();
+            pointClickables[blueprintComboBox.SelectedItem.ToString()].Clear();
+            edgeClickables[blueprintComboBox.SelectedItem.ToString()].Clear();
             drawingSurface.Refresh();
 
             pointsLabel.Text = "Points: " + graph.pointCount().ToString();
@@ -456,6 +472,97 @@ namespace AgSwift_GUI
             {
                 ImportPdfForm importForm = new ImportPdfForm(fileDialog.FileName, this);
                 importForm.Show();
+            }
+        }
+
+        private void saveProjectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string filename;
+            FileStream fs;
+            SaveFileDialog dialog = new SaveFileDialog();
+            DialogResult result = dialog.ShowDialog();
+            
+            if(result == DialogResult.OK)
+            {
+                filename = Path.GetFullPath(dialog.FileName);
+                fs = File.Open(filename, FileMode.OpenOrCreate);
+                foreach(EdgeClickable _e in edgeClickables[blueprintComboBox.SelectedItem.ToString()])
+                {
+                    string x1 = _e.get_a().get_x().ToString();
+                    string x2 = _e.get_b().get_x().ToString();
+                    string e1 = _e.get_a().get_elevation().ToString();
+                    string y1 = _e.get_a().get_y().ToString();
+                    string y2 = _e.get_b().get_y().ToString();
+                    string e2 = _e.get_b().get_elevation().ToString();
+
+                    string edge_str = x1 + "," + y1 + "," + e1 + "," + x2 + "," + y2 + "," + e2 + "\n";
+                    byte[] edge_obj = Encoding.UTF8.GetBytes(edge_str);
+                    fs.Write(edge_obj, 0, edge_obj.Length);
+                }
+                fs.Close();
+            }
+        }
+
+        private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string filename;
+            byte[] file_contents;
+            string file_string;
+            string[] file_string_array;
+            FileStream fs;
+            OpenFileDialog dialog = new OpenFileDialog();
+            DialogResult result = dialog.ShowDialog();
+
+            if(result == DialogResult.OK)
+            {
+                try
+                {
+                    filename = Path.GetFullPath(dialog.FileName);
+                    fs = File.Open(filename, FileMode.Open);
+                    file_contents = new byte[fs.Length - 1];
+                    fs.Read(file_contents, 0, (int)fs.Length - 1);
+                    file_string = Encoding.UTF8.GetString(file_contents);
+                    file_string_array = file_string.Split('\n');
+
+                    pointClickables[blueprintComboBox.SelectedItem.ToString()].Clear();
+                    edgeClickables[blueprintComboBox.SelectedItem.ToString()].Clear();
+
+                    foreach(string s in file_string_array)
+                    {
+                        string[] line = s.Split(',');
+                        double x1 = Double.Parse(line[0]);
+                        double y1 = Double.Parse(line[1]);
+                        double e1 = Double.Parse(line[2]);
+
+                        double x2 = Double.Parse(line[3]);
+                        double y2 = Double.Parse(line[4]);
+                        double e2 = Double.Parse(line[5]);
+
+                        PointClickable a = new PointClickable(x1, y1, e1);
+                        PointClickable b = new PointClickable(x2, y2, e2);
+
+                        EdgeClickable ab = new EdgeClickable(a, b);
+                        EdgeClickable ab_dup = new EdgeClickable(b, a);
+
+                        if(!pointClickables[blueprintComboBox.SelectedItem.ToString()].Contains(a))
+                        {
+                            pointClickables[blueprintComboBox.SelectedItem.ToString()].Add(a);
+                        }
+                        if (!pointClickables[blueprintComboBox.SelectedItem.ToString()].Contains(b))
+                        {
+                            pointClickables[blueprintComboBox.SelectedItem.ToString()].Add(b);
+                        }
+                        if (!edgeClickables[blueprintComboBox.SelectedItem.ToString()].Contains(ab) && !edgeClickables[blueprintComboBox.SelectedItem.ToString()].Contains(ab_dup))
+                        {
+                            edgeClickables[blueprintComboBox.SelectedItem.ToString()].Add(ab);
+                        }
+                    }
+                    
+                }
+                catch(Exception _e)
+                {
+                    MessageBox.Show(_e.Message);
+                }
             }
         }
 
@@ -492,8 +599,18 @@ namespace AgSwift_GUI
         {
             String msg;
             double cut, fill;
-            existing_graph.bowyerWatsonTriangulation();
-            proposed_graph.bowyerWatsonTriangulation();
+            existing_graph.clearGraph();
+            proposed_graph.clearGraph();
+            foreach(PointClickable _p in pointClickables["Existing"])
+            {
+                existing_graph.addPoint(_p);
+            }
+            foreach (PointClickable _p in pointClickables["Proposed"])
+            {
+                proposed_graph.addPoint(_p);
+            }
+            existing_graph.createTriangulation();
+            proposed_graph.createTriangulation();
             MeshComparator mc = new MeshComparator(existing_graph, proposed_graph);
             mc.CalculateCutFill();
             if(mc.getError())
