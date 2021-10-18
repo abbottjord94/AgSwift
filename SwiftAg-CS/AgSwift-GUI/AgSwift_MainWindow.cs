@@ -16,6 +16,9 @@ namespace AgSwift_GUI
         //Determines whether the mouse is being dragged
         private bool draggingState = false;
 
+        //Determines whether or not an image is being dragged by the mouse
+        private bool imageDraggingState = false;
+
         //Booleans for the entry and selection modes. These are set by the "Interaction Mode" combo box at the top
         private bool selectionMode = false;
         private bool entryMode = false;
@@ -40,6 +43,7 @@ namespace AgSwift_GUI
         private Pen p = new Pen(Color.Green, 1);
         private Pen selected_pen = new Pen(Color.Red, 1);
         private Pen yellow_pen = new Pen(Color.Yellow, 1);
+        private Pen blue_pen = new Pen(Color.Blue, 1);
 
         //Stores the maximum radius for point selection
         private double selectionRadius = 10;
@@ -49,6 +53,11 @@ namespace AgSwift_GUI
 
         //Stores the currently-selected image
         private ImageClickable selected_image = null;
+
+        //Booleans for layer selection
+        private bool showExisting;
+        private bool showProposed;
+        private bool showImages;
 
         //Constructor (Runs at the start of the program)
         public AgSwift_MainWindow()
@@ -104,34 +113,68 @@ namespace AgSwift_GUI
             Graphics g = e.Graphics;
             if (blueprintComboBox.SelectedItem.ToString() == "Existing" || blueprintComboBox.SelectedItem.ToString() == "Proposed")
             {
-                foreach(ImageClickable _i in images[blueprintComboBox.SelectedItem.ToString()])
+                if (showImages)
                 {
-                    g.DrawImage(_i.getImage(), new Rectangle(centerX, centerY, (int)(_i.getImage().Width * zoomFactor), (int)(_i.getImage().Height * zoomFactor)));
-                }
-                foreach (PointClickable _p in pointClickables[blueprintComboBox.SelectedItem.ToString()])
-                {
-                    if (_p.getSelected())
+                    foreach (ImageClickable _i in images[blueprintComboBox.SelectedItem.ToString()])
                     {
-
-                        g.DrawEllipse(selected_pen, new Rectangle((int)(centerX + _p.get_x() * zoomFactor) - 3, (int)(centerY + _p.get_y() * zoomFactor) - 3, 6, 6));
-                    }
-                    else
-                    {
-                        g.DrawEllipse(p, new Rectangle((int)(centerX + _p.get_x() * zoomFactor) - 1, (int)(centerY + _p.get_y() * zoomFactor) - 1, 3, 3));
+                        SwiftAg_CS.Point image_point = _i.getTopLeftCorner();
+                        g.DrawImage(_i.getImage(), new Rectangle(centerX + (int)image_point.get_x(), centerY + (int)image_point.get_y(), (int)(_i.getImage().Width * zoomFactor), (int)(_i.getImage().Height * zoomFactor)));
                     }
                 }
-
-                foreach (EdgeClickable _e in edgeClickables[blueprintComboBox.SelectedItem.ToString()])
+                if (showExisting)
                 {
-                    System.Drawing.Point pt1 = new System.Drawing.Point((int)(centerX + _e.get_a().get_x() * zoomFactor), (int)(centerY + _e.get_a().get_y() * zoomFactor));
-                    System.Drawing.Point pt2 = new System.Drawing.Point((int)(centerX + _e.get_b().get_x() * zoomFactor), (int)(centerY + _e.get_b().get_y() * zoomFactor));
-                    if (_e.getSelected())
+                    foreach (PointClickable _p in pointClickables["Existing"])
                     {
-                        g.DrawLine(selected_pen, pt1, pt2);
+                        if (_p.getSelected())
+                        {
+
+                            g.DrawEllipse(selected_pen, new Rectangle((int)(centerX + _p.get_x() * zoomFactor) - 3, (int)(centerY + _p.get_y() * zoomFactor) - 3, 6, 6));
+                        }
+                        else
+                        {
+                            g.DrawEllipse(p, new Rectangle((int)(centerX + _p.get_x() * zoomFactor) - 1, (int)(centerY + _p.get_y() * zoomFactor) - 1, 3, 3));
+                        }
                     }
-                    else
+                    foreach (EdgeClickable _e in edgeClickables["Existing"])
                     {
-                        g.DrawLine(p, pt1, pt2);
+                        System.Drawing.Point pt1 = new System.Drawing.Point((int)(centerX + _e.get_a().get_x() * zoomFactor), (int)(centerY + _e.get_a().get_y() * zoomFactor));
+                        System.Drawing.Point pt2 = new System.Drawing.Point((int)(centerX + _e.get_b().get_x() * zoomFactor), (int)(centerY + _e.get_b().get_y() * zoomFactor));
+                        if (_e.getSelected())
+                        {
+                            g.DrawLine(selected_pen, pt1, pt2);
+                        }
+                        else
+                        {
+                            g.DrawLine(p, pt1, pt2);
+                        }
+                    }
+                }
+                if (showProposed)
+                {
+                    foreach (PointClickable _p in pointClickables["Proposed"])
+                    {
+                        if (_p.getSelected())
+                        {
+
+                            g.DrawEllipse(selected_pen, new Rectangle((int)(centerX + _p.get_x() * zoomFactor) - 3, (int)(centerY + _p.get_y() * zoomFactor) - 3, 6, 6));
+                        }
+                        else
+                        {
+                            g.DrawEllipse(blue_pen, new Rectangle((int)(centerX + _p.get_x() * zoomFactor) - 1, (int)(centerY + _p.get_y() * zoomFactor) - 1, 3, 3));
+                        }
+                    }
+                    foreach (EdgeClickable _e in edgeClickables["Proposed"])
+                    {
+                        System.Drawing.Point pt1 = new System.Drawing.Point((int)(centerX + _e.get_a().get_x() * zoomFactor), (int)(centerY + _e.get_a().get_y() * zoomFactor));
+                        System.Drawing.Point pt2 = new System.Drawing.Point((int)(centerX + _e.get_b().get_x() * zoomFactor), (int)(centerY + _e.get_b().get_y() * zoomFactor));
+                        if (_e.getSelected())
+                        {
+                            g.DrawLine(selected_pen, pt1, pt2);
+                        }
+                        else
+                        {
+                            g.DrawLine(blue_pen, pt1, pt2);
+                        }
                     }
                 }
 
@@ -238,9 +281,26 @@ namespace AgSwift_GUI
             }
             else
             {
-                mouseX = e.X;
-                mouseY = e.Y;
-                drawingSurface.Refresh();
+                if (selected_image != null && imageDraggingState)
+                {
+                    SwiftAg_CS.Point current_image_point = selected_image.getTopLeftCorner();
+                    int dx = (prevX - e.X);
+                    int dy = (prevY - e.Y);
+
+                    SwiftAg_CS.Point new_image_point = new SwiftAg_CS.Point(current_image_point.get_x() - dx, current_image_point.get_y() - dy, 0);
+
+                    selected_image.setTopLeftCorner(new_image_point);
+
+                    prevX = e.X;
+                    prevY = e.Y;
+
+                    drawingSurface.Refresh();
+                }
+                else {
+                    mouseX = e.X;
+                    mouseY = e.Y;
+                    drawingSurface.Refresh();
+                }
             }
         }
 
@@ -254,6 +314,10 @@ namespace AgSwift_GUI
                 prevX = e.X;
                 prevY = e.Y;
             }
+            else if(e.Button == MouseButtons.Left)
+            {
+                imageDraggingState = true;
+            }
         }
 
         //Ensures that the draggingState is set to false when the user stops holding the middle mouse button
@@ -263,6 +327,10 @@ namespace AgSwift_GUI
             {
                 stateLabel.Text = "State: Not Dragging";
                 draggingState = false;
+            }
+            else if (e.Button == MouseButtons.Left)
+            {
+                imageDraggingState = false;
             }
 
         }
@@ -596,11 +664,60 @@ namespace AgSwift_GUI
             }
         }
 
+        private void showExistingCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if(showExistingCheckBox.Checked)
+            {
+                showExisting = true;
+            }
+            else
+            {
+                showExisting = false;
+            }
+            drawingSurface.Refresh();
+        }
+
+        private void showProposedCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (showProposedCheckBox.Checked)
+            {
+                showProposed = true;
+            }
+            else
+            {
+                showProposed = false;
+            }
+            drawingSurface.Refresh();
+        }
+
+        private void showImagesCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            showImages = showImagesCheckBox.Checked;
+            drawingSurface.Refresh();
+        }
+
         //Refreshes the drawing surface when the user changes the blueprint they're working on
         private void blueprintComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             prev_point = null;
             has_prev_point = false;
+
+            if(blueprintComboBox.SelectedItem.ToString() == "Exising")
+            {
+                showExisting = true;
+                showProposed = false;
+
+                showExistingCheckBox.Checked = true;
+                showProposedCheckBox.Checked = false;
+            }
+            if (blueprintComboBox.SelectedItem.ToString() == "Proposed")
+            {
+                showExisting = false;
+                showProposed = true;
+
+                showExistingCheckBox.Checked = false;
+                showProposedCheckBox.Checked = true;
+            }
             drawingSurface.Refresh();
         }
 
@@ -609,6 +726,17 @@ namespace AgSwift_GUI
         {
             String msg;
             double cut, fill;
+
+            foreach(PointClickable pc in pointClickables["Existing"])
+            {
+                graphs["Existing"].addPoint(pc);
+            }
+
+            foreach (PointClickable pc in pointClickables["Proposed"])
+            {
+                graphs["Proposed"].addPoint(pc);
+            }
+
             graphs["Existing"].createTriangulation();
             graphs["Proposed"].createTriangulation();
             MeshComparator mc = new MeshComparator(graphs["Existing"], graphs["Proposed"]);

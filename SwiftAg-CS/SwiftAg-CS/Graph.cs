@@ -6,7 +6,6 @@ namespace SwiftAg_CS
     public class Graph
     {
         private Dictionary<int, Point> points;
-
         private Dictionary<int, Edge> edges;
         private Dictionary<int, Triangle> triangles;
 

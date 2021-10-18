@@ -22,5 +22,10 @@ namespace AgSwift_GUI
         {
             return topLeftCorner;
         }
+
+        public void setTopLeftCorner(SwiftAg_CS.Point _point)
+        {
+            topLeftCorner = _point;
+        }
     }
 }
