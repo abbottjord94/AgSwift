@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using System.Text.Json;
 using System.IO;
 using System.Drawing;
 using System.Windows.Forms;
@@ -35,7 +34,6 @@ namespace AgSwift_GUI
         private bool has_prev_point = false;
 
         //Lists to store references to pointClickables and edgeClickables that appear on the drawing surface.
-
         Dictionary<string, List<PointClickable>> pointClickables = new Dictionary<string, List<PointClickable>>();
         Dictionary<string, List<EdgeClickable>> edgeClickables = new Dictionary<string, List<EdgeClickable>>();
         Dictionary<string, List<Image>> images = new Dictionary<string, List<Image>>();
@@ -91,7 +89,6 @@ namespace AgSwift_GUI
             {
                 foreach(Image _i in images[blueprintComboBox.SelectedItem.ToString()])
                 {
-                    //g.DrawImage(_i, centerX/zoomFactor, centerY/zoomFactor);
                     g.DrawImage(_i, new Rectangle(centerX, centerY, (int)(_i.Width * zoomFactor), (int)(_i.Height * zoomFactor)));
                 }
                 foreach (PointClickable _p in pointClickables[blueprintComboBox.SelectedItem.ToString()])
@@ -443,6 +440,8 @@ namespace AgSwift_GUI
                 graph = existing_graph;
             }
             graph.clearGraph();
+            pointClickables[blueprintComboBox.SelectedItem.ToString()].Clear();
+            edgeClickables[blueprintComboBox.SelectedItem.ToString()].Clear();
             drawingSurface.Refresh();
 
             pointsLabel.Text = "Points: " + graph.pointCount().ToString();
