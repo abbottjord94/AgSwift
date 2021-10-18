@@ -170,8 +170,7 @@ namespace SwiftAg_CS
             {
                 Point pt = pts.Value;
                 graph_points.Add(pt);
-                Vertex new_vertex = new Vertex(pt.get_x(), pt.get_y());
-                vertices.Add(new_vertex);
+                vertices.Add(pt);
             }
 
             Triangulator triangulator = new Triangulator();

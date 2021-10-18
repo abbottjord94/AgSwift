@@ -1,4 +1,6 @@
-﻿namespace SwiftAg_CS
+﻿using System;
+
+namespace SwiftAg_CS
 {
     public class Edge
     {
@@ -100,7 +102,7 @@
 
             double dot = (A * E) + (B * F);
             double len_sq = (E * E) + (F * F);
-            return (dot * dot) / len_sq;
+            return Math.Abs(dot) / Math.Sqrt(len_sq); 
         }
 
         public static bool operator==(Edge _a, Edge _b)

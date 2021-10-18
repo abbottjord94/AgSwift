@@ -2,13 +2,11 @@
 
 namespace SwiftAg_CS
 {
-    public class Point
+    public class Point : Vertex
     {
-        private double x;
-        private double y;
         private double elevation;
 
-        public Point(double _x, double _y, double _elevation)
+        public Point(double _x, double _y, double _elevation) : base(_x, _y)
         {
             x = _x;
             y = _y;
