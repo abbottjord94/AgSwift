@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SwiftAg_CS
 {
@@ -18,7 +15,6 @@ namespace SwiftAg_CS
         {
             if (suppliedPoints.Count < 3)
             {
-                //throw new ArgumentException("Number of points supplied must be >= 3");
             }
             else
             {

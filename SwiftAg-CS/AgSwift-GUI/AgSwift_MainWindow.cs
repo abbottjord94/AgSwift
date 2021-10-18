@@ -10,7 +10,7 @@ namespace AgSwift_GUI
 {
     public partial class AgSwift_MainWindow : Form
     {
-        //Sets the zoom factor for the drawing surface. Bounded between 1-16
+        //Sets the zoom factor for the drawing surface. Bounded between 1-32
         private int zoomFactor = 1;
 
         //Determines whether the mouse is being dragged
@@ -31,11 +31,10 @@ namespace AgSwift_GUI
         private bool has_prev_point = false;
 
         //Lists to store references to pointClickables and edgeClickables that appear on the drawing surface.
-
         Dictionary<string, Graph> graphs = new Dictionary<string, Graph>();
         Dictionary<string, List<PointClickable>> pointClickables = new Dictionary<string, List<PointClickable>>();
         Dictionary<string, List<EdgeClickable>> edgeClickables = new Dictionary<string, List<EdgeClickable>>();
-        Dictionary<string, List<Image>> images = new Dictionary<string, List<Image>>();
+        Dictionary<string, List<ImageClickable>> images = new Dictionary<string, List<ImageClickable>>();
 
         //Pens used to determine the color of items drawn on the drawing surface
         private Pen p = new Pen(Color.Green, 1);
@@ -47,6 +46,9 @@ namespace AgSwift_GUI
 
         //Stores X and Y mouse coordinates for drawing edges (might be a better way to do this)
         private double mouseX, mouseY;
+
+        //Stores the currently-selected image
+        private ImageClickable selected_image = null;
 
         //Constructor (Runs at the start of the program)
         public AgSwift_MainWindow()
@@ -65,8 +67,8 @@ namespace AgSwift_GUI
             pointClickables["Proposed"] = new List<PointClickable>();
             edgeClickables["Proposed"] = new List<EdgeClickable>();
 
-            images["Existing"] = new List<Image>();
-            images["Proposed"] = new List<Image>();
+            images["Existing"] = new List<ImageClickable>();
+            images["Proposed"] = new List<ImageClickable>();
 
             centerLabel.Text = "Center: (" + centerX.ToString() + ", " + centerY.ToString() + ")";
         }
@@ -84,10 +86,9 @@ namespace AgSwift_GUI
         //Add image from import form
         public void addImageFromImportForm(Image _image)
         {
-            if(!images[blueprintComboBox.SelectedItem.ToString()].Contains(_image))
-            {
-                images[blueprintComboBox.SelectedItem.ToString()].Add(_image);
-            }
+            SwiftAg_CS.Point new_image_point = new SwiftAg_CS.Point(centerX, centerY, 0);
+            ImageClickable new_image = new ImageClickable(_image, new_image_point);
+            images[blueprintComboBox.SelectedItem.ToString()].Add(new_image);
         }
 
         private void threeDView_Click(object sender, EventArgs e)
@@ -103,10 +104,9 @@ namespace AgSwift_GUI
             Graphics g = e.Graphics;
             if (blueprintComboBox.SelectedItem.ToString() == "Existing" || blueprintComboBox.SelectedItem.ToString() == "Proposed")
             {
-                foreach(Image _i in images[blueprintComboBox.SelectedItem.ToString()])
+                foreach(ImageClickable _i in images[blueprintComboBox.SelectedItem.ToString()])
                 {
-                    //g.DrawImage(_i, centerX/zoomFactor, centerY/zoomFactor);
-                    g.DrawImage(_i, new Rectangle(centerX, centerY, (int)(_i.Width * zoomFactor), (int)(_i.Height * zoomFactor)));
+                    g.DrawImage(_i.getImage(), new Rectangle(centerX, centerY, (int)(_i.getImage().Width * zoomFactor), (int)(_i.getImage().Height * zoomFactor)));
                 }
                 foreach (PointClickable _p in pointClickables[blueprintComboBox.SelectedItem.ToString()])
                 {
@@ -272,9 +272,9 @@ namespace AgSwift_GUI
         {
             if (e.Delta > 0)
             {
-                if (zoomFactor >= 16)
+                if (zoomFactor >= 32)
                 {
-                    zoomFactor = 16;
+                    zoomFactor = 32;
                 }
                 else
                 {
@@ -314,8 +314,10 @@ namespace AgSwift_GUI
                         SwiftAg_CS.Point test_point = new SwiftAg_CS.Point((me.X - centerX) / zoomFactor, (me.Y - centerY) / zoomFactor, 0);
                         PointClickable closest_point = null;
                         EdgeClickable closest_edge = null;
+                        Image nearest_image = null;
                         bool found_point = false;
                         bool found_edge = false;
+                        bool found_image = false;
                         double min_distance = Double.NaN;
                         foreach (PointClickable _p in pointClickables[blueprintComboBox.SelectedItem.ToString()])
                         {
@@ -326,6 +328,7 @@ namespace AgSwift_GUI
                                 min_distance = _p.distance(test_point);
                             }
                         }
+                        //If we found a point
                         if (found_point)
                         {
                             if (closest_point.getSelected())
@@ -338,6 +341,7 @@ namespace AgSwift_GUI
                             }
                             drawingSurface.Refresh();
                         }
+                        //Otherwise, look for an edge or an image
                         else {
                             min_distance = Double.NaN;
                             foreach (EdgeClickable _e in edgeClickables[blueprintComboBox.SelectedItem.ToString()])
@@ -360,6 +364,23 @@ namespace AgSwift_GUI
                                     closest_edge.setSelected(true);
                                 }
                                 drawingSurface.Refresh();
+                            }
+                            //If no edge found, look for an image
+                            else
+                            {
+                                foreach(ImageClickable _i in images[blueprintComboBox.SelectedItem.ToString()])
+                                {
+                                    SwiftAg_CS.Point topLeftCorner = _i.getTopLeftCorner();
+                                    SwiftAg_CS.Point bottomRightCorner = new SwiftAg_CS.Point(_i.getImage().Width - topLeftCorner.get_x(), _i.getImage().Height - topLeftCorner.get_y(), 0);
+
+                                    if(test_point.get_x() > topLeftCorner.get_x() && 
+                                        test_point.get_x() < bottomRightCorner.get_x() && 
+                                        test_point.get_y() > topLeftCorner.get_y() &&
+                                        test_point.get_y() < bottomRightCorner.get_y())
+                                    {
+                                        selected_image = _i;
+                                    }
+                                }
                             }
                         }
                     }
@@ -605,7 +626,6 @@ namespace AgSwift_GUI
                     + "Difference: \t" + Math.Abs(cut - fill) + "\n";
                 MessageBox.Show(msg, "Cut/Fill Calculation");
             }
-
         }
 
         //Exits the program

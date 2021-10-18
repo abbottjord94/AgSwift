@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SwiftAg_CS
+﻿namespace SwiftAg_CS
 {
     public class Edge
     {

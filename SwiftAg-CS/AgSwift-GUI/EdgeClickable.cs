@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SwiftAg_CS;
-
-namespace AgSwift_GUI
+﻿namespace AgSwift_GUI
 {
     public class EdgeClickable : SwiftAg_CS.Edge
     {

@@ -24,8 +24,8 @@ namespace AgSwift_GUI
             existing_graph = mainWindow.getExistingGraph();
             proposed_graph = mainWindow.getProposedGraph();
 
-            existing_graph.bowyerWatsonTriangulation();
-            proposed_graph.bowyerWatsonTriangulation();
+            existing_graph.createTriangulation();
+            proposed_graph.createTriangulation();
 
         }
 

@@ -59,6 +59,7 @@
       <DependentUpon>AgSwift_MainWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="EdgeClickable.cs" />
+    <Compile Include="ImageClickable.cs" />
     <Compile Include="ImportPdfForm.cs" />
     <Compile Include="ImportPdfForm.Designer.cs">
       <DependentUpon>ImportPdfForm.cs</DependentUpon>
