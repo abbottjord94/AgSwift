@@ -58,6 +58,7 @@ namespace AgSwift_GUI
         private bool showExisting;
         private bool showProposed;
         private bool showImages;
+        private bool showTriangles;
 
         //Constructor (Runs at the start of the program)
         public AgSwift_MainWindow()
@@ -118,7 +119,7 @@ namespace AgSwift_GUI
                     foreach (ImageClickable _i in images[blueprintComboBox.SelectedItem.ToString()])
                     {
                         SwiftAg_CS.Point image_point = _i.getTopLeftCorner();
-                        g.DrawImage(_i.getImage(), new Rectangle(centerX + (int)image_point.get_x(), centerY + (int)image_point.get_y(), (int)(_i.getImage().Width * zoomFactor), (int)(_i.getImage().Height * zoomFactor)));
+                        g.DrawImage(_i.getImage(), new Rectangle(centerX + (int)image_point.get_x() * zoomFactor, centerY + (int)image_point.get_y() * zoomFactor, (int)(_i.getImage().Width * zoomFactor), (int)(_i.getImage().Height * zoomFactor)));
                     }
                 }
                 if (showExisting)
@@ -178,18 +179,21 @@ namespace AgSwift_GUI
                     }
                 }
 
-                Dictionary<int, Triangle> tris = graphs[blueprintComboBox.SelectedItem.ToString()].getTriangles();
-                foreach(KeyValuePair<int, Triangle> _t in tris)
+                if (showTriangles)
                 {
-                    Triangle _tri = _t.Value;
-                    System.Drawing.Point pt1 = new System.Drawing.Point((int)(centerX + _tri.get_a().get_x() * zoomFactor), (int)(centerY + _tri.get_a().get_y() * zoomFactor));
-                    System.Drawing.Point pt2 = new System.Drawing.Point((int)(centerX + _tri.get_b().get_x() * zoomFactor), (int)(centerY + _tri.get_b().get_y() * zoomFactor));
-                    System.Drawing.Point pt3 = new System.Drawing.Point((int)(centerX + _tri.get_c().get_x() * zoomFactor), (int)(centerY + _tri.get_c().get_y() * zoomFactor));
+                    Dictionary<int, Triangle> tris = graphs[blueprintComboBox.SelectedItem.ToString()].getTriangles();
+                    foreach (KeyValuePair<int, Triangle> _t in tris)
+                    {
+                        Triangle _tri = _t.Value;
+                        System.Drawing.Point pt1 = new System.Drawing.Point((int)(centerX + _tri.get_a().get_x() * zoomFactor), (int)(centerY + _tri.get_a().get_y() * zoomFactor));
+                        System.Drawing.Point pt2 = new System.Drawing.Point((int)(centerX + _tri.get_b().get_x() * zoomFactor), (int)(centerY + _tri.get_b().get_y() * zoomFactor));
+                        System.Drawing.Point pt3 = new System.Drawing.Point((int)(centerX + _tri.get_c().get_x() * zoomFactor), (int)(centerY + _tri.get_c().get_y() * zoomFactor));
 
-                    g.DrawLine(yellow_pen, pt1, pt2);
-                    g.DrawLine(yellow_pen, pt2, pt3);
-                    g.DrawLine(yellow_pen, pt3, pt1);
+                        g.DrawLine(yellow_pen, pt1, pt2);
+                        g.DrawLine(yellow_pen, pt2, pt3);
+                        g.DrawLine(yellow_pen, pt3, pt1);
 
+                    }
                 }
 
                 if (has_prev_point)
@@ -693,6 +697,12 @@ namespace AgSwift_GUI
         private void showImagesCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             showImages = showImagesCheckBox.Checked;
+            drawingSurface.Refresh();
+        }
+
+        private void showTrianglesCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            showTriangles = showTrianglesCheckBox.Checked;
             drawingSurface.Refresh();
         }
 
