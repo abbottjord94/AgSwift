@@ -72,6 +72,7 @@
     </Compile>
     <Compile Include="PointClickable.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Project.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="AgSwift_MainWindow.resx">
       <DependentUpon>AgSwift_MainWindow.cs</DependentUpon>

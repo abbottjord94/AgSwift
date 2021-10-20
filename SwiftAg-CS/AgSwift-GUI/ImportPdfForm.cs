@@ -13,6 +13,7 @@ namespace AgSwift_GUI
         private string pdfimporter_path = null;
         private int pageNumber = 1;
         private Image previewImage;
+        private string previewImageDir;
         public ImportPdfForm(string _filename, AgSwift_MainWindow _mainWindow)
         {
             InitializeComponent();
@@ -37,6 +38,7 @@ namespace AgSwift_GUI
             {
                 string imageFileName = Path.GetFullPath(Path.GetFileName(filename) + "-Page-" + pageNumber.ToString() + ".tiff");
                 Image img = Image.FromFile(imageFileName);
+                previewImageDir = imageFileName;
                 
                 return img;
             }
@@ -98,7 +100,7 @@ namespace AgSwift_GUI
 
         private void import_button_Click(object sender, EventArgs e)
         {
-            mainWindow.addImageFromImportForm(previewImage);
+            mainWindow.addImageFromImportForm(previewImage, previewImageDir);
             this.Close();
         }
     }

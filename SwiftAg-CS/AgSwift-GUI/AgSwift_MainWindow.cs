@@ -60,6 +60,9 @@ namespace AgSwift_GUI
         private bool showImages;
         private bool showTriangles;
 
+        //Object storing current project information
+        Project currentProject = new Project();
+
         //Constructor (Runs at the start of the program)
         public AgSwift_MainWindow()
         {
@@ -94,10 +97,10 @@ namespace AgSwift_GUI
         }
 
         //Add image from import form
-        public void addImageFromImportForm(Image _image)
+        public void addImageFromImportForm(Image _image, string _dir)
         {
             SwiftAg_CS.Point new_image_point = new SwiftAg_CS.Point(centerX, centerY, 0);
-            ImageClickable new_image = new ImageClickable(_image, new_image_point);
+            ImageClickable new_image = new ImageClickable(_image, new_image_point, _dir);
             images[blueprintComboBox.SelectedItem.ToString()].Add(new_image);
         }
 
@@ -259,9 +262,6 @@ namespace AgSwift_GUI
         //Runs when the drawing surface is resized (given by the drawingSurface.Resize event handler)
         private void drawingSurface_Resize(object sender, EventArgs e)
         {
-            centerX = drawingSurface.Width / 2;
-            centerY = drawingSurface.Height / 2;
-
             centerLabel.Text = "Center: (" + centerX.ToString() + ", " + centerY.ToString() + ")";
             drawingSurface.Refresh();
         }
@@ -386,10 +386,8 @@ namespace AgSwift_GUI
                         SwiftAg_CS.Point test_point = new SwiftAg_CS.Point((me.X - centerX) / zoomFactor, (me.Y - centerY) / zoomFactor, 0);
                         PointClickable closest_point = null;
                         EdgeClickable closest_edge = null;
-                        Image nearest_image = null;
                         bool found_point = false;
                         bool found_edge = false;
-                        bool found_image = false;
                         double min_distance = Double.NaN;
                         foreach (PointClickable _p in pointClickables[blueprintComboBox.SelectedItem.ToString()])
                         {
@@ -580,91 +578,44 @@ namespace AgSwift_GUI
         private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string filename;
-            byte[] file_contents;
-            string file_string;
-            string[] file_string_array;
-            FileStream fs;
             OpenFileDialog dialog = new OpenFileDialog();
             DialogResult result = dialog.ShowDialog();
 
             if (result == DialogResult.OK)
             {
-                try
+                filename = Path.GetFullPath(dialog.FileName);
+                currentProject.loadProject(filename);
+                foreach(string k in blueprintComboBox.Items)
                 {
-                    filename = Path.GetFullPath(dialog.FileName);
-                    fs = File.Open(filename, FileMode.Open);
-                    file_contents = new byte[fs.Length - 1];
-                    fs.Read(file_contents, 0, (int)fs.Length - 1);
-                    file_string = Encoding.UTF8.GetString(file_contents);
-                    file_string_array = file_string.Split('\n');
-
-                    pointClickables[blueprintComboBox.SelectedItem.ToString()].Clear();
-                    edgeClickables[blueprintComboBox.SelectedItem.ToString()].Clear();
-
-                    foreach (string s in file_string_array)
+                    if(k != "[SELECT]")
                     {
-                        string[] line = s.Split(',');
-                        double x1 = Double.Parse(line[0]);
-                        double y1 = Double.Parse(line[1]);
-                        double e1 = Double.Parse(line[2]);
-
-                        double x2 = Double.Parse(line[3]);
-                        double y2 = Double.Parse(line[4]);
-                        double e2 = Double.Parse(line[5]);
-
-                        PointClickable a = new PointClickable(x1, y1, e1);
-                        PointClickable b = new PointClickable(x2, y2, e2);
-
-                        EdgeClickable ab = new EdgeClickable(a, b);
-                        EdgeClickable ab_dup = new EdgeClickable(b, a);
-
-                        if (!pointClickables[blueprintComboBox.SelectedItem.ToString()].Contains(a))
-                        {
-                            pointClickables[blueprintComboBox.SelectedItem.ToString()].Add(a);
-                        }
-                        if (!pointClickables[blueprintComboBox.SelectedItem.ToString()].Contains(b))
-                        {
-                            pointClickables[blueprintComboBox.SelectedItem.ToString()].Add(b);
-                        }
-                        if (!edgeClickables[blueprintComboBox.SelectedItem.ToString()].Contains(ab) && !edgeClickables[blueprintComboBox.SelectedItem.ToString()].Contains(ab_dup))
-                        {
-                            edgeClickables[blueprintComboBox.SelectedItem.ToString()].Add(ab);
-                        }
+                        pointClickables[k] = currentProject.getBluePrintPoints(k);
+                        edgeClickables[k] = currentProject.getBluePrintEdges(k);
+                        images[k] = currentProject.getBluePrintImages(k);
                     }
-
                 }
-                catch (Exception _e)
-                {
-                    MessageBox.Show(_e.Message);
-                }
+                drawingSurface.Refresh();
             }
         }
 
         private void saveProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            foreach(string k in blueprintComboBox.Items)
+            {
+                if(k != "[SELECT]")
+                {
+                    currentProject.addEdgeList(k, edgeClickables[k]);
+                    currentProject.addImageList(k, images[k]);
+                }
+            }
             string filename;
-            FileStream fs;
             SaveFileDialog dialog = new SaveFileDialog();
             DialogResult result = dialog.ShowDialog();
 
             if (result == DialogResult.OK)
             {
                 filename = Path.GetFullPath(dialog.FileName);
-                fs = File.Open(filename, FileMode.OpenOrCreate);
-                foreach (EdgeClickable _e in edgeClickables[blueprintComboBox.SelectedItem.ToString()])
-                {
-                    string x1 = _e.get_a().get_x().ToString();
-                    string x2 = _e.get_b().get_x().ToString();
-                    string e1 = _e.get_a().get_elevation().ToString();
-                    string y1 = _e.get_a().get_y().ToString();
-                    string y2 = _e.get_b().get_y().ToString();
-                    string e2 = _e.get_b().get_elevation().ToString();
-
-                    string edge_str = x1 + "," + y1 + "," + e1 + "," + x2 + "," + y2 + "," + e2 + "\n";
-                    byte[] edge_obj = Encoding.UTF8.GetBytes(edge_str);
-                    fs.Write(edge_obj, 0, edge_obj.Length);
-                }
-                fs.Close();
+                currentProject.saveProject(filename);
             }
         }
 
