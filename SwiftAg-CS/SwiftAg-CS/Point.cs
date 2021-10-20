@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace SwiftAg_CS
 {
-    public class Point
+    public class Point : Vertex
     {
-        private double x;
-        private double y;
         private double elevation;
 
-        public Point(double _x, double _y, double _elevation)
+        public Point(double _x, double _y, double _elevation) : base(_x, _y)
         {
             x = _x;
             y = _y;
@@ -49,30 +46,6 @@ namespace SwiftAg_CS
         public double distance(Point _p)
         {
             return Math.Sqrt(Math.Pow(_p.get_x() - x, 2) + Math.Pow(_p.get_y() - y, 2));
-        }
-
-        public bool closerToOriginThan(Point _p)
-        {
-            //Calculates the distance from point (0,0) and checks if the calling point is closer
-            //in cases of equidistance, the point with the lowest x value is treated as closer
-            // in cases of equidistance and equal x values, the lowest y value is treated as closer
-            //Helpful in creating uniform storage order in sorted lists, edge objects, triangle objects, ets.
-            //THIS IS A HACK TO SOLVE THE IDENTICAL EDGES WITH DIFFERNET HASHING PROBLEM. TODO: FIND BETTER ANSWER - RH
-            bool retval= false;
-            Point origin = new Point(0, 0, 0);
-            if (this.distance(origin) > _p.distance(origin)) retval = true;
-            else if (this.distance(origin) < _p.distance(origin)) retval = false;
-            else if (this.distance(origin) == _p.distance(origin)){
-                if (this.get_x() < _p.get_x()) retval = true;
-                else if (this.get_x() > _p.get_x()) retval = false;
-                else if (this.get_x() == _p.get_x())
-                {
-                    if (this.get_y() < _p.get_y()) retval = true;
-                    else if (this.get_y() > _p.get_y()) retval = false;
-                    else throw new ArgumentException("Identical Point Error");
-                }
-            }
-            return retval;
         }
 
         public static bool operator==(Point _a, Point _b)

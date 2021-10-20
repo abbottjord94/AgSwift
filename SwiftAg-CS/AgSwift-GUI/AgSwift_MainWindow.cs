@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Text;
 using System.IO;
+using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
@@ -10,14 +10,14 @@ namespace AgSwift_GUI
 {
     public partial class AgSwift_MainWindow : Form
     {
-        //Existing and Proposed Graphs
-        private Graph existing_graph, proposed_graph;
-        
-        //Sets the zoom factor for the drawing surface. Bounded between 1-16
+        //Sets the zoom factor for the drawing surface. Bounded between 1-32
         private int zoomFactor = 1;
 
         //Determines whether the mouse is being dragged
         private bool draggingState = false;
+
+        //Determines whether or not an image is being dragged by the mouse
+        private bool imageDraggingState = false;
 
         //Booleans for the entry and selection modes. These are set by the "Interaction Mode" combo box at the top
         private bool selectionMode = false;
@@ -34,30 +34,45 @@ namespace AgSwift_GUI
         private bool has_prev_point = false;
 
         //Lists to store references to pointClickables and edgeClickables that appear on the drawing surface.
+        Dictionary<string, Graph> graphs = new Dictionary<string, Graph>();
         Dictionary<string, List<PointClickable>> pointClickables = new Dictionary<string, List<PointClickable>>();
         Dictionary<string, List<EdgeClickable>> edgeClickables = new Dictionary<string, List<EdgeClickable>>();
-        Dictionary<string, List<Image>> images = new Dictionary<string, List<Image>>();
+        Dictionary<string, List<ImageClickable>> images = new Dictionary<string, List<ImageClickable>>();
 
         //Pens used to determine the color of items drawn on the drawing surface
         private Pen p = new Pen(Color.Green, 1);
         private Pen selected_pen = new Pen(Color.Red, 1);
         private Pen yellow_pen = new Pen(Color.Yellow, 1);
-        
+        private Pen blue_pen = new Pen(Color.Blue, 1);
+
         //Stores the maximum radius for point selection
         private double selectionRadius = 10;
 
         //Stores X and Y mouse coordinates for drawing edges (might be a better way to do this)
         private double mouseX, mouseY;
 
+        //Stores the currently-selected image
+        private ImageClickable selected_image = null;
+
+        //Booleans for layer selection
+        private bool showExisting;
+        private bool showProposed;
+        private bool showImages;
+        private bool showTriangles;
+
+        //Object storing current project information
+        Project currentProject = new Project();
+
         //Constructor (Runs at the start of the program)
         public AgSwift_MainWindow()
         {
             InitializeComponent();
-            existing_graph = new Graph();
-            proposed_graph = new Graph();
             centerX = drawingSurface.Width / 2;
             centerY = drawingSurface.Height / 2;
             blueprintComboBox.SelectedIndex = 0;
+
+            graphs["Existing"] = new Graph();
+            graphs["Proposed"] = new Graph();
 
             pointClickables["Existing"] = new List<PointClickable>();
             edgeClickables["Existing"] = new List<EdgeClickable>();
@@ -65,19 +80,34 @@ namespace AgSwift_GUI
             pointClickables["Proposed"] = new List<PointClickable>();
             edgeClickables["Proposed"] = new List<EdgeClickable>();
 
-            images["Existing"] = new List<Image>();
-            images["Proposed"] = new List<Image>();
+            images["Existing"] = new List<ImageClickable>();
+            images["Proposed"] = new List<ImageClickable>();
 
             centerLabel.Text = "Center: (" + centerX.ToString() + ", " + centerY.ToString() + ")";
         }
 
-        //Add image from import form
-        public void addImageFromImportForm(Image _image)
+        public Graph getExistingGraph()
         {
-            if(!images[blueprintComboBox.SelectedItem.ToString()].Contains(_image))
-            {
-                images[blueprintComboBox.SelectedItem.ToString()].Add(_image);
-            }
+            return graphs["Existing"];
+        }
+
+        public Graph getProposedGraph()
+        {
+            return graphs["Proposed"];
+        }
+
+        //Add image from import form
+        public void addImageFromImportForm(Image _image, string _dir)
+        {
+            SwiftAg_CS.Point new_image_point = new SwiftAg_CS.Point(centerX, centerY, 0);
+            ImageClickable new_image = new ImageClickable(_image, new_image_point, _dir);
+            images[blueprintComboBox.SelectedItem.ToString()].Add(new_image);
+        }
+
+        private void threeDView_Click(object sender, EventArgs e)
+        {
+            OpenGL3Dview threeDPreview = new OpenGL3Dview(this);
+            threeDPreview.Show();
         }
 
         //Drawing Surface Paint Method
@@ -87,49 +117,86 @@ namespace AgSwift_GUI
             Graphics g = e.Graphics;
             if (blueprintComboBox.SelectedItem.ToString() == "Existing" || blueprintComboBox.SelectedItem.ToString() == "Proposed")
             {
-                foreach(Image _i in images[blueprintComboBox.SelectedItem.ToString()])
+                if (showImages)
                 {
-                    g.DrawImage(_i, new Rectangle(centerX, centerY, (int)(_i.Width * zoomFactor), (int)(_i.Height * zoomFactor)));
-                }
-                foreach (PointClickable _p in pointClickables[blueprintComboBox.SelectedItem.ToString()])
-                {
-                    if (_p.getSelected())
+                    foreach (ImageClickable _i in images[blueprintComboBox.SelectedItem.ToString()])
                     {
-
-                        g.DrawEllipse(selected_pen, new Rectangle((int)(centerX + _p.get_x() * zoomFactor) - 3, (int)(centerY + _p.get_y() * zoomFactor) - 3, 6, 6));
-                    }
-                    else
-                    {
-                        g.DrawEllipse(p, new Rectangle((int)(centerX + _p.get_x() * zoomFactor) - 1, (int)(centerY + _p.get_y() * zoomFactor) - 1, 3, 3));
+                        SwiftAg_CS.Point image_point = _i.getTopLeftCorner();
+                        g.DrawImage(_i.getImage(), new Rectangle(centerX + (int)image_point.get_x() * zoomFactor, centerY + (int)image_point.get_y() * zoomFactor, (int)(_i.getImage().Width * zoomFactor), (int)(_i.getImage().Height * zoomFactor)));
                     }
                 }
-
-                foreach (EdgeClickable _e in edgeClickables[blueprintComboBox.SelectedItem.ToString()])
+                if (showExisting)
                 {
-                    System.Drawing.Point pt1 = new System.Drawing.Point((int)(centerX + _e.get_a().get_x() * zoomFactor), (int)(centerY + _e.get_a().get_y() * zoomFactor));
-                    System.Drawing.Point pt2 = new System.Drawing.Point((int)(centerX + _e.get_b().get_x() * zoomFactor), (int)(centerY + _e.get_b().get_y() * zoomFactor));
-                    if (_e.getSelected())
+                    foreach (PointClickable _p in pointClickables["Existing"])
                     {
-                        g.DrawLine(selected_pen, pt1, pt2);
+                        if (_p.getSelected())
+                        {
+
+                            g.DrawEllipse(selected_pen, new Rectangle((int)(centerX + _p.get_x() * zoomFactor) - 3, (int)(centerY + _p.get_y() * zoomFactor) - 3, 6, 6));
+                        }
+                        else
+                        {
+                            g.DrawEllipse(p, new Rectangle((int)(centerX + _p.get_x() * zoomFactor) - 1, (int)(centerY + _p.get_y() * zoomFactor) - 1, 3, 3));
+                        }
                     }
-                    else
+                    foreach (EdgeClickable _e in edgeClickables["Existing"])
                     {
-                        g.DrawLine(p, pt1, pt2);
+                        System.Drawing.Point pt1 = new System.Drawing.Point((int)(centerX + _e.get_a().get_x() * zoomFactor), (int)(centerY + _e.get_a().get_y() * zoomFactor));
+                        System.Drawing.Point pt2 = new System.Drawing.Point((int)(centerX + _e.get_b().get_x() * zoomFactor), (int)(centerY + _e.get_b().get_y() * zoomFactor));
+                        if (_e.getSelected())
+                        {
+                            g.DrawLine(selected_pen, pt1, pt2);
+                        }
+                        else
+                        {
+                            g.DrawLine(p, pt1, pt2);
+                        }
+                    }
+                }
+                if (showProposed)
+                {
+                    foreach (PointClickable _p in pointClickables["Proposed"])
+                    {
+                        if (_p.getSelected())
+                        {
+
+                            g.DrawEllipse(selected_pen, new Rectangle((int)(centerX + _p.get_x() * zoomFactor) - 3, (int)(centerY + _p.get_y() * zoomFactor) - 3, 6, 6));
+                        }
+                        else
+                        {
+                            g.DrawEllipse(blue_pen, new Rectangle((int)(centerX + _p.get_x() * zoomFactor) - 1, (int)(centerY + _p.get_y() * zoomFactor) - 1, 3, 3));
+                        }
+                    }
+                    foreach (EdgeClickable _e in edgeClickables["Proposed"])
+                    {
+                        System.Drawing.Point pt1 = new System.Drawing.Point((int)(centerX + _e.get_a().get_x() * zoomFactor), (int)(centerY + _e.get_a().get_y() * zoomFactor));
+                        System.Drawing.Point pt2 = new System.Drawing.Point((int)(centerX + _e.get_b().get_x() * zoomFactor), (int)(centerY + _e.get_b().get_y() * zoomFactor));
+                        if (_e.getSelected())
+                        {
+                            g.DrawLine(selected_pen, pt1, pt2);
+                        }
+                        else
+                        {
+                            g.DrawLine(blue_pen, pt1, pt2);
+                        }
                     }
                 }
 
-                //For debugging only. Remove before submitting pull request
-                Dictionary<int, Triangle> tris = existing_graph.getTriangles();
-                foreach(KeyValuePair<int, Triangle> _t in tris)
+                if (showTriangles)
                 {
-                    Triangle t = _t.Value;
-                    System.Drawing.Point pt1 = new System.Drawing.Point((int)(centerX + t.get_a().get_x() * zoomFactor), (int)(centerY + t.get_a().get_y() * zoomFactor));
-                    System.Drawing.Point pt2 = new System.Drawing.Point((int)(centerX + t.get_b().get_x() * zoomFactor), (int)(centerY + t.get_b().get_y() * zoomFactor));
-                    System.Drawing.Point pt3 = new System.Drawing.Point((int)(centerX + t.get_c().get_x() * zoomFactor), (int)(centerY + t.get_c().get_y() * zoomFactor));
+                    Dictionary<int, Triangle> tris = graphs[blueprintComboBox.SelectedItem.ToString()].getTriangles();
+                    foreach (KeyValuePair<int, Triangle> _t in tris)
+                    {
+                        Triangle _tri = _t.Value;
+                        System.Drawing.Point pt1 = new System.Drawing.Point((int)(centerX + _tri.get_a().get_x() * zoomFactor), (int)(centerY + _tri.get_a().get_y() * zoomFactor));
+                        System.Drawing.Point pt2 = new System.Drawing.Point((int)(centerX + _tri.get_b().get_x() * zoomFactor), (int)(centerY + _tri.get_b().get_y() * zoomFactor));
+                        System.Drawing.Point pt3 = new System.Drawing.Point((int)(centerX + _tri.get_c().get_x() * zoomFactor), (int)(centerY + _tri.get_c().get_y() * zoomFactor));
 
-                    g.DrawLine(yellow_pen, pt1, pt2);
-                    g.DrawLine(yellow_pen, pt2, pt3);
-                    g.DrawLine(yellow_pen, pt3, pt1);
+                        g.DrawLine(yellow_pen, pt1, pt2);
+                        g.DrawLine(yellow_pen, pt2, pt3);
+                        g.DrawLine(yellow_pen, pt3, pt1);
+
+                    }
                 }
 
                 if (has_prev_point)
@@ -195,9 +262,6 @@ namespace AgSwift_GUI
         //Runs when the drawing surface is resized (given by the drawingSurface.Resize event handler)
         private void drawingSurface_Resize(object sender, EventArgs e)
         {
-            centerX = drawingSurface.Width / 2;
-            centerY = drawingSurface.Height / 2;
-
             centerLabel.Text = "Center: (" + centerX.ToString() + ", " + centerY.ToString() + ")";
             drawingSurface.Refresh();
         }
@@ -216,14 +280,31 @@ namespace AgSwift_GUI
                 prevX = e.X;
                 prevY = e.Y;
 
-                centerLabel.Text = "Center: (" + (centerX / zoomFactor).ToString() + ", " + (centerY / zoomFactor).ToString() + ")";
+                centerLabel.Text = "Center: (" + centerX.ToString() + ", " + centerY.ToString() + ")";
                 drawingSurface.Refresh();
             }
             else
             {
-                mouseX = e.X;
-                mouseY = e.Y;
-                drawingSurface.Refresh();
+                if (selected_image != null && imageDraggingState)
+                {
+                    SwiftAg_CS.Point current_image_point = selected_image.getTopLeftCorner();
+                    int dx = (prevX - e.X);
+                    int dy = (prevY - e.Y);
+
+                    SwiftAg_CS.Point new_image_point = new SwiftAg_CS.Point(current_image_point.get_x() - dx, current_image_point.get_y() - dy, 0);
+
+                    selected_image.setTopLeftCorner(new_image_point);
+
+                    prevX = e.X;
+                    prevY = e.Y;
+
+                    drawingSurface.Refresh();
+                }
+                else {
+                    mouseX = e.X;
+                    mouseY = e.Y;
+                    drawingSurface.Refresh();
+                }
             }
         }
 
@@ -237,6 +318,10 @@ namespace AgSwift_GUI
                 prevX = e.X;
                 prevY = e.Y;
             }
+            else if(e.Button == MouseButtons.Left)
+            {
+                imageDraggingState = true;
+            }
         }
 
         //Ensures that the draggingState is set to false when the user stops holding the middle mouse button
@@ -247,6 +332,10 @@ namespace AgSwift_GUI
                 stateLabel.Text = "State: Not Dragging";
                 draggingState = false;
             }
+            else if (e.Button == MouseButtons.Left)
+            {
+                imageDraggingState = false;
+            }
 
         }
 
@@ -255,9 +344,9 @@ namespace AgSwift_GUI
         {
             if (e.Delta > 0)
             {
-                if (zoomFactor >= 16)
+                if (zoomFactor >= 32)
                 {
-                    zoomFactor = 16;
+                    zoomFactor = 32;
                 }
                 else
                 {
@@ -309,6 +398,7 @@ namespace AgSwift_GUI
                                 min_distance = _p.distance(test_point);
                             }
                         }
+                        //If we found a point
                         if (found_point)
                         {
                             if (closest_point.getSelected())
@@ -321,6 +411,7 @@ namespace AgSwift_GUI
                             }
                             drawingSurface.Refresh();
                         }
+                        //Otherwise, look for an edge or an image
                         else {
                             min_distance = Double.NaN;
                             foreach (EdgeClickable _e in edgeClickables[blueprintComboBox.SelectedItem.ToString()])
@@ -344,6 +435,23 @@ namespace AgSwift_GUI
                                 }
                                 drawingSurface.Refresh();
                             }
+                            //If no edge found, look for an image
+                            else
+                            {
+                                foreach(ImageClickable _i in images[blueprintComboBox.SelectedItem.ToString()])
+                                {
+                                    SwiftAg_CS.Point topLeftCorner = _i.getTopLeftCorner();
+                                    SwiftAg_CS.Point bottomRightCorner = new SwiftAg_CS.Point(_i.getImage().Width - topLeftCorner.get_x(), _i.getImage().Height - topLeftCorner.get_y(), 0);
+
+                                    if(test_point.get_x() > topLeftCorner.get_x() && 
+                                        test_point.get_x() < bottomRightCorner.get_x() && 
+                                        test_point.get_y() > topLeftCorner.get_y() &&
+                                        test_point.get_y() < bottomRightCorner.get_y())
+                                    {
+                                        selected_image = _i;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -360,19 +468,6 @@ namespace AgSwift_GUI
                     }
                     else
                     {
-                        Graph graph;
-                        if (blueprintComboBox.SelectedItem.ToString() == "Existing")
-                        {
-                            graph = existing_graph;
-                        }
-                        else if (blueprintComboBox.SelectedItem.ToString() == "Proposed")
-                        {
-                            graph = proposed_graph;
-                        }
-                        else
-                        {
-                            graph = existing_graph;
-                        }
                         MouseEventArgs mouseEvent = (MouseEventArgs)e;
                         if (mouseEvent.Button == MouseButtons.Left)
                         {
@@ -396,12 +491,12 @@ namespace AgSwift_GUI
                                     prev_point = new_point;
                                     has_prev_point = true;
                                 }
-                                graph.addPoint(new_point);
+                                graphs[blueprintComboBox.SelectedItem.ToString()].addPoint(new_point);
                                 drawingSurface.Refresh();
 
-                                pointsLabel.Text = "Points: " + graph.pointCount().ToString();
-                                edgesLabel.Text = "Edges: " + graph.edgeCount().ToString();
-                                trianglesLabel.Text = "Triangles: " + graph.triangleCount().ToString();
+                                pointsLabel.Text = "Points: " + graphs[blueprintComboBox.SelectedItem.ToString()].pointCount().ToString();
+                                edgesLabel.Text = "Edges: " + graphs[blueprintComboBox.SelectedItem.ToString()].edgeCount().ToString();
+                                trianglesLabel.Text = "Triangles: " + graphs[blueprintComboBox.SelectedItem.ToString()].triangleCount().ToString();
                             }
                             catch (Exception ex)
                             {
@@ -426,27 +521,12 @@ namespace AgSwift_GUI
         //Clears the selected graph of all points, edges, and triangles.
         private void clearGraphToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-            Graph graph;
-            if (blueprintComboBox.SelectedItem.ToString() == "Existing")
-            {
-                graph = existing_graph;
-            }
-            else if (blueprintComboBox.SelectedItem.ToString() == "Proposed")
-            {
-                graph = proposed_graph;
-            }
-            else
-            {
-                graph = existing_graph;
-            }
-            graph.clearGraph();
-            pointClickables[blueprintComboBox.SelectedItem.ToString()].Clear();
-            edgeClickables[blueprintComboBox.SelectedItem.ToString()].Clear();
+            graphs[blueprintComboBox.SelectedItem.ToString()].clearGraph();
             drawingSurface.Refresh();
 
-            pointsLabel.Text = "Points: " + graph.pointCount().ToString();
-            edgesLabel.Text = "Edges: " + graph.edgeCount().ToString();
-            trianglesLabel.Text = "Triangles: " + graph.triangleCount().ToString();
+            pointsLabel.Text = "Points: " + graphs[blueprintComboBox.SelectedItem.ToString()].pointCount().ToString();
+            edgesLabel.Text = "Edges: " + graphs[blueprintComboBox.SelectedItem.ToString()].edgeCount().ToString();
+            trianglesLabel.Text = "Triangles: " + graphs[blueprintComboBox.SelectedItem.ToString()].triangleCount().ToString();
         }
 
         //Event handler for when a pointList item is selected
@@ -475,97 +555,6 @@ namespace AgSwift_GUI
             }
         }
 
-        private void saveProjectToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            string filename;
-            FileStream fs;
-            SaveFileDialog dialog = new SaveFileDialog();
-            DialogResult result = dialog.ShowDialog();
-            
-            if(result == DialogResult.OK)
-            {
-                filename = Path.GetFullPath(dialog.FileName);
-                fs = File.Open(filename, FileMode.OpenOrCreate);
-                foreach(EdgeClickable _e in edgeClickables[blueprintComboBox.SelectedItem.ToString()])
-                {
-                    string x1 = _e.get_a().get_x().ToString();
-                    string x2 = _e.get_b().get_x().ToString();
-                    string e1 = _e.get_a().get_elevation().ToString();
-                    string y1 = _e.get_a().get_y().ToString();
-                    string y2 = _e.get_b().get_y().ToString();
-                    string e2 = _e.get_b().get_elevation().ToString();
-
-                    string edge_str = x1 + "," + y1 + "," + e1 + "," + x2 + "," + y2 + "," + e2 + "\n";
-                    byte[] edge_obj = Encoding.UTF8.GetBytes(edge_str);
-                    fs.Write(edge_obj, 0, edge_obj.Length);
-                }
-                fs.Close();
-            }
-        }
-
-        private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            string filename;
-            byte[] file_contents;
-            string file_string;
-            string[] file_string_array;
-            FileStream fs;
-            OpenFileDialog dialog = new OpenFileDialog();
-            DialogResult result = dialog.ShowDialog();
-
-            if(result == DialogResult.OK)
-            {
-                try
-                {
-                    filename = Path.GetFullPath(dialog.FileName);
-                    fs = File.Open(filename, FileMode.Open);
-                    file_contents = new byte[fs.Length - 1];
-                    fs.Read(file_contents, 0, (int)fs.Length - 1);
-                    file_string = Encoding.UTF8.GetString(file_contents);
-                    file_string_array = file_string.Split('\n');
-
-                    pointClickables[blueprintComboBox.SelectedItem.ToString()].Clear();
-                    edgeClickables[blueprintComboBox.SelectedItem.ToString()].Clear();
-
-                    foreach(string s in file_string_array)
-                    {
-                        string[] line = s.Split(',');
-                        double x1 = Double.Parse(line[0]);
-                        double y1 = Double.Parse(line[1]);
-                        double e1 = Double.Parse(line[2]);
-
-                        double x2 = Double.Parse(line[3]);
-                        double y2 = Double.Parse(line[4]);
-                        double e2 = Double.Parse(line[5]);
-
-                        PointClickable a = new PointClickable(x1, y1, e1);
-                        PointClickable b = new PointClickable(x2, y2, e2);
-
-                        EdgeClickable ab = new EdgeClickable(a, b);
-                        EdgeClickable ab_dup = new EdgeClickable(b, a);
-
-                        if(!pointClickables[blueprintComboBox.SelectedItem.ToString()].Contains(a))
-                        {
-                            pointClickables[blueprintComboBox.SelectedItem.ToString()].Add(a);
-                        }
-                        if (!pointClickables[blueprintComboBox.SelectedItem.ToString()].Contains(b))
-                        {
-                            pointClickables[blueprintComboBox.SelectedItem.ToString()].Add(b);
-                        }
-                        if (!edgeClickables[blueprintComboBox.SelectedItem.ToString()].Contains(ab) && !edgeClickables[blueprintComboBox.SelectedItem.ToString()].Contains(ab_dup))
-                        {
-                            edgeClickables[blueprintComboBox.SelectedItem.ToString()].Add(ab);
-                        }
-                    }
-                    
-                }
-                catch(Exception _e)
-                {
-                    MessageBox.Show(_e.Message);
-                }
-            }
-        }
-
         //Event handler for when the user changes their interaction mode.
         private void modeSelectComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -586,11 +575,110 @@ namespace AgSwift_GUI
             }
         }
 
+        private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string filename;
+            OpenFileDialog dialog = new OpenFileDialog();
+            DialogResult result = dialog.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                filename = Path.GetFullPath(dialog.FileName);
+                currentProject.loadProject(filename);
+                foreach(string k in blueprintComboBox.Items)
+                {
+                    if(k != "[SELECT]")
+                    {
+                        pointClickables[k] = currentProject.getBluePrintPoints(k);
+                        edgeClickables[k] = currentProject.getBluePrintEdges(k);
+                        images[k] = currentProject.getBluePrintImages(k);
+                    }
+                }
+                drawingSurface.Refresh();
+            }
+        }
+
+        private void saveProjectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach(string k in blueprintComboBox.Items)
+            {
+                if(k != "[SELECT]")
+                {
+                    currentProject.addEdgeList(k, edgeClickables[k]);
+                    currentProject.addImageList(k, images[k]);
+                }
+            }
+            string filename;
+            SaveFileDialog dialog = new SaveFileDialog();
+            DialogResult result = dialog.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                filename = Path.GetFullPath(dialog.FileName);
+                currentProject.saveProject(filename);
+            }
+        }
+
+        private void showExistingCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if(showExistingCheckBox.Checked)
+            {
+                showExisting = true;
+            }
+            else
+            {
+                showExisting = false;
+            }
+            drawingSurface.Refresh();
+        }
+
+        private void showProposedCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (showProposedCheckBox.Checked)
+            {
+                showProposed = true;
+            }
+            else
+            {
+                showProposed = false;
+            }
+            drawingSurface.Refresh();
+        }
+
+        private void showImagesCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            showImages = showImagesCheckBox.Checked;
+            drawingSurface.Refresh();
+        }
+
+        private void showTrianglesCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            showTriangles = showTrianglesCheckBox.Checked;
+            drawingSurface.Refresh();
+        }
+
         //Refreshes the drawing surface when the user changes the blueprint they're working on
         private void blueprintComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             prev_point = null;
             has_prev_point = false;
+
+            if(blueprintComboBox.SelectedItem.ToString() == "Exising")
+            {
+                showExisting = true;
+                showProposed = false;
+
+                showExistingCheckBox.Checked = true;
+                showProposedCheckBox.Checked = false;
+            }
+            if (blueprintComboBox.SelectedItem.ToString() == "Proposed")
+            {
+                showExisting = false;
+                showProposed = true;
+
+                showExistingCheckBox.Checked = false;
+                showProposedCheckBox.Checked = true;
+            }
             drawingSurface.Refresh();
         }
 
@@ -599,19 +687,20 @@ namespace AgSwift_GUI
         {
             String msg;
             double cut, fill;
-            existing_graph.clearGraph();
-            proposed_graph.clearGraph();
-            foreach(PointClickable _p in pointClickables["Existing"])
+
+            foreach(PointClickable pc in pointClickables["Existing"])
             {
-                existing_graph.addPoint(_p);
+                graphs["Existing"].addPoint(pc);
             }
-            foreach (PointClickable _p in pointClickables["Proposed"])
+
+            foreach (PointClickable pc in pointClickables["Proposed"])
             {
-                proposed_graph.addPoint(_p);
+                graphs["Proposed"].addPoint(pc);
             }
-            existing_graph.createTriangulation();
-            proposed_graph.createTriangulation();
-            MeshComparator mc = new MeshComparator(existing_graph, proposed_graph);
+
+            graphs["Existing"].createTriangulation();
+            graphs["Proposed"].createTriangulation();
+            MeshComparator mc = new MeshComparator(graphs["Existing"], graphs["Proposed"]);
             mc.CalculateCutFill();
             if(mc.getError())
             {
@@ -626,7 +715,6 @@ namespace AgSwift_GUI
                     + "Difference: \t" + Math.Abs(cut - fill) + "\n";
                 MessageBox.Show(msg, "Cut/Fill Calculation");
             }
-
         }
 
         //Exits the program

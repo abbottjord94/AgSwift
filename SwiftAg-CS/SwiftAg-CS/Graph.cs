@@ -6,7 +6,6 @@ namespace SwiftAg_CS
     public class Graph
     {
         private Dictionary<int, Point> points;
-
         private Dictionary<int, Edge> edges;
         private Dictionary<int, Triangle> triangles;
 
@@ -171,8 +170,7 @@ namespace SwiftAg_CS
             {
                 Point pt = pts.Value;
                 graph_points.Add(pt);
-                Vertex new_vertex = new Vertex(pt.get_x(), pt.get_y());
-                vertices.Add(new_vertex);
+                vertices.Add(pt);
             }
 
             Triangulator triangulator = new Triangulator();

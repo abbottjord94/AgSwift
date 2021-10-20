@@ -60,6 +60,10 @@
             this.edgesLabel = new System.Windows.Forms.Label();
             this.trianglesLabel = new System.Windows.Forms.Label();
             this.pointsLabel = new System.Windows.Forms.Label();
+            this.showExistingCheckBox = new System.Windows.Forms.CheckBox();
+            this.showProposedCheckBox = new System.Windows.Forms.CheckBox();
+            this.showImagesCheckBox = new System.Windows.Forms.CheckBox();
+            this.showTrianglesCheckBox = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.drawingSurface)).BeginInit();
@@ -158,7 +162,7 @@
             // 
             // elevationEntryBox
             // 
-            this.elevationEntryBox.Location = new System.Drawing.Point(464, 24);
+            this.elevationEntryBox.Location = new System.Drawing.Point(340, 24);
             this.elevationEntryBox.Name = "elevationEntryBox";
             this.elevationEntryBox.Size = new System.Drawing.Size(70, 20);
             this.elevationEntryBox.TabIndex = 16;
@@ -166,7 +170,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(407, 27);
+            this.label4.Location = new System.Drawing.Point(283, 27);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(51, 13);
             this.label4.TabIndex = 17;
@@ -233,6 +237,10 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.showTrianglesCheckBox);
+            this.panel1.Controls.Add(this.showImagesCheckBox);
+            this.panel1.Controls.Add(this.showProposedCheckBox);
+            this.panel1.Controls.Add(this.showExistingCheckBox);
             this.panel1.Controls.Add(this.threeDView);
             this.panel1.Controls.Add(this.calculateCutFill);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -249,6 +257,7 @@
             this.threeDView.TabIndex = 1;
             this.threeDView.Text = "3D View";
             this.threeDView.UseVisualStyleBackColor = true;
+            this.threeDView.Click += new System.EventHandler(this.threeDView_Click);
             // 
             // calculateCutFill
             // 
@@ -361,7 +370,7 @@
             // edgesLabel
             // 
             this.edgesLabel.AutoSize = true;
-            this.edgesLabel.Location = new System.Drawing.Point(934, 8);
+            this.edgesLabel.Location = new System.Drawing.Point(904, 8);
             this.edgesLabel.Name = "edgesLabel";
             this.edgesLabel.Size = new System.Drawing.Size(49, 13);
             this.edgesLabel.TabIndex = 22;
@@ -370,7 +379,7 @@
             // trianglesLabel
             // 
             this.trianglesLabel.AutoSize = true;
-            this.trianglesLabel.Location = new System.Drawing.Point(868, 8);
+            this.trianglesLabel.Location = new System.Drawing.Point(808, 8);
             this.trianglesLabel.Name = "trianglesLabel";
             this.trianglesLabel.Size = new System.Drawing.Size(62, 13);
             this.trianglesLabel.TabIndex = 23;
@@ -384,6 +393,50 @@
             this.pointsLabel.Size = new System.Drawing.Size(48, 13);
             this.pointsLabel.TabIndex = 21;
             this.pointsLabel.Text = "Points: 0";
+            // 
+            // showExistingCheckBox
+            // 
+            this.showExistingCheckBox.AutoSize = true;
+            this.showExistingCheckBox.Location = new System.Drawing.Point(163, 7);
+            this.showExistingCheckBox.Name = "showExistingCheckBox";
+            this.showExistingCheckBox.Size = new System.Drawing.Size(92, 17);
+            this.showExistingCheckBox.TabIndex = 2;
+            this.showExistingCheckBox.Text = "Show Existing";
+            this.showExistingCheckBox.UseVisualStyleBackColor = true;
+            this.showExistingCheckBox.CheckedChanged += new System.EventHandler(this.showExistingCheckBox_CheckedChanged);
+            // 
+            // showProposedCheckBox
+            // 
+            this.showProposedCheckBox.AutoSize = true;
+            this.showProposedCheckBox.Location = new System.Drawing.Point(163, 26);
+            this.showProposedCheckBox.Name = "showProposedCheckBox";
+            this.showProposedCheckBox.Size = new System.Drawing.Size(101, 17);
+            this.showProposedCheckBox.TabIndex = 3;
+            this.showProposedCheckBox.Text = "Show Proposed";
+            this.showProposedCheckBox.UseVisualStyleBackColor = true;
+            this.showProposedCheckBox.CheckedChanged += new System.EventHandler(this.showProposedCheckBox_CheckedChanged);
+            // 
+            // showImagesCheckBox
+            // 
+            this.showImagesCheckBox.AutoSize = true;
+            this.showImagesCheckBox.Location = new System.Drawing.Point(270, 26);
+            this.showImagesCheckBox.Name = "showImagesCheckBox";
+            this.showImagesCheckBox.Size = new System.Drawing.Size(90, 17);
+            this.showImagesCheckBox.TabIndex = 4;
+            this.showImagesCheckBox.Text = "Show Images";
+            this.showImagesCheckBox.UseVisualStyleBackColor = true;
+            this.showImagesCheckBox.CheckedChanged += new System.EventHandler(this.showImagesCheckBox_CheckedChanged);
+            // 
+            // showTrianglesCheckBox
+            // 
+            this.showTrianglesCheckBox.AutoSize = true;
+            this.showTrianglesCheckBox.Location = new System.Drawing.Point(270, 7);
+            this.showTrianglesCheckBox.Name = "showTrianglesCheckBox";
+            this.showTrianglesCheckBox.Size = new System.Drawing.Size(99, 17);
+            this.showTrianglesCheckBox.TabIndex = 5;
+            this.showTrianglesCheckBox.Text = "Show Triangles";
+            this.showTrianglesCheckBox.UseVisualStyleBackColor = true;
+            this.showTrianglesCheckBox.CheckedChanged += new System.EventHandler(this.showTrianglesCheckBox_CheckedChanged);
             // 
             // AgSwift_MainWindow
             // 
@@ -400,6 +453,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.drawingSurface)).EndInit();
             this.tableLayoutPanel2.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             this.bottomPanel.ResumeLayout(false);
@@ -442,6 +496,10 @@
         private System.Windows.Forms.Label centerLabel;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox modeSelectComboBox;
+        private System.Windows.Forms.CheckBox showProposedCheckBox;
+        private System.Windows.Forms.CheckBox showExistingCheckBox;
+        private System.Windows.Forms.CheckBox showImagesCheckBox;
+        private System.Windows.Forms.CheckBox showTrianglesCheckBox;
     }
 }
 

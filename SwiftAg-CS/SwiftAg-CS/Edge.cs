@@ -90,19 +90,77 @@ namespace SwiftAg_CS
             else return null;
         }
 
-        //Source: https://stackoverflow.com/questions/30559799/function-for-finding-the-distance-between-a-point-and-an-edge-in-java
         public double distanceFromEdge(Point _p)
         {
-            double A = _p.get_x() - a.get_x();
-            double B = _p.get_y() - a.get_y();
-            double C = b.get_x() - a.get_x();
-            double D = b.get_y() - a.get_y();
-            double E = -D;
-            double F = C;
+            bool dx_dominate = false;
+            bool dy_dominate = false;
 
-            double dot = (A * E) + (B * F);
-            double len_sq = (E * E) + (F * F);
-            return (dot * dot) / len_sq;
+            if (Math.Abs(a.get_x() - b.get_x()) > Math.Abs(a.get_y() - b.get_y()))
+            {
+                dx_dominate = true;
+            }
+            else
+            {
+                dy_dominate = true;
+            }
+
+            if (dx_dominate)
+            {
+
+                double[] xs = new double[2];
+                xs[0] = a.get_x();
+                xs[1] = b.get_x();
+                Array.Sort(xs);
+                if (xs[0] < _p.get_x() && xs[1] > _p.get_x())
+                {
+                    double d_a = _p.distance(a);
+                    double d_b = _p.distance(b);
+                    double alpha = Math.Acos(Math.Cos(Math.Pow(d_a, 2) + Math.Pow(length(), 2) - Math.Pow(d_b, 2) / (2 * d_a * length())));
+                    return Math.Sin(alpha) * d_a;
+                }
+                else
+                {
+                    if(_p.distance(a) < _p.distance(b))
+                    {
+                        return _p.distance(a);
+                    }
+                    else
+                    {
+                        return _p.distance(b);
+                    }
+                }
+
+            }
+
+            else if (dy_dominate)
+            {
+                double[] ys = new double[2];
+                ys[0] = a.get_y();
+                ys[1] = b.get_y();
+                Array.Sort(ys);
+                if (ys[0] < _p.get_y() && ys[1] > _p.get_y())
+                {
+                    double d_a = _p.distance(a);
+                    double d_b = _p.distance(b);
+                    double alpha = Math.Acos(Math.Cos(Math.Pow(d_a, 2) + Math.Pow(length(), 2) - Math.Pow(d_b, 2) / (2 * d_a * length())));
+                    return Math.Sin(alpha) * d_a;
+                }
+                else
+                {
+                    if (_p.distance(a) < _p.distance(b))
+                    {
+                        return _p.distance(a);
+                    }
+                    else
+                    {
+                        return _p.distance(b);
+                    }
+                }
+            }
+            else
+            {
+                return 9999999;
+            }
         }
 
         public static bool operator==(Edge _a, Edge _b)
