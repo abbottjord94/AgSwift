@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
@@ -416,7 +415,7 @@ namespace AgSwift_GUI
                             min_distance = Double.NaN;
                             foreach (EdgeClickable _e in edgeClickables[blueprintComboBox.SelectedItem.ToString()])
                             {
-                                if (_e.distanceFromEdge(test_point) < selectionRadius && (min_distance < _e.distanceFromEdge(test_point) || Double.IsNaN(min_distance)))
+                                if (_e.distanceFromEdge(test_point) < (selectionRadius * 5) && (min_distance < _e.distanceFromEdge(test_point) || Double.IsNaN(min_distance)))
                                 {
                                     closest_edge = _e;
                                     found_edge = true;
