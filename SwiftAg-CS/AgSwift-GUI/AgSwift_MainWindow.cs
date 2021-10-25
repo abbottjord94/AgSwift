@@ -217,6 +217,18 @@ namespace AgSwift_GUI
             drawingSurface.MouseUp += new System.Windows.Forms.MouseEventHandler(this.drawingSurface_MiddleMouseClickUp);
             drawingSurface.MouseMove += new System.Windows.Forms.MouseEventHandler(this.drawingSurface_Pan);
             drawingSurface.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.drawingSurface_KeyDown);
+
+            this.newProjectToolStripMenuItem.ShowShortcutKeys = true;
+            this.newProjectToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+
+            this.openProjectToolStripMenuItem.ShowShortcutKeys = true;
+            this.openProjectToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+
+            this.saveProjectToolStripMenuItem.ShowShortcutKeys = true;
+            this.saveProjectToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+
+            this.importPDFToolStripMenuItem.ShowShortcutKeys = true;
+            this.importPDFToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
         }
         
         //Runs when a key is pressed on the drawing surface
