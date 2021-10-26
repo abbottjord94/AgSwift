@@ -41,17 +41,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Edge.cs" />
-    <Compile Include="Graph.cs" />
-    <Compile Include="Hull.cs" />
-    <Compile Include="MeshComparator.cs" />
-    <Compile Include="Point.cs" />
+    <Compile Include="SwiftAg-CS\Edge.cs" />
+    <Compile Include="SwiftAg-CS\Graph.cs" />
+    <Compile Include="Triangulator\Hull.cs" />
+    <Compile Include="SwiftAg-CS\MeshComparator.cs" />
+    <Compile Include="SwiftAg-CS\Point.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Set.cs" />
-    <Compile Include="Triad.cs" />
-    <Compile Include="Triangle.cs" />
-    <Compile Include="Triangulator.cs" />
-    <Compile Include="Vertex.cs" />
+    <Compile Include="Triangulator\Set.cs" />
+    <Compile Include="Triangulator\Triad.cs" />
+    <Compile Include="SwiftAg-CS\Triangle.cs" />
+    <Compile Include="Triangulator\Triangulator.cs" />
+    <Compile Include="Triangulator\Vertex.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

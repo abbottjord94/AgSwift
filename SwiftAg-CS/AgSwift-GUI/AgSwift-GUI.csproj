@@ -58,29 +58,31 @@
     <Compile Include="AgSwift_MainWindow.Designer.cs">
       <DependentUpon>AgSwift_MainWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="EdgeClickable.cs" />
-    <Compile Include="ImageClickable.cs" />
-    <Compile Include="ImportPdfForm.cs" />
-    <Compile Include="ImportPdfForm.Designer.cs">
-      <DependentUpon>ImportPdfForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="OpenGL3Dview.cs">
+    <Compile Include="UI\EdgeClickable.cs" />
+    <Compile Include="UI\ImageClickable.cs" />
+    <Compile Include="PDFImportForm\ImportPdfForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="OpenGL3Dview.Designer.cs">
+    <Compile Include="PDFImportForm\ImportPdfForm.Designer.cs">
+      <DependentUpon>ImportPdfForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OpenGLView\OpenGL3Dview.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OpenGLView\OpenGL3Dview.Designer.cs">
       <DependentUpon>OpenGL3Dview.cs</DependentUpon>
     </Compile>
-    <Compile Include="PointClickable.cs" />
+    <Compile Include="UI\PointClickable.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Project.cs" />
+    <Compile Include="Utilities\Project.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="AgSwift_MainWindow.resx">
       <DependentUpon>AgSwift_MainWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ImportPdfForm.resx">
+    <EmbeddedResource Include="PDFImportForm\ImportPdfForm.resx">
       <DependentUpon>ImportPdfForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="OpenGL3Dview.resx">
+    <EmbeddedResource Include="OpenGLView\OpenGL3Dview.resx">
       <DependentUpon>OpenGL3Dview.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
