@@ -361,9 +361,9 @@ namespace AgSwift_GUI
         {
             if (e.Delta > 0)
             {
-                if (zoomFactor >= 32)
+                if (zoomFactor >= settingsObject.zoomScale)
                 {
-                    zoomFactor = 32;
+                    zoomFactor = settingsObject.zoomScale;
                 }
                 else
                 {
@@ -692,6 +692,24 @@ namespace AgSwift_GUI
         public void saveSettings(Utilities.Settings _settingsObject)
         {
             settingsObject = _settingsObject;
+            if(settingsObject.showDebugInfo)
+            {
+                zoomFactorLabel.Visible = true;
+                stateLabel.Visible = true;
+                centerLabel.Visible = true;
+                trianglesLabel.Visible = true;
+                edgesLabel.Visible = true;
+                pointsLabel.Visible = true;
+            }
+            else
+            {
+                zoomFactorLabel.Visible = false;
+                stateLabel.Visible = false;
+                centerLabel.Visible = false;
+                trianglesLabel.Visible = false;
+                edgesLabel.Visible = false;
+                pointsLabel.Visible = false;
+            }
         }
 
         //Refreshes the drawing surface when the user changes the blueprint they're working on

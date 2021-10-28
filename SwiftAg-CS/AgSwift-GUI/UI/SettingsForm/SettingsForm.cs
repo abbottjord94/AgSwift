@@ -34,7 +34,7 @@ namespace AgSwift_GUI.SettingsForm
 
         private void saveButton_Click(object sender, EventArgs e)
         {
-            FileStream fs = File.Open("settings.txt", FileMode.Open);
+            FileStream fs = File.Open("settings.txt", FileMode.Create);
             string fileString = String.Join("\n", new string[] { pdfImporterUtilityDirectoryTextBox.Text, 
                                                                  pointSizeTextBox.Text, 
                                                                  maximumZoomScaleTextBox.Text, 
@@ -44,6 +44,12 @@ namespace AgSwift_GUI.SettingsForm
             });
             fs.Write(Encoding.UTF8.GetBytes(fileString), 0, fileString.Length);
             fs.Close();
+            settingsObject.pdfImporterDir = pdfImporterUtilityDirectoryTextBox.Text;
+            settingsObject.pointSize = Convert.ToInt32(pointSizeTextBox.Text);
+            settingsObject.zoomScale = Convert.ToInt32(maximumZoomScaleTextBox.Text);
+            settingsObject.selectionRadius = Convert.ToInt32(selectionRadiusTextBox.Text);
+            settingsObject.stepAmount = Convert.ToDouble(meshComparatorStepAmountTextBox.Text);
+            settingsObject.showDebugInfo = Convert.ToBoolean(showDebugInfoCheckbox.Checked);
             mainWindow.saveSettings(settingsObject);
             this.Close();
         }
