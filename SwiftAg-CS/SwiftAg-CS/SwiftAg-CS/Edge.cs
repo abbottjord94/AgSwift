@@ -114,9 +114,11 @@ namespace SwiftAg_CS
                 if (xs[0] < _p.get_x() && xs[1] > _p.get_x())
                 {
                     double d_a = _p.distance(a);
-                    double d_b = _p.distance(b);
-                    double alpha = Math.Acos(Math.Cos(Math.Pow(d_a, 2) + Math.Pow(length(), 2) - Math.Pow(d_b, 2) / (2 * d_a * length())));
-                    return Math.Sin(alpha) * d_a;
+                    double a_d = _p.get_x() - a.get_x();
+
+                    return Math.Sqrt(Math.Pow(d_a,2) - Math.Pow(a_d, 2));
+
+                    
                 }
                 else
                 {
@@ -141,9 +143,9 @@ namespace SwiftAg_CS
                 if (ys[0] < _p.get_y() && ys[1] > _p.get_y())
                 {
                     double d_a = _p.distance(a);
-                    double d_b = _p.distance(b);
-                    double alpha = Math.Acos(Math.Cos(Math.Pow(d_a, 2) + Math.Pow(length(), 2) - Math.Pow(d_b, 2) / (2 * d_a * length())));
-                    return Math.Sin(alpha) * d_a;
+                    double a_d = _p.get_y() - a.get_y();
+
+                    return Math.Sqrt(Math.Pow(d_a, 2) - Math.Pow(a_d, 2));
                 }
                 else
                 {

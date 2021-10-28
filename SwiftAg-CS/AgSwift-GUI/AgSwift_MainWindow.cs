@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
@@ -10,7 +9,7 @@ namespace AgSwift_GUI
 {
     public partial class AgSwift_MainWindow : Form
     {
-        //Sets the zoom factor for the drawing surface. Bounded between 1-32
+        //Sets the zoom factor for the drawing surface
         private int zoomFactor = 1;
 
         //Determines whether the mouse is being dragged
@@ -63,6 +62,9 @@ namespace AgSwift_GUI
         //Object storing current project information
         Project currentProject = new Project();
 
+        //Object storing the current settings information
+        Utilities.Settings settingsObject = new Utilities.Settings();
+
         //Constructor (Runs at the start of the program)
         public AgSwift_MainWindow()
         {
@@ -104,6 +106,7 @@ namespace AgSwift_GUI
             images[blueprintComboBox.SelectedItem.ToString()].Add(new_image);
         }
 
+        //Opens 3D view
         private void threeDView_Click(object sender, EventArgs e)
         {
             OpenGL3Dview threeDPreview = new OpenGL3Dview(this);
@@ -211,6 +214,7 @@ namespace AgSwift_GUI
         //Runs when the main window is finished loading. Event handlers go here.
         private void AgSwift_MainWindow_Load(object sender, EventArgs e)
         {
+            //Event Handlers
             drawingSurface.Resize += new System.EventHandler(this.drawingSurface_Resize);
             drawingSurface.Paint += new System.Windows.Forms.PaintEventHandler(this.drawingSurface_Paint);
             drawingSurface.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.drawingSurface_MouseWheel);
@@ -218,6 +222,19 @@ namespace AgSwift_GUI
             drawingSurface.MouseUp += new System.Windows.Forms.MouseEventHandler(this.drawingSurface_MiddleMouseClickUp);
             drawingSurface.MouseMove += new System.Windows.Forms.MouseEventHandler(this.drawingSurface_Pan);
             drawingSurface.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.drawingSurface_KeyDown);
+
+            //Adds Shortcut Keys
+            this.newProjectToolStripMenuItem.ShowShortcutKeys = true;
+            this.newProjectToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+            this.openProjectToolStripMenuItem.ShowShortcutKeys = true;
+            this.openProjectToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.saveProjectToolStripMenuItem.ShowShortcutKeys = true;
+            this.saveProjectToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.importPDFToolStripMenuItem.ShowShortcutKeys = true;
+            this.importPDFToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
+
+            //Load Settings
+            settingsObject.loadSettings("settings.txt");
         }
         
         //Runs when a key is pressed on the drawing surface
@@ -344,9 +361,9 @@ namespace AgSwift_GUI
         {
             if (e.Delta > 0)
             {
-                if (zoomFactor >= 32)
+                if (zoomFactor >= settingsObject.zoomScale)
                 {
-                    zoomFactor = 32;
+                    zoomFactor = settingsObject.zoomScale;
                 }
                 else
                 {
@@ -416,7 +433,7 @@ namespace AgSwift_GUI
                             min_distance = Double.NaN;
                             foreach (EdgeClickable _e in edgeClickables[blueprintComboBox.SelectedItem.ToString()])
                             {
-                                if (_e.distanceFromEdge(test_point) < selectionRadius && (min_distance < _e.distanceFromEdge(test_point) || Double.IsNaN(min_distance)))
+                                if (_e.distanceFromEdge(test_point) < (selectionRadius * 5) && (min_distance < _e.distanceFromEdge(test_point) || Double.IsNaN(min_distance)))
                                 {
                                     closest_edge = _e;
                                     found_edge = true;
@@ -544,6 +561,7 @@ namespace AgSwift_GUI
             }
         }
 
+        //Import PDF Menu item
         private void importPDFToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog fileDialog = new OpenFileDialog();
@@ -575,6 +593,7 @@ namespace AgSwift_GUI
             }
         }
 
+        //Open Project Menu item
         private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string filename;
@@ -598,6 +617,7 @@ namespace AgSwift_GUI
             }
         }
 
+        //Save Project Menu item
         private void saveProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             foreach(string k in blueprintComboBox.Items)
@@ -619,6 +639,7 @@ namespace AgSwift_GUI
             }
         }
 
+        //Show Existing checkbox
         private void showExistingCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if(showExistingCheckBox.Checked)
@@ -632,6 +653,7 @@ namespace AgSwift_GUI
             drawingSurface.Refresh();
         }
 
+        //Show Proposed checkbox
         private void showProposedCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (showProposedCheckBox.Checked)
@@ -645,16 +667,49 @@ namespace AgSwift_GUI
             drawingSurface.Refresh();
         }
 
+        //Show Images checkbox
         private void showImagesCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             showImages = showImagesCheckBox.Checked;
             drawingSurface.Refresh();
         }
 
+        //Show Triangles checkbox
         private void showTrianglesCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             showTriangles = showTrianglesCheckBox.Checked;
             drawingSurface.Refresh();
+        }
+
+        //Change Editor Settings menu item
+        private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AgSwift_GUI.SettingsForm.SettingsForm settingsForm = new AgSwift_GUI.SettingsForm.SettingsForm(settingsObject, this);
+            settingsForm.Show();
+        }
+
+        //Function to save settings when the Settings form is closed
+        public void saveSettings(Utilities.Settings _settingsObject)
+        {
+            settingsObject = _settingsObject;
+            if(settingsObject.showDebugInfo)
+            {
+                zoomFactorLabel.Visible = true;
+                stateLabel.Visible = true;
+                centerLabel.Visible = true;
+                trianglesLabel.Visible = true;
+                edgesLabel.Visible = true;
+                pointsLabel.Visible = true;
+            }
+            else
+            {
+                zoomFactorLabel.Visible = false;
+                stateLabel.Visible = false;
+                centerLabel.Visible = false;
+                trianglesLabel.Visible = false;
+                edgesLabel.Visible = false;
+                pointsLabel.Visible = false;
+            }
         }
 
         //Refreshes the drawing surface when the user changes the blueprint they're working on

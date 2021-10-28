@@ -8,7 +8,9 @@ namespace AgSwift_GUI
 {
     class Project
     {
-        string dir;
+        private string projectTitle;
+        private double scaleFactor;
+        private string dir;
 
         private Dictionary<string, List<ImageClickable>> bluePrintImages;
         private Dictionary<string, List<PointClickable>> bluePrintPoints;

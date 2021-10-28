@@ -37,6 +37,7 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearGraphToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.elevationEntryBox = new System.Windows.Forms.TextBox();
@@ -46,6 +47,10 @@
             this.pointList = new System.Windows.Forms.ListBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.showTrianglesCheckBox = new System.Windows.Forms.CheckBox();
+            this.showImagesCheckBox = new System.Windows.Forms.CheckBox();
+            this.showProposedCheckBox = new System.Windows.Forms.CheckBox();
+            this.showExistingCheckBox = new System.Windows.Forms.CheckBox();
             this.threeDView = new System.Windows.Forms.Button();
             this.calculateCutFill = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
@@ -60,10 +65,7 @@
             this.edgesLabel = new System.Windows.Forms.Label();
             this.trianglesLabel = new System.Windows.Forms.Label();
             this.pointsLabel = new System.Windows.Forms.Label();
-            this.showExistingCheckBox = new System.Windows.Forms.CheckBox();
-            this.showProposedCheckBox = new System.Windows.Forms.CheckBox();
-            this.showImagesCheckBox = new System.Windows.Forms.CheckBox();
-            this.showTrianglesCheckBox = new System.Windows.Forms.CheckBox();
+            this.projectSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.drawingSurface)).BeginInit();
@@ -134,7 +136,9 @@
             // editToolStripMenuItem
             // 
             this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.clearGraphToolStripMenuItem});
+            this.clearGraphToolStripMenuItem,
+            this.settingsToolStripMenuItem,
+            this.projectSettingsToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "Edit";
@@ -142,9 +146,16 @@
             // clearGraphToolStripMenuItem
             // 
             this.clearGraphToolStripMenuItem.Name = "clearGraphToolStripMenuItem";
-            this.clearGraphToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.clearGraphToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.clearGraphToolStripMenuItem.Text = "Clear Graph";
             this.clearGraphToolStripMenuItem.Click += new System.EventHandler(this.clearGraphToolStripMenuItem_Click_1);
+            // 
+            // settingsToolStripMenuItem
+            // 
+            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.settingsToolStripMenuItem.Text = "Editor Settings";
+            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -243,11 +254,55 @@
             this.panel1.Controls.Add(this.showExistingCheckBox);
             this.panel1.Controls.Add(this.threeDView);
             this.panel1.Controls.Add(this.calculateCutFill);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(561, 3);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(553, 51);
             this.panel1.TabIndex = 0;
+            // 
+            // showTrianglesCheckBox
+            // 
+            this.showTrianglesCheckBox.AutoSize = true;
+            this.showTrianglesCheckBox.Location = new System.Drawing.Point(270, 7);
+            this.showTrianglesCheckBox.Name = "showTrianglesCheckBox";
+            this.showTrianglesCheckBox.Size = new System.Drawing.Size(99, 17);
+            this.showTrianglesCheckBox.TabIndex = 5;
+            this.showTrianglesCheckBox.Text = "Show Triangles";
+            this.showTrianglesCheckBox.UseVisualStyleBackColor = true;
+            this.showTrianglesCheckBox.CheckedChanged += new System.EventHandler(this.showTrianglesCheckBox_CheckedChanged);
+            // 
+            // showImagesCheckBox
+            // 
+            this.showImagesCheckBox.AutoSize = true;
+            this.showImagesCheckBox.Location = new System.Drawing.Point(270, 26);
+            this.showImagesCheckBox.Name = "showImagesCheckBox";
+            this.showImagesCheckBox.Size = new System.Drawing.Size(90, 17);
+            this.showImagesCheckBox.TabIndex = 4;
+            this.showImagesCheckBox.Text = "Show Images";
+            this.showImagesCheckBox.UseVisualStyleBackColor = true;
+            this.showImagesCheckBox.CheckedChanged += new System.EventHandler(this.showImagesCheckBox_CheckedChanged);
+            // 
+            // showProposedCheckBox
+            // 
+            this.showProposedCheckBox.AutoSize = true;
+            this.showProposedCheckBox.Location = new System.Drawing.Point(163, 26);
+            this.showProposedCheckBox.Name = "showProposedCheckBox";
+            this.showProposedCheckBox.Size = new System.Drawing.Size(101, 17);
+            this.showProposedCheckBox.TabIndex = 3;
+            this.showProposedCheckBox.Text = "Show Proposed";
+            this.showProposedCheckBox.UseVisualStyleBackColor = true;
+            this.showProposedCheckBox.CheckedChanged += new System.EventHandler(this.showProposedCheckBox_CheckedChanged);
+            // 
+            // showExistingCheckBox
+            // 
+            this.showExistingCheckBox.AutoSize = true;
+            this.showExistingCheckBox.Location = new System.Drawing.Point(163, 7);
+            this.showExistingCheckBox.Name = "showExistingCheckBox";
+            this.showExistingCheckBox.Size = new System.Drawing.Size(92, 17);
+            this.showExistingCheckBox.TabIndex = 2;
+            this.showExistingCheckBox.Text = "Show Existing";
+            this.showExistingCheckBox.UseVisualStyleBackColor = true;
+            this.showExistingCheckBox.CheckedChanged += new System.EventHandler(this.showExistingCheckBox_CheckedChanged);
             // 
             // threeDView
             // 
@@ -277,7 +332,7 @@
             this.panel2.Controls.Add(this.elevationEntryBox);
             this.panel2.Controls.Add(this.blueprintLabel);
             this.panel2.Controls.Add(this.blueprintComboBox);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel2.Location = new System.Drawing.Point(3, 3);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(552, 51);
@@ -334,7 +389,7 @@
             this.bottomPanel.Controls.Add(this.edgesLabel);
             this.bottomPanel.Controls.Add(this.trianglesLabel);
             this.bottomPanel.Controls.Add(this.pointsLabel);
-            this.bottomPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.bottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.bottomPanel.Location = new System.Drawing.Point(3, 608);
             this.bottomPanel.Name = "bottomPanel";
             this.bottomPanel.Size = new System.Drawing.Size(1117, 27);
@@ -394,49 +449,11 @@
             this.pointsLabel.TabIndex = 21;
             this.pointsLabel.Text = "Points: 0";
             // 
-            // showExistingCheckBox
+            // projectSettingsToolStripMenuItem
             // 
-            this.showExistingCheckBox.AutoSize = true;
-            this.showExistingCheckBox.Location = new System.Drawing.Point(163, 7);
-            this.showExistingCheckBox.Name = "showExistingCheckBox";
-            this.showExistingCheckBox.Size = new System.Drawing.Size(92, 17);
-            this.showExistingCheckBox.TabIndex = 2;
-            this.showExistingCheckBox.Text = "Show Existing";
-            this.showExistingCheckBox.UseVisualStyleBackColor = true;
-            this.showExistingCheckBox.CheckedChanged += new System.EventHandler(this.showExistingCheckBox_CheckedChanged);
-            // 
-            // showProposedCheckBox
-            // 
-            this.showProposedCheckBox.AutoSize = true;
-            this.showProposedCheckBox.Location = new System.Drawing.Point(163, 26);
-            this.showProposedCheckBox.Name = "showProposedCheckBox";
-            this.showProposedCheckBox.Size = new System.Drawing.Size(101, 17);
-            this.showProposedCheckBox.TabIndex = 3;
-            this.showProposedCheckBox.Text = "Show Proposed";
-            this.showProposedCheckBox.UseVisualStyleBackColor = true;
-            this.showProposedCheckBox.CheckedChanged += new System.EventHandler(this.showProposedCheckBox_CheckedChanged);
-            // 
-            // showImagesCheckBox
-            // 
-            this.showImagesCheckBox.AutoSize = true;
-            this.showImagesCheckBox.Location = new System.Drawing.Point(270, 26);
-            this.showImagesCheckBox.Name = "showImagesCheckBox";
-            this.showImagesCheckBox.Size = new System.Drawing.Size(90, 17);
-            this.showImagesCheckBox.TabIndex = 4;
-            this.showImagesCheckBox.Text = "Show Images";
-            this.showImagesCheckBox.UseVisualStyleBackColor = true;
-            this.showImagesCheckBox.CheckedChanged += new System.EventHandler(this.showImagesCheckBox_CheckedChanged);
-            // 
-            // showTrianglesCheckBox
-            // 
-            this.showTrianglesCheckBox.AutoSize = true;
-            this.showTrianglesCheckBox.Location = new System.Drawing.Point(270, 7);
-            this.showTrianglesCheckBox.Name = "showTrianglesCheckBox";
-            this.showTrianglesCheckBox.Size = new System.Drawing.Size(99, 17);
-            this.showTrianglesCheckBox.TabIndex = 5;
-            this.showTrianglesCheckBox.Text = "Show Triangles";
-            this.showTrianglesCheckBox.UseVisualStyleBackColor = true;
-            this.showTrianglesCheckBox.CheckedChanged += new System.EventHandler(this.showTrianglesCheckBox_CheckedChanged);
+            this.projectSettingsToolStripMenuItem.Name = "projectSettingsToolStripMenuItem";
+            this.projectSettingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.projectSettingsToolStripMenuItem.Text = "Project Settings";
             // 
             // AgSwift_MainWindow
             // 
@@ -500,6 +517,8 @@
         private System.Windows.Forms.CheckBox showExistingCheckBox;
         private System.Windows.Forms.CheckBox showImagesCheckBox;
         private System.Windows.Forms.CheckBox showTrianglesCheckBox;
+        private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem projectSettingsToolStripMenuItem;
     }
 }
 
