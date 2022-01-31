@@ -24,7 +24,7 @@ This earthwork calculation is somewhat complicated and involves a few steps. Fir
 
 ![unknown](https://user-images.githubusercontent.com/18123941/151679449-e76e32ca-2e92-463c-8d1f-a778c878cc63.png)
 
-(Profile view along the x-axis)
+(Profile view along the y-axis)
 
 ![unknown](https://user-images.githubusercontent.com/18123941/151679460-f2fb997f-88be-4f6f-b275-ea9138055d91.png)
 
